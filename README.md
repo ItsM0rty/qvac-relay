@@ -8,6 +8,13 @@ The repository is an assessment implementation. See [testing evidence](docs/TEST
 
 The verified execution path is Ubuntu 24.04 in WSL2, using CPU inference. Use Linux Node 22.21 or newer on the 22 line, or Node 24.9 or newer. The Windows host used during development has Vulkan 1.3.260. QVAC documents Vulkan 1.4 as necessary on Windows, including CPU mode, so these instructions use Linux. No cloud API key is required.
 
+The repository is private. If you have access, clone it from a Linux terminal:
+
+```sh
+git clone https://github.com/da-goat37/prac-sdk.git
+cd prac-sdk
+```
+
 From a Linux terminal inside this checkout:
 
 ```sh
@@ -77,7 +84,7 @@ npm run relay -- scan --dir .relay/a
 
 CPU work can take several minutes. The `work` command waits for its checkpoint; use another terminal for `status` or `cancel`. CLI runs allow at most 20 model calls, two corrective attempts and ten minutes per run. Automatic resumption carries call and repair counts from prior work. These are cooperative execution limits, and cancellation waits for native settlement.
 
-The retained [live demonstration](artifacts/live-demo.json) passed with Qwen3 1.7B Q4 in 358177 ms, using five cumulative calls and zero repairs. It includes offline contribution, automatic resumption and restart deduplication. This is one successful demonstration, not a measured success rate.
+The retained [v6 live demonstration](artifacts/live-demo.json) passed with Qwen3 1.7B Q4 in 343463 ms (about 5.7 minutes), using seven cumulative model calls and two repairs. Peer B wrote its contribution into B's own store while A was offline; after reconnecting, A completed the brief citing the health log and deployment configuration. A further restart confirmed deduplication. This is one successful demonstration, not a measured success rate.
 
 `npm run demo` runs the complete live-only handoff in two child processes, retains separate stores under `.relay/demo-*`, and writes a report. It fails visibly if the local model cannot create pending work or use the contribution. It never substitutes scripted output.
 
@@ -90,7 +97,11 @@ RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic npm run relay -- peer --dir .relay
 RELAY_MODEL=1.7b RELAY_SELECTOR=laya npm run demo
 ```
 
-The default generator is Qwen3 1.7B Q4 through `@qvac/sdk` 0.22.0. It completed the native handoff on this machine. Qwen3 0.6B Q4 remains available for experiments, but its full-task attempts exposed repeated searches, source-ID confusion and output-budget failures. The default selector is deterministic. Laya typed decisions Q8 is optional and never rewrites evidence. Its bounded `decide()` call can omit optional snippets; mandatory contribution context is protected. Truncation and malformed selector results produce a visible deterministic fallback. A native selector call failure falls back only when cleanup succeeds; cleanup failure is an infrastructure failure that stops the run and is quarantined. Confidence values do not authorize actions. Live Laya and repeated selector evaluations are being verified; no performance or token savings are claimed yet.
+The default generator is Qwen3 1.7B Q4 through `@qvac/sdk` 0.22.0. It completed the native handoff on this machine. Qwen3 0.6B Q4 remains available for experiments, but its full-task attempts exposed repeated searches, source-ID confusion and output-budget failures. The default selector is deterministic. Laya typed decisions Q8 is optional and never rewrites evidence. Its bounded `decide()` call can omit optional snippets; mandatory contribution context is protected. Truncation and malformed selector results produce a visible deterministic fallback. A native selector call failure falls back only when cleanup succeeds; cleanup failure is an infrastructure failure that stops the run and is quarantined. Confidence values do not authorize actions.
+
+The [v5 selector matrix](docs/EVALUATION.md) used source snapshot `872df5c`: both deterministic and Laya arms passed 6/6 automated state checks. Laya made six valid decisions without fallback or truncation, but selected all six candidates, including five irrelevant records, on every task. No filtering benefit was observed, so deterministic selection remains the default. This matrix predates the v6 handoff snapshot and does not establish semantic truth or general selector performance.
+
+The selected [Qwen3 1.7B probe](artifacts/live-smoke-1.7b.json) passed in two calls with exact output formatting in 28.56 seconds. The [cancellation probe](artifacts/live-cancellation-1.7b.json) requested cancellation after native output began; cancel() returned in 32.77 ms and the completion rejected as INFERENCE_CANCELLED. These probes are separate from the complete handoff.
 
 Application work uses native required-tool mode because its completion contract is a saved brief. The model selects among the declared tools; the harness does not prescribe a successful sequence. Repeating an identical action twice against unchanged data triggers bounded no-progress feedback. The separate probe permits ordinary text so it can verify that a tool result influenced the next model turn.
 
@@ -106,13 +117,13 @@ npm run evaluate -- --compare artifacts/baseline.json artifacts/laya.json --outp
 npm run regrade -- artifacts/live-deterministic.json
 ```
 
-Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. `regrade` reads captured version 2 case state and recomputes checks without inference or store writes. It refuses missing state and mismatched identities, and labels its output as recorded-state-regrade. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Each task includes five irrelevant evidence records. Expected source IDs belong to the grader and are not supplied as mandatory selector context. Measurements and limitations are included in each report. The small synthetic suite does not establish general accuracy or statistical significance.
+Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. `regrade` reads captured version 2 case state and recomputes checks without inference or store writes. It refuses missing state and mismatched identities, and labels its output as recorded-state-regrade. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Each task includes five irrelevant evidence records. Expected source IDs belong to the grader and are not supplied as mandatory selector context. Version 2 reports check the quoted-observation policy and uncertainty notice; historical version 1 reports are not comparable. Measurements and limitations are included in each report. See [the recorded selector evaluation](docs/EVALUATION.md). The small synthetic suite does not establish general accuracy or statistical significance.
 
 ## Boundaries and limitations
 
 - Each peer has one owned Hyperbee2 tree. Paired trees are read-only. Corestore replicates signed blocks over an encrypted protocol stream carried by loopback TCP. This implementation targets two peers on one machine and does not implement internet discovery.
 - Freshness means the latest information locally available at validation. A serialized write guard catches prior queued local writes. This is not global consensus or a claim of exactly-once distributed effects.
-- Quotes, revisions, source existence and required contribution coverage are checked. Those checks do not prove a generated interpretation follows from the quotation.
+- Brief facts are exact source quotations under `quoted-observations-v1`; generated explanations are labelled as unverified uncertainty. The grader checks quotation text, source revisions, required contribution coverage and the root-cause uncertainty notice. These checks do not prove that a source is true or establish semantic entailment.
 - Context uses field projection and a conservative UTF-8 byte estimate with template allowance. This is not an exact tokenizer. Required protocol is never silently removed to fit. Overflow stops visibly.
 - Evidence reads return at most 1000 characters and mark truncation. The model must not cite unread text. Tree scans and remote block waits are bounded. An unreadable paired tree can fail a case read instead of silently hiding evidence.
 - Local control uses a random bearer token in each peer's data directory. Do not share that directory or commit it. Source record IDs and tool names appear in traces; unnecessary source content is not logged there.

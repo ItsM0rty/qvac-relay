@@ -1,40 +1,38 @@
 {
   "mode": "live-qvac-two-peer",
   "passed": true,
-  "elapsedMs": 358177,
-  "directory": ".relay/live-demo-11 (retained locally)",
+  "elapsedMs": 343463,
+  "directory": ".relay/clean-demo-fd54add9623da1fcd0b59f344a3ddf82ca6e63c0-1793466639",
   "events": [
     {
       "event": "peer-started",
       "name": "a",
-      "owner": "6993e14c7de0731ff4395e054a845fa078094d1eda971d4f4e63a788d6558b3d",
-      "p2pPort": 37487
+      "owner": "6826216a22f0463bb3c8ae0120540b2c0ede39cb42d52329efc7be5d9a16cb6e",
+      "p2pPort": 35601
     },
     {
       "event": "peer-started",
       "name": "b",
-      "owner": "02421c5be9b333f7923ff0155dc0d316846e94cf9f0c9f9e6dbe8fabb83eeb5a",
-      "p2pPort": 38391
+      "owner": "48b18980a028751eb3236391e51f21f29fe20113134c1d443831f323517c4944",
+      "p2pPort": 35431
     },
     {
       "event": "initial-work",
       "checkpoint": {
-        "id": "dc2841f0d6f59f266b8a3f91307d3831d12923c05909c3913d497078c740b8c0",
-        "owner": "6993e14c7de0731ff4395e054a845fa078094d1eda971d4f4e63a788d6558b3d",
+        "id": "ee948320b7a1d739affae3b70e742b289029aff13a5d163c9921e44989652414",
+        "owner": "6826216a22f0463bb3c8ae0120540b2c0ede39cb42d52329efc7be5d9a16cb6e",
         "caseId": "rollback-investigation",
-        "createdAt": "2026-10-31T14:06:24.132Z",
+        "createdAt": "2026-10-31T17:13:44.76Z",
         "schemaVersion": 1,
         "kind": "checkpoint",
-        "runId": "007e6568-73f6-4b5f-ae97-b4ed801b78e1",
+        "runId": "80c092f5-01fb-4c80-823d-4a732d4977ab",
         "status": "pending",
         "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
-        "calls": 3,
-        "repairs": 0,
+        "calls": 4,
+        "repairs": 1,
         "consumed": [],
-        "briefId": "6965cb9ac51c6b7ab647b0a6c55f2fc1606081afa76891deb66758130e2a527e",
-        "requestIds": [
-          "2859d9ad55c31bfe0a88564a2ac3424908602a7563f409d363521daa0034bef0"
-        ]
+        "briefId": "55441a951c54e9a439a6e180c8b181c81b9ef3a5c08c68c20b6102a52ac3f1a3",
+        "requestIds": ["6e68bb67600f94403bdc627b131880fb594a30af818800daafa269c10d4ade49"]
       }
     },
     {
@@ -43,85 +41,82 @@
     {
       "event": "b-contributed-offline",
       "id": "deployment-config",
-      "requestId": "2859d9ad55c31bfe0a88564a2ac3424908602a7563f409d363521daa0034bef0"
+      "requestId": "6e68bb67600f94403bdc627b131880fb594a30af818800daafa269c10d4ade49"
     },
     {
       "event": "peer-started",
       "name": "a",
-      "owner": "6993e14c7de0731ff4395e054a845fa078094d1eda971d4f4e63a788d6558b3d",
-      "p2pPort": 46029
+      "owner": "6826216a22f0463bb3c8ae0120540b2c0ede39cb42d52329efc7be5d9a16cb6e",
+      "p2pPort": 44525
     },
     {
       "event": "resumed",
       "checkpoint": {
-        "id": "bf1c812850d303a9a2ac0a4398a2ff54be13aff1d0fced6006bbc55e69d2da9b",
-        "owner": "6993e14c7de0731ff4395e054a845fa078094d1eda971d4f4e63a788d6558b3d",
+        "id": "823d25a458fe3554b48c22de8e8a2029184d5dd1f0f45cd4bf8a9d5a0c2fb7c1",
+        "owner": "6826216a22f0463bb3c8ae0120540b2c0ede39cb42d52329efc7be5d9a16cb6e",
         "caseId": "rollback-investigation",
-        "createdAt": "2026-10-31T14:08:53.729Z",
+        "createdAt": "2026-10-31T17:16:25.681Z",
         "schemaVersion": 1,
         "kind": "checkpoint",
-        "runId": "0e9d15a18d01743c85a3837a29750818dd583d431298a06b28d70cf37e064fa5",
+        "runId": "20703ab9635dba7260f0c88fdb1e5011e140871d3e9e17971985af37f66d6aa0",
         "status": "completed",
         "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
-        "calls": 5,
-        "repairs": 0,
-        "consumed": [
-          "deployment-config"
-        ],
-        "requiredIds": [
-          "deployment-config",
-          "health-log"
-        ],
-        "briefId": "cbc1aedb7cdf9e873462d4ef87e5908bcbddb707ddde070a9a3be7c119eb0433",
-        "requestIds": [
-          "2859d9ad55c31bfe0a88564a2ac3424908602a7563f409d363521daa0034bef0"
-        ]
+        "calls": 7,
+        "repairs": 2,
+        "consumed": ["deployment-config"],
+        "requiredIds": ["deployment-config", "health-log"],
+        "briefId": "00145d9eb9a2c57706c07cdd4f4b5dc1671e6fde3bced9e41f0c03ee27e91d24",
+        "requestIds": ["6e68bb67600f94403bdc627b131880fb594a30af818800daafa269c10d4ade49"]
       },
       "brief": {
-        "id": "cbc1aedb7cdf9e873462d4ef87e5908bcbddb707ddde070a9a3be7c119eb0433",
-        "owner": "6993e14c7de0731ff4395e054a845fa078094d1eda971d4f4e63a788d6558b3d",
+        "id": "00145d9eb9a2c57706c07cdd4f4b5dc1671e6fde3bced9e41f0c03ee27e91d24",
+        "owner": "6826216a22f0463bb3c8ae0120540b2c0ede39cb42d52329efc7be5d9a16cb6e",
         "caseId": "rollback-investigation",
-        "createdAt": "2026-10-31T14:08:53.72Z",
+        "createdAt": "2026-10-31T17:16:25.668Z",
         "schemaVersion": 1,
         "kind": "brief",
+        "factPolicy": "quoted-observations-v1",
         "facts": [
           {
             "text": "Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification.",
             "sources": [
               {
                 "id": "deployment-config",
-                "revision": "8224fb7c87066dd0e66e9c76836f81ad49bee26aa2b19bff081b3c58b020e518",
+                "revision": "17ea949588abc3309be9465333f37de05404e6e1ec8f658d2510c6eb9025befe",
                 "quote": "Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification."
               }
             ]
           },
           {
-            "text": "Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%.",
+            "text": "Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration.",
             "sources": [
               {
                 "id": "health-log",
-                "revision": "36b40f136bea4581ea1904a17a9733a8951b58b68032454e3c632c1c685d5b9b",
-                "quote": "Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%."
+                "revision": "7591f8516d25b79ee3bf10b9e673d81e70b16d9b2fc803d305abc46f9a573183",
+                "quote": "Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration."
               }
             ]
           }
         ],
         "uncertainty": [
-          "Causality still requires verification for the deployment configuration."
+          "Source quotations alone do not establish root cause.",
+          "Unverified model interpretation: The causality of the deployment change and its impact on the health log is uncertain."
         ],
         "missing": [],
-        "basedOn": "1900313421bfc403760e6886af2d0105d4749ea33343042a79d0f15ace0440a3"
+        "basedOn": "01dd53e7928c89a6298c478df7c4e90d7fbc84e77a924fa1a17f4017b2785a67"
       }
     },
     {
       "event": "peer-started",
       "name": "a",
-      "owner": "6993e14c7de0731ff4395e054a845fa078094d1eda971d4f4e63a788d6558b3d",
-      "p2pPort": 33189
+      "owner": "6826216a22f0463bb3c8ae0120540b2c0ede39cb42d52329efc7be5d9a16cb6e",
+      "p2pPort": 46589
     },
     {
       "event": "restart-deduplication-verified",
-      "runId": "0e9d15a18d01743c85a3837a29750818dd583d431298a06b28d70cf37e064fa5"
+      "runId": "20703ab9635dba7260f0c88fdb1e5011e140871d3e9e17971985af37f66d6aa0"
     }
-  ]
+  ],
+  "sourceCommit": "fd54add9623da1fcd0b59f344a3ddf82ca6e63c0",
+  "storesRetainedLocally": true
 }

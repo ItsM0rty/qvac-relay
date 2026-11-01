@@ -1,7 +1,7 @@
 {
   "mode": "clean-source-installation",
   "passed": true,
-  "sourceCommit": "872df5c1a93d95165b41f2958ba6d11074373ce2",
+  "sourceCommit": "fd54add9623da1fcd0b59f344a3ddf82ca6e63c0",
   "platform": "Ubuntu 24.04 WSL2 x64; fresh source and node_modules on Linux filesystem",
   "node": "22.21.1",
   "commands": [
@@ -14,7 +14,7 @@
     "NODE_OPTIONS_during_npm_ci": "--max-old-space-size=384"
   },
   "tests": {
-    "passed": 105,
+    "passed": 110,
     "failed": 0
   },
   "scope": "Fresh git archive of the named commit and fresh node_modules. npm download cache available. No global toolchain changed. This report covers installation/build/tests; separate artifacts cover live inference."

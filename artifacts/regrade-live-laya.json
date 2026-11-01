@@ -1,0 +1,129 @@
+{
+  "mode": "recorded-state-regrade",
+  "nativeInference": false,
+  "sourceMode": "live",
+  "suiteId": "relay-engineering-handoff-v1",
+  "datasetHash": "80a951b25b42c9fd4f1356d6069055428ea73c6e67cb04b6b34e0ee63e288851",
+  "results": [
+    {
+      "caseId": "deployment",
+      "trial": 1,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "success": true,
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": []
+    },
+    {
+      "caseId": "queue",
+      "trial": 1,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "success": true,
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": []
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 1,
+      "status": "pending",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "success": true,
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": []
+    },
+    {
+      "caseId": "deployment",
+      "trial": 2,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "success": true,
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": []
+    },
+    {
+      "caseId": "queue",
+      "trial": 2,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "success": true,
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": []
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 2,
+      "status": "pending",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "success": true,
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": []
+    }
+  ]
+}

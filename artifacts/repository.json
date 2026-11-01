@@ -1,0 +1,14 @@
+{
+  "mode": "private-repository-verification",
+  "checkedAt": "2026-10-31T17:30:55.9808830+00:00",
+  "account": "da-goat37",
+  "repository": "da-goat37/prac-sdk",
+  "url": "https://github.com/da-goat37/prac-sdk",
+  "isPrivate": true,
+  "defaultBranch": "code-fix/relay-handoff",
+  "collaborators": [
+    "da-goat37"
+  ],
+  "pendingInvitations": 0,
+  "accessInstruction": "Owner-only. User revoked reviewer invitations."
+}

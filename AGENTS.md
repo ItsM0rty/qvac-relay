@@ -14,7 +14,11 @@ Relay is an engineering handoff agent using local QVAC inference and independent
 
 ## Runtime
 
-Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents Vulkan 1.4 on Windows. Native CPU tool calling, cancellation and the full two-peer handoff have passed on Ubuntu 24.04 WSL. Qwen3 1.7B Q4 is the default; one complete handoff took 358177 ms with five cumulative calls and zero repairs. A local Node 22.21.1 runtime is in ignored .tools. Use scripts/linux.sh to select it. Do not change global drivers or toolchains. WSL has about 4 GiB RAM. Run dependency installation and model work sequentially. A clean npm install was observed around 2.8 GiB RSS even with a bounded V8 heap.
+Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260; QVAC 0.22 documents Vulkan 1.4 on Windows. The verified native path is Ubuntu 24.04 WSL2 CPU inference. Qwen3 1.7B Q4 is the default; the v6 two-peer handoff completed in 343463 ms with seven cumulative model calls and two repairs. Peer B contributed from its own store while A was offline; A reconnected, cited the health log and deployment configuration, completed the brief, and deduplicated after a further restart. The 1.7B tool-result probe passed in two calls with exact format in 28.56 s; cancel() returned in 32.77 ms after native output, and the completion rejected as INFERENCE_CANCELLED. A local Node 22.21.1 runtime is in ignored `.tools`; use `scripts/linux.sh` to select it. Do not change global drivers or toolchains. WSL has about 4 GiB RAM. Run dependency installation and model work sequentially; a clean install was observed around 2.8 GiB RSS even with a bounded V8 heap.
+
+The v5 selector matrix used source snapshot `872df5c` and passed 6/6 automated checks in both deterministic and Laya arms. Laya made six valid decisions with no fallback or truncation, but selected all six candidates including five irrelevant records on every task. No filtering benefit was observed; deterministic remains the default. This matrix is not evidence for the later v6 handoff snapshot. See `docs/EVALUATION.md` for the measurement scope and limitations.
+
+The clean Linux verification for source `fd54add` passed fresh `npm ci`, QVAC bundle, build and 110/110 tests with zero reported vulnerabilities. The v6 handoff report at the same source is one successful live run, not a success-rate claim. Keep the snapshot identity clear when citing the earlier selector matrix.
 
 ## Project map
 
@@ -36,11 +40,10 @@ Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents 
 ## Verified commands
 
 - npm run build
-- npm test (102 tests passed from clean source at commit 27edb4a)
-- npm test (105 current-source tests passed after the quoted-observation change; a new clean matrix is pending)
-- npm run smoke (native 0.6B tool result round trip, exact format false)
+- npm test (110 tests passed from a clean Linux install at source fd54add)
+- npm run smoke (selected Qwen3 1.7B tool-result probe: two calls, exact format true)
 - node --import tsx scripts/cancel-smoke.ts (native cancellation)
 - npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json
-- npm run demo (one complete native 1.7B handoff with offline contribution and restart deduplication)
+- npm run demo (one complete native 1.7B v6 handoff with offline contribution and restart deduplication)
 
-The clean source check passed. Live Laya ablation and final native checks are being verified. Full handoff evidence and current ablation status are in docs/STATE.md and retained artifacts. Do not infer it from the existence of a script. Keep docs/TESTING.md current after meaningful verification.
+The v5 Laya ablation is complete and showed no candidate-filtering benefit; it predates the v6 handoff source. The selected live probes and full handoff are retained as artifacts. Do not infer verification from the existence of a script. Keep docs/TESTING.md current after meaningful verification.
