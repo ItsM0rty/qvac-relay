@@ -160,6 +160,12 @@ export async function buildContext(args: {
           : {}),
         requests,
         requiredEvidenceIds: args.requiredIds ?? [],
+        ...(args.requiredIds?.length && args.requiredIds.every((id) => args.readIds?.includes(id))
+          ? {
+              readState:
+                'Required sources were read. Save with their available quotes; read only a missing location.',
+            }
+          : {}),
         ...(args.readIds === undefined
           ? {}
           : {
@@ -201,7 +207,49 @@ export async function buildContext(args: {
           guidance:
             'Partial index: use find_evidence to search. Read sourceId at offset=start; nextOffset pages records.',
         },
-        evidenceIndex: selected,
+        evidenceIndex: selected.map((candidate) => {
+          if (!required.has(candidate.sourceId ?? candidate.id)) return candidate;
+          const start = candidate.start ?? 0,
+            end = candidate.end ?? candidate.text.length;
+          for (const message of retainedHistory) {
+            if (
+              message.role !== 'tool' ||
+              message.toolName !== 'read_record' ||
+              !message.toolCallId
+            )
+              continue;
+            try {
+              const read: unknown = JSON.parse(message.content);
+              if (typeof read !== 'object' || read === null) continue;
+              const page = read as {
+                id?: unknown;
+                revision?: unknown;
+                offset?: unknown;
+                end?: unknown;
+                text?: unknown;
+              };
+              if (
+                page.id === (candidate.sourceId ?? candidate.id) &&
+                page.revision === candidate.revision &&
+                typeof page.offset === 'number' &&
+                Number.isSafeInteger(page.offset) &&
+                page.offset >= 0 &&
+                typeof page.end === 'number' &&
+                Number.isSafeInteger(page.end) &&
+                typeof page.text === 'string' &&
+                page.end === page.offset + page.text.length &&
+                page.offset <= start &&
+                page.end >= end &&
+                page.text.slice(start - page.offset, end - page.offset) === candidate.text
+              ) {
+                return { ...candidate, text: '', textInToolResult: message.toolCallId };
+              }
+            } catch {
+              /* Non-JSON tool results cannot prove coverage. */
+            }
+          }
+          return candidate;
+        }),
       }),
     },
     ...retainedHistory,

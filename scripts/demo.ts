@@ -152,15 +152,21 @@ try {
       ? { records, checkpoint: cp }
       : undefined;
   }, 720_000);
+  const settled = await until(async () => {
+    const status = await call(a!, 'status');
+    return status.active ? undefined : status;
+  }, 45_000);
+  events.push({
+    event: 'terminal-run-settled',
+    checkpoint: final.checkpoint,
+    cleanupError: settled.cleanupError,
+    resumptionError: settled.resumptionError,
+  });
   assert.equal(
     final.checkpoint.status,
     'completed',
     `Automatic resumption failed: ${JSON.stringify(final.checkpoint)}`,
   );
-  const settled = await until(async () => {
-    const status = await call(a!, 'status');
-    return status.active ? undefined : status;
-  }, 45_000);
   assert.equal(settled.cleanupError, null, 'Resumed model cleanup failed');
   assert.equal(settled.resumptionError, null, 'Resumption infrastructure failed');
   events.push({ event: 'model-cleanup-verified' });

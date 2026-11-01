@@ -15,6 +15,7 @@ import {
 import { buildContext, DeterministicSelector, type Selector } from './context.js';
 import type { Message, Model, ToolSpec } from './qvac.js';
 import { PassageIndex } from './retrieval.js';
+import { fitsToolResult } from './tool-budget.js';
 import {
   checkCancelled,
   classify,
@@ -441,6 +442,17 @@ export class Agent {
           )
             requiredIds.add(record.id);
         this.index.sync(snapshot.records);
+        for (const [id, cached] of read) {
+          if (
+            !snapshot.records.some(
+              (record) =>
+                record.kind === 'evidence' &&
+                record.id === id &&
+                revision(record) === cached.revision,
+            )
+          )
+            read.delete(id);
+        }
         for (const { passage } of this.index.search(task, 12)) {
           knownIds.delete(passage.sourceId);
           knownIds.add(passage.sourceId);
@@ -549,7 +561,9 @@ export class Agent {
         if ([...ids].some((id) => usedCallIds.has(id)))
           throw new RelayError('CALL_IDS', 'Reused model call ID.', 'model');
         for (const id of ids) usedCallIds.add(id);
-        history.push({ role: 'assistant', content: '', toolCalls: reply.calls });
+        const assistant: Message = { role: 'assistant', content: '', toolCalls: reply.calls };
+        history.push(assistant);
+        const turnResults: Message[] = [];
         let turnError: unknown;
         let saved = false;
         const unsafeBatch =
@@ -581,6 +595,70 @@ export class Agent {
               );
             const current = await this.store.snapshot(caseId);
             checkCancelled(signal);
+            const fits = async (body: unknown, readId?: string, discovered: string[] = []) => {
+              const freshReads = [...read]
+                .filter(([id, cached]) =>
+                  current.records.some(
+                    (record) =>
+                      record.kind === 'evidence' &&
+                      record.id === id &&
+                      revision(record) === cached.revision,
+                  ),
+                )
+                .map(([id]) => id);
+              if (readId && !freshReads.includes(readId)) freshReads.push(readId);
+              const futureKnown = new Set(knownIds);
+              for (const id of discovered) {
+                futureKnown.delete(id);
+                futureKnown.add(id);
+              }
+              this.index.sync(current.records);
+              for (const { passage } of this.index.search(task, 12)) {
+                futureKnown.delete(passage.sourceId);
+                futureKnown.add(passage.sourceId);
+              }
+              // A later independent read can enable the larger save schema.
+              // Reserve that future schema now, without marking it actually read.
+              for (const pending of reply.calls.slice(turnResults.length + 1)) {
+                if (pending.name !== 'read_record') continue;
+                const parsed = schemas.read_record.safeParse(pending.arguments);
+                if (
+                  parsed.success &&
+                  current.records.some(
+                    (record) => record.kind === 'evidence' && record.id === parsed.data.id,
+                  ) &&
+                  !freshReads.includes(parsed.data.id)
+                )
+                  freshReads.push(parsed.data.id);
+              }
+              return fitsToolResult({
+                task,
+                records: current.records,
+                requiredIds: [...requiredIds],
+                readIds: freshReads,
+                tools: offerTools(
+                  freshReads,
+                  [...requiredIds],
+                  [...futureKnown].slice(-24),
+                  current.records
+                    .find((record) => record.kind === 'case')
+                    ?.informationNeeds?.map((need) => need.id) ?? [],
+                ),
+                assistant,
+                results: [
+                  ...turnResults,
+                  {
+                    role: 'tool',
+                    toolCallId: call.id,
+                    toolName: call.name,
+                    content: JSON.stringify(body),
+                  },
+                ],
+                remainingCalls: reply.calls.slice(turnResults.length + 1),
+                budget: options.contextBudget ?? 7000,
+                signal,
+              });
+            };
             const actionKey = stableId(call.name, JSON.stringify(args), current.fingerprint);
             const repetitions = actions.get(actionKey) ?? 0;
             actions.set(actionKey, repetitions + 1);
@@ -620,7 +698,26 @@ export class Agent {
                   break;
                 found.push(next);
               }
-              if (matches.length && !found.length)
+              while (found.length) {
+                found.at(-1)!.nextSkip = matches.length > found.length ? skip + found.length : null;
+                if (
+                  await fits(
+                    found,
+                    undefined,
+                    found.map((passage) => passage.id),
+                  )
+                )
+                  break;
+                found.pop();
+              }
+              if (
+                (matches.length && !found.length) ||
+                !(await fits(
+                  found,
+                  undefined,
+                  found.map((passage) => passage.id),
+                ))
+              )
                 throw new RelayError(
                   'SEARCH_RESULT_BUDGET',
                   reply.calls.length > 1
@@ -628,8 +725,6 @@ export class Agent {
                     : 'A search location cannot fit the configured context budget. Increase contextBudget before starting another run.',
                   reply.calls.length > 1 ? 'validation' : 'overflow',
                 );
-              if (found.length)
-                found.at(-1)!.nextSkip = matches.length > found.length ? skip + found.length : null;
               for (const passage of found) {
                 knownIds.delete(passage.id);
                 knownIds.add(passage.id);
@@ -661,11 +756,22 @@ export class Agent {
                 truncated: offset > 0 || offset + text.length < record.text.length,
               });
               let bytes = Buffer.byteLength(JSON.stringify(page(text)), 'utf8');
-              while (text.length && bytes > resultBudget) {
+              // A complete required passage can replace its duplicate index text.
+              // Test that representation before shrinking: its total prompt cost
+              // can be lower than a shorter, non-covering read page.
+              const coveredRequiredFits =
+                reply.calls.length === 1 &&
+                requiredIds.has(record.id) &&
+                (await fits(page(text), record.id));
+              while (!coveredRequiredFits && text.length && bytes > resultBudget) {
                 text = text.slice(
                   0,
                   Math.max(0, text.length - Math.max(1, Math.ceil((bytes - resultBudget) / 2))),
                 );
+                bytes = Buffer.byteLength(JSON.stringify(page(text)), 'utf8');
+              }
+              while (text.length && !(await fits(page(text), record.id))) {
+                text = text.slice(0, Math.floor(text.length / 2));
                 bytes = Buffer.byteLength(JSON.stringify(page(text)), 'utf8');
               }
               if (!text.length)
@@ -929,12 +1035,14 @@ export class Agent {
             });
             if (turnError === undefined || kind !== 'validation') turnError = error;
           }
-          history.push({
+          const message: Message = {
             role: 'tool',
             toolCallId: call.id,
             toolName: call.name,
             content: JSON.stringify(result),
-          });
+          };
+          history.push(message);
+          turnResults.push(message);
         }
         if (turnError !== undefined) {
           const kind = classify(turnError),

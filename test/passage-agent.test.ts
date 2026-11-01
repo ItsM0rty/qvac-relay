@@ -525,8 +525,15 @@ test('both exact quotes remain usable after the first read leaves protocol histo
         for (const [id, quote] of Object.entries(quotes))
           assert.ok(
             evidence.some(
-              (c: { sourceId: string; text: string }) =>
-                c.sourceId === id && c.text.includes(quote),
+              (c: { sourceId: string; text: string; textInToolResult?: string }) =>
+                c.sourceId === id &&
+                (c.text.includes(quote) ||
+                  h.some(
+                    (message) =>
+                      message.role === 'tool' &&
+                      message.toolCallId === c.textInToolResult &&
+                      JSON.parse(message.content).text.includes(quote),
+                  )),
             ),
           );
         return action(
@@ -546,3 +553,59 @@ test('both exact quotes remain usable after the first read leaves protocol histo
     assert.equal(cp.repairs, 0);
   });
 });
+
+for (const budget of [7000, 8000])
+  test(`escape-heavy required sources respect the configured ${budget} budget`, async () => {
+    await fixture(async (store, base) => {
+      const quote = 'The zircon marker was amber.';
+      const original = (quote + ' "Escaped line".\n'.repeat(40)).trim();
+      const requiredIds = ['protected-a', 'protected-b'];
+      for (const id of requiredIds)
+        await store.put({ ...base, kind: 'evidence', id, title: 'Zircon', text: original });
+      const model = new ControlledModel([
+        (_h, t) => action('read_record', { id: requiredIds[0], length: 1000 }, t),
+        (h, t) => {
+          assert.ok(result<{ text: string }>(h, 'read_record').text.startsWith(quote));
+          return action('read_record', { id: requiredIds[1], length: 1000 }, t);
+        },
+        (h, t) => {
+          const page = result<{
+            text: string;
+            offset: number;
+            end: number;
+            nextOffset: number | null;
+          }>(h, 'read_record');
+          assert.equal(page.text, original.slice(page.offset, page.end));
+          assert.ok(page.text.startsWith(quote));
+          assert.ok(page.end <= original.length);
+          assert.equal(page.nextOffset, page.end < original.length ? page.end : null);
+          const state = h
+            .filter((m) => m.role === 'user')
+            .map((m) => JSON.parse(m.content))
+            .find((v) => v.readState);
+          assert.ok(state);
+          return action(
+            'save_brief',
+            {
+              facts: requiredIds.map((id) => ({ sources: [{ id, quote }] })),
+              uncertainty: [],
+              missing: [],
+            },
+            t,
+          );
+        },
+      ]);
+      const cp = await new Agent(store, model).run('incident', {
+        requiredIds,
+        contextBudget: budget,
+      });
+      if (budget === 7000) {
+        assert.equal(cp.status, 'failed');
+        assert.match(cp.reason ?? '', /overflow/);
+        assert.ok(!(await store.list('incident')).some((record) => record.kind === 'brief'));
+      } else {
+        assert.equal(cp.status, 'completed', cp.reason ?? '');
+        assert.equal(cp.calls, 3);
+      }
+    });
+  });
