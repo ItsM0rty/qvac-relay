@@ -10,7 +10,7 @@ import { projectPassages } from './retrieval.js';
 export function regradePassageReport(
   input: RetrievalEvalReport,
 ): RetrievalEvalReport & { regrade: { mode: string; nativeInference: false; policy: string } } {
-  const report = structuredClone(validateRetrievalReport(input));
+  const report = structuredClone(validateRetrievalReport(input, { historicalConfiguration: true }));
   for (const row of report.rows) {
     if (report.options.mode !== 'retrieval')
       throw new Error('Passage selection regrade requires retrieval-only report');

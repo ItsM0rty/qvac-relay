@@ -178,7 +178,20 @@ export async function buildContext(args: {
   const budget = args.budget ?? 7000;
   const compose = () => [
     ...base,
-    { role: 'user' as const, content: JSON.stringify({ evidenceIndex: selected }) },
+    {
+      role: 'user' as const,
+      content: JSON.stringify({
+        evidenceAvailability: {
+          sources: args.records.filter((r) => r.kind === 'evidence').length,
+          passages: candidates.length,
+          shown: selected.length,
+          omitted: candidates.length - selected.length,
+          guidance:
+            'This index is partial, not the full store. Search with find_evidence before assuming evidence is absent. Read sourceId at offset=start to recover the complete original passage; nextOffset pages longer records.',
+        },
+        evidenceIndex: selected,
+      }),
+    },
     ...args.history,
   ];
   const cost = () => estimateTokens(compose()) + estimateTokens(args.tools) + 256;

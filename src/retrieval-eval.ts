@@ -21,7 +21,7 @@ import { QvacModel } from './qvac.js';
 
 const sha = (v: unknown) => createHash('sha256').update(JSON.stringify(v)).digest('hex');
 export const RETRIEVAL_EVAL_CONFIG = {
-  version: 1,
+  version: 2,
   fixtureVersion: RETRIEVAL_FIXTURE_VERSION,
   datasetHash: RETRIEVAL_CASES_STABLE_ID,
   retrieval: RETRIEVAL_CONFIG,
@@ -97,7 +97,10 @@ export interface RetrievalEvalReport {
   rows: RetrievalEvalRow[];
   limitations: string[];
 }
-export function validateRetrievalReport(report: RetrievalEvalReport): RetrievalEvalReport {
+export function validateRetrievalReport(
+  report: RetrievalEvalReport,
+  options: { historicalConfiguration?: boolean } = {},
+): RetrievalEvalReport {
   if (
     !['retrieval', 'agent'].includes(report.options.mode) ||
     report.mode !==
@@ -106,8 +109,13 @@ export function validateRetrievalReport(report: RetrievalEvalReport): RetrievalE
         : 'passage-retrieval-with-local-rankers')
   )
     throw new Error('Retrieval mode must match its inference label');
-  if (report.configurationHash !== sha(RETRIEVAL_EVAL_CONFIG))
+  if (!options.historicalConfiguration && report.configurationHash !== sha(RETRIEVAL_EVAL_CONFIG))
     throw new Error('Incompatible canonical retrieval configuration');
+  if (
+    options.historicalConfiguration &&
+    sha(report.configuration.retrieval) !== sha(RETRIEVAL_EVAL_CONFIG.retrieval)
+  )
+    throw new Error('Historical passage segmentation is incompatible with current regrading');
   if (
     !Number.isInteger(report.options.trials) ||
     report.options.trials < 1 ||

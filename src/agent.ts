@@ -103,7 +103,12 @@ interface SchemaNode {
   enum?: string[];
   required?: string[];
 }
-function offerTools(readIds: string[], requiredIds: string[], knownIds: string[]): ToolSpec[] {
+function offerTools(
+  readIds: string[],
+  requiredIds: string[],
+  knownIds: string[],
+  needIds: string[],
+): ToolSpec[] {
   const canSave = readIds.length > 0 && requiredIds.every((id) => readIds.includes(id));
   const readable = [...new Set([...requiredIds, ...readIds, ...knownIds])].sort();
   return TOOLS.filter(
@@ -111,6 +116,19 @@ function offerTools(readIds: string[], requiredIds: string[], knownIds: string[]
       (tool.name !== 'save_brief' || canSave) &&
       (tool.name !== 'read_record' || readable.length > 0),
   ).map((tool) => {
+    if (tool.name === 'request_information') {
+      const parameters = structuredClone(tool.parameters),
+        properties = (parameters as SchemaNode).properties;
+      if (!properties)
+        throw new RelayError(
+          'TOOL_SCHEMA',
+          'Trusted request schema is unavailable.',
+          'infrastructure',
+        );
+      if (needIds.length) properties.needId!.enum = [...needIds];
+      else delete properties.needId;
+      return { ...tool, parameters };
+    }
     if (tool.name === 'read_record') {
       const parameters = structuredClone(tool.parameters);
       const id = (parameters as SchemaNode).properties?.id;
@@ -406,7 +424,14 @@ export class Agent {
           knownIds.delete(passage.sourceId);
           knownIds.add(passage.sourceId);
         }
-        const tools = offerTools([...read.keys()], [...requiredIds], [...knownIds].slice(-24));
+        const tools = offerTools(
+          [...read.keys()],
+          [...requiredIds],
+          [...knownIds].slice(-24),
+          snapshot.records
+            .find((r) => r.kind === 'case')
+            ?.informationNeeds?.map((need) => need.id) ?? [],
+        );
         const context = await buildContext({
           task,
           records: snapshot.records,
