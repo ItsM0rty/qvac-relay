@@ -353,7 +353,20 @@ try {
     events,
   };
   await writeFile(join(directory, 'report.json'), JSON.stringify(report, null, 2));
-  console.log(JSON.stringify(report, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        passed: true,
+        report: join(directory, 'report.json'),
+        elapsedMs: report.elapsedMs,
+        calls: final.checkpoint.calls,
+        repairs: final.checkpoint.repairs,
+        brief,
+      },
+      null,
+      2,
+    ),
+  );
 } catch (error) {
   const report = {
     mode: 'live-qvac-two-peer',
@@ -366,7 +379,17 @@ try {
     events,
   };
   await writeFile(join(directory, 'report.json'), JSON.stringify(report, null, 2));
-  console.error(JSON.stringify(report, null, 2));
+  console.error(
+    JSON.stringify(
+      {
+        passed: false,
+        report: join(directory, 'report.json'),
+        error: report.error.split(': {')[0]!.split('\n')[0]!.slice(0, 400),
+      },
+      null,
+      2,
+    ),
+  );
   process.exitCode = 1;
 } finally {
   if (a) await stop(a);

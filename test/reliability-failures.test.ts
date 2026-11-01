@@ -4,7 +4,8 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { setTimeout as delay } from 'node:timers/promises';
-import { Agent } from '../src/agent.js';
+import { Agent, latestCheckpoint } from '../src/agent.js';
+import { Resumer } from '../src/resume.js';
 import { RelayStore } from '../src/store.js';
 import type { RelayRecord } from '../src/records.js';
 import type { Message, Model, ModelReply } from '../src/qvac.js';
@@ -226,3 +227,166 @@ test(
     }
   },
 );
+
+test(
+  'request-only pending resumes once after a real peer contribution',
+  { timeout: 30000 },
+  async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'relay-request-only-'));
+    let a: RelayStore | undefined;
+    let b: RelayStore | undefined;
+    let coordinator: Resumer | undefined;
+    try {
+      a = await RelayStore.open(join(directory, 'a'));
+      b = await RelayStore.open(join(directory, 'b'));
+      await a.put({
+        ...base(a),
+        id: 'case',
+        kind: 'case',
+        title: 'Broker incident',
+        task: 'Find the broker configuration.',
+      });
+      await a.pair(b.owner);
+      await b.pair(a.owner);
+      await b.connect(await a.listen());
+      const question = 'What broker setting changed?';
+      const waiting = await new Agent(
+        a,
+        model([
+          () => action('ask', 'request_information', { question }),
+          () => ({
+            content: 'Waiting for the requested evidence.',
+            calls: [],
+            toolErrors: [],
+            stopReason: 'eos',
+          }),
+        ]),
+      ).run('incident', { runId: 'request-only' });
+      assert.equal(waiting.status, 'pending', waiting.reason ?? '');
+      assert.equal(waiting.briefId, undefined);
+      assert.equal(waiting.calls, 2);
+      assert.equal(waiting.repairs, 0);
+      const initial = await a.list('incident');
+      assert.equal(initial.filter((record) => record.kind === 'brief').length, 0);
+      const request = initial.find((record) => record.kind === 'request');
+      assert.ok(request && request.kind === 'request');
+      assert.deepEqual(waiting.requestIds, [request.id]);
+      let seenRequest = false;
+      for (let i = 0; i < 100; i++) {
+        if ((await b.list('incident')).some((record) => record.id === request.id)) {
+          seenRequest = true;
+          break;
+        }
+        await delay(50);
+      }
+      assert.ok(seenRequest, 'peer did not receive the persisted request');
+      let calls = 0;
+      const worker = new Agent(
+        a,
+        model([
+          () => {
+            calls++;
+            return action('read-response', 'read_record', { id: 'broker-response' });
+          },
+          (history) => {
+            calls++;
+            return finishFromRead(history);
+          },
+        ]),
+      );
+      coordinator = new Resumer(a, worker, { maxCalls: 12, maxRepairs: 2 });
+      coordinator.start(100);
+      await b.put({
+        ...base(b),
+        id: 'broker-response',
+        kind: 'evidence',
+        title: 'Broker configuration',
+        text: 'The broker timeout is 3000 ms.',
+        requestId: request.id,
+      });
+      let completed = undefined as ReturnType<typeof latestCheckpoint>;
+      for (let i = 0; i < 150; i++) {
+        const records = await a.list('incident');
+        const checkpoint = latestCheckpoint(records, a.owner);
+        if (checkpoint?.status === 'completed') {
+          completed = checkpoint;
+          break;
+        }
+        if (checkpoint?.status === 'failed') assert.fail(checkpoint.reason ?? 'resumption failed');
+        await delay(50);
+      }
+      assert.ok(completed, 'automatic resumption did not complete');
+      assert.equal(completed.calls, 4);
+      assert.equal(completed.repairs, 0);
+      assert.deepEqual(completed.consumed, ['broker-response']);
+      const records = await a.list('incident');
+      const briefs = records.filter((record) => record.kind === 'brief');
+      assert.equal(briefs.length, 1);
+      assert.ok(
+        briefs[0]?.kind === 'brief' &&
+          briefs[0].facts.some((fact) =>
+            fact.sources.some(
+              (source) =>
+                source.id === 'broker-response' &&
+                source.quote === 'The broker timeout is 3000 ms.',
+            ),
+          ),
+      );
+      await coordinator.scan();
+      await coordinator.scan();
+      assert.equal(calls, 2);
+      assert.equal(
+        (await a.list('incident')).filter((record) => record.kind === 'brief').length,
+        1,
+      );
+    } finally {
+      await coordinator?.close();
+      await Promise.allSettled([a?.close(), b?.close()]);
+      await rm(directory, { recursive: true, force: true });
+    }
+  },
+);
+
+for (const [name, reply] of [
+  ['malformed', { content: 'Incomplete.', calls: [], toolErrors: ['invalid'], stopReason: 'eos' }],
+  ['length-limited', { content: 'Incomplete.', calls: [], toolErrors: [], stopReason: 'length' }],
+] as const) {
+  test(
+    `${name} output after a request does not create request-only pending`,
+    { timeout: 20000 },
+    async () => {
+      const directory = await mkdtemp(join(tmpdir(), 'relay-request-invalid-'));
+      const store = await RelayStore.open(directory);
+      try {
+        await store.put({
+          ...base(store),
+          id: 'case',
+          kind: 'case',
+          title: 'Broker',
+          task: 'Find the broker setting.',
+        });
+        const checkpoint = await new Agent(
+          store,
+          model([
+            () =>
+              action('ask', 'request_information', { question: 'What broker setting changed?' }),
+            () => ({ ...reply, calls: [...reply.calls], toolErrors: [...reply.toolErrors] }),
+          ]),
+        ).run('incident', { runId: `invalid-${name}`, maxRepairs: 0 });
+        assert.equal(checkpoint.status, 'failed');
+        assert.equal(checkpoint.briefId, undefined);
+        assert.equal(
+          (await store.list('incident')).filter((record) => record.kind === 'brief').length,
+          0,
+        );
+        assert.equal(
+          (await store.list('incident')).filter((record) => record.kind === 'request').length,
+          1,
+        );
+      } finally {
+        await store.close();
+        await rm(directory, { recursive: true, force: true });
+      }
+    },
+  );
+}

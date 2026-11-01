@@ -548,6 +548,34 @@ export class Agent {
           toolErrorCount: reply.toolErrors.length,
         });
         if (reply.calls.length === 0) {
+          // Ordinary completion may suspend an evidence-free investigation, but
+          // cannot create facts or count as a completed brief. Malformed or
+          // length-limited output still follows the corrective-failure path.
+          if (
+            !read.size &&
+            !reply.toolErrors.length &&
+            reply.stopReason !== 'length' &&
+            reply.content.trim()
+          ) {
+            const waiting = await this.store.list(caseId);
+            const unanswered = waiting.filter(
+              (record) =>
+                record.kind === 'request' &&
+                record.owner === this.store.owner &&
+                requestIds.includes(record.id) &&
+                !waiting.some(
+                  (answer) => answer.kind === 'evidence' && answer.requestId === record.id,
+                ),
+            );
+            if (unanswered.length) {
+              reason = 'Awaiting requested peer evidence; no observations accepted.';
+              await this.trace(runId, 'pending_without_brief', {
+                requestIds: unanswered.map((record) => record.id),
+                reason,
+              });
+              return await checkpoint('pending');
+            }
+          }
           const error = new RelayError(
             reply.stopReason === 'length'
               ? 'OUTPUT_LIMIT'
