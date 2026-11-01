@@ -42,7 +42,14 @@ class ScriptedModel implements Model {
     this.histories.push(structuredClone(history));
     this.offerings.push(tools.map((tool) => tool.name));
     const readSchema = tools.find((tool) => tool.name === 'read_record')?.parameters as
-      { properties?: { id?: { enum?: unknown[] } } } | undefined;
+      | { properties?: { id?: { enum?: unknown[] }; offset?: unknown; length?: unknown } }
+      | undefined;
+    assert.ok(readSchema?.properties?.offset);
+    assert.equal(
+      readSchema.properties.length,
+      undefined,
+      'Native read pages are sized by trusted code',
+    );
     this.readableIds.push(
       (readSchema?.properties?.id?.enum ?? []).filter((id): id is string => typeof id === 'string'),
     );

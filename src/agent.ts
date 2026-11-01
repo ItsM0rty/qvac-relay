@@ -94,7 +94,7 @@ export const TOOLS: ToolSpec[] = Object.entries(schemas).map(([name, schema]) =>
       find_evidence:
         'Search all passages. Returns a bounded page of source IDs and exact locations, not source text. Read matching offsets before citing. Use nextSkip for the next page.',
       read_record:
-        'Read exact original text using source ID and offset from search/context. Maximum requested length1000; the returned page may be shorter to fit context. Follow nextOffset for more. Offsets are UTF-16 characters, not passage IDs.',
+        'Read exact original text using source ID and offset from search/context. Trusted code returns up to1000 characters, possibly fewer to fit context. Follow nextOffset for more. Offsets are UTF-16 characters, not passage IDs.',
       request_information:
         'Persist a question for another peer. For a required informationNeed include its needId. Reuse existing questions.',
       save_brief:
@@ -145,6 +145,9 @@ function offerTools(
           'infrastructure',
         );
       id.enum = readable;
+      // Page size is a harness budget decision, not a model counting task.
+      // The library validator retains length for controlled callers/tests.
+      delete (parameters as SchemaNode).properties!.length;
       return { ...tool, parameters };
     }
     if (tool.name !== 'save_brief') return tool;

@@ -21,7 +21,7 @@ import { QvacModel } from './qvac.js';
 
 const sha = (v: unknown) => createHash('sha256').update(JSON.stringify(v)).digest('hex');
 export const RETRIEVAL_EVAL_CONFIG = {
-  version: 5,
+  version: 6,
   fixtureVersion: RETRIEVAL_FIXTURE_VERSION,
   datasetHash: RETRIEVAL_CASES_STABLE_ID,
   retrieval: RETRIEVAL_CONFIG,

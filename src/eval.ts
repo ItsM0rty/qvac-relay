@@ -59,7 +59,7 @@ export type EvalCase = (typeof EVAL_CASES)[number];
 export const EVAL_SUITE_ID = 'relay-engineering-handoff-v1';
 export const EVAL_DATASET_HASH = stableId(JSON.stringify(EVAL_CASES));
 export const EVAL_HARNESS_HASH = stableId(
-  'native-permissions-v9-single-copy-protected-feedback',
+  'native-permissions-v10-trusted-read-page-sizing',
   INSTRUCTIONS,
   JSON.stringify(TOOLS),
 );
