@@ -84,6 +84,8 @@ export async function buildContext(args: {
   budget?: number;
   signal: AbortSignal;
   feedback?: string;
+  readIds?: string[];
+  discardRejectedDraft?: boolean;
 }): Promise<{ history: Message[]; selection: Selection; estimatedTokens: number }> {
   checkCancelled(args.signal);
   validateHistory(args.history);
@@ -158,6 +160,13 @@ export async function buildContext(args: {
           : {}),
         requests,
         requiredEvidenceIds: args.requiredIds ?? [],
+        ...(args.readIds === undefined
+          ? {}
+          : {
+              readIds: args.readIds,
+              readProgressGuidance:
+                'Reuse prior reads when relevant; an ID does not mean the whole source was read.',
+            }),
         feedback: args.feedback,
       }),
     },
@@ -190,7 +199,7 @@ export async function buildContext(args: {
           shown: selected.length,
           omitted: candidates.length - selected.length,
           guidance:
-            'This index is partial, not the full store. Search with find_evidence before assuming evidence is absent. Read sourceId at offset=start to recover the complete original passage; nextOffset pages longer records.',
+            'Partial index: use find_evidence to search. Read sourceId at offset=start; nextOffset pages records.',
         },
         evidenceIndex: selected,
       }),
@@ -207,6 +216,55 @@ export async function buildContext(args: {
       );
       if (next < 0) break;
       retainedHistory.splice(0, next);
+      historyGroupsDropped++;
+    }
+  }
+  // The trusted caller may discard only a fully rejected draft, and only under
+  // pressure; preserve the explicit repair feedback and all protected context.
+  if (
+    cost() > budget &&
+    args.discardRejectedDraft &&
+    args.feedback?.trim() &&
+    retainedHistory.length > 1
+  ) {
+    const [assistant, ...results] = retainedHistory;
+    const calls = assistant?.role === 'assistant' ? assistant.toolCalls : undefined;
+    const rejected =
+      calls?.length &&
+      calls.every((call) => call.name === 'save_brief') &&
+      results.length === calls.length &&
+      results.every((message) => {
+        if (message.role !== 'tool' || message.toolName !== 'save_brief') return false;
+        try {
+          const value: unknown = JSON.parse(message.content);
+          return (
+            typeof value === 'object' &&
+            value !== null &&
+            'ok' in value &&
+            value.ok === false &&
+            'code' in value &&
+            typeof value.code === 'string' &&
+            [
+              'ARGUMENTS',
+              'MALFORMED_CALL',
+              'PARALLEL_DENIED',
+              'PERMISSION',
+              'NO_PROGRESS',
+              'STALE_CONTEXT',
+              'UNREAD_SOURCE',
+              'QUOTE',
+              'REVISION',
+              'COVERAGE',
+              'REQUIRED_INFORMATION_REQUEST',
+              'REQUEST_REQUIRED',
+            ].includes(value.code)
+          );
+        } catch {
+          return false;
+        }
+      });
+    if (rejected) {
+      retainedHistory.splice(0);
       historyGroupsDropped++;
     }
   }

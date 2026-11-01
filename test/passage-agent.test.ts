@@ -4,7 +4,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
-import { Agent, validateArguments } from '../src/agent.js';
+import { Agent, latestCheckpoint, validateArguments } from '../src/agent.js';
 import { buildContext, validateHistory } from '../src/context.js';
 import { RelayStore } from '../src/store.js';
 import { revision, type EvidenceRecord } from '../src/records.js';
@@ -406,5 +406,143 @@ test('parallel read payloads are bounded and undelivered text cannot be cited be
     const cp = await new Agent(store, model).run('incident');
     assert.equal(cp.status, 'completed', cp.reason ?? '');
     assert.equal(cp.repairs, 1);
+  });
+});
+
+test('oversized rejected draft repairs from protected read progress without repeating the read', async () => {
+  await fixture(async (store, base) => {
+    const quote = 'The zircon marker was amber.';
+    await store.put({
+      ...base,
+      kind: 'evidence',
+      id: 'draft-source',
+      title: 'Zircon',
+      text: quote,
+    });
+    const model = new ControlledModel([
+      (_h, t) => action('read_record', { id: 'draft-source' }, t),
+      (h, t) => {
+        assert.equal(result<{ text: string }>(h, 'read_record').text, quote);
+        return action(
+          'save_brief',
+          draft(
+            'draft-source',
+            [0, 1, 2].map((i) => 'x'.repeat(990) + i),
+          ),
+          t,
+        );
+      },
+      (h, t) => {
+        const state = h
+          .filter((m) => m.role === 'user')
+          .map((m) => JSON.parse(m.content))
+          .find((v) => Array.isArray(v.readIds));
+        assert.deepEqual(state.readIds, ['draft-source']);
+        assert.ok(state.feedback);
+        assert.ok(
+          !h.some((m) => m.role === 'tool' && m.toolName === 'save_brief'),
+          'Rejected draft should leave the protected prompt under budget pressure',
+        );
+        return action('save_brief', draft('draft-source', [quote]), t);
+      },
+    ]);
+    const cp = await new Agent(store, model).run('incident', { contextBudget: 6500 });
+    assert.equal(cp.status, 'completed', cp.reason ?? '');
+    assert.equal(cp.calls, 3);
+    assert.equal(cp.repairs, 1);
+  });
+});
+
+test('new owned checkpoints remain later than persisted progress after a wall-clock rollback', async () => {
+  await fixture(async (store, base) => {
+    const quote = 'The zircon marker was amber.';
+    const future = '2099-01-01T05:45:00.000+05:45';
+    await store.put({
+      ...base,
+      kind: 'checkpoint',
+      id: 'future-checkpoint',
+      createdAt: future,
+      runId: 'old-run',
+      status: 'failed',
+      task: 'Investigate zircon.',
+      calls: 3,
+      repairs: 0,
+      consumed: [],
+      requestIds: [],
+      reason: 'Earlier persisted run.',
+    });
+    await store.put({
+      ...base,
+      kind: 'evidence',
+      id: 'clock-source',
+      title: 'Zircon',
+      text: quote,
+    });
+    const model = new ControlledModel([
+      (_h, t) => action('read_record', { id: 'clock-source' }, t),
+      (_h, t) => action('save_brief', draft('clock-source', [quote]), t),
+    ]);
+    const cp = await new Agent(store, model).run('incident');
+    assert.equal(cp.status, 'completed', cp.reason ?? '');
+    assert.ok(Date.parse(cp.createdAt) > Date.parse(future));
+    assert.equal(latestCheckpoint(await store.list('incident'), store.owner)?.runId, cp.runId);
+  });
+});
+
+test('both exact quotes remain usable after the first read leaves protocol history', async () => {
+  await fixture(async (store, base) => {
+    const quotes = {
+      'first-source': 'The zircon marker was amber.',
+      'second-source': 'The zircon setting was 100 ms.',
+    };
+    for (const [id, text] of Object.entries(quotes))
+      await store.put({ ...base, kind: 'evidence', id, title: 'Zircon', text });
+    const model = new ControlledModel([
+      (_h, t) => action('read_record', { id: 'first-source' }, t),
+      (h, t) => {
+        assert.equal(result<{ text: string }>(h, 'read_record').text, quotes['first-source']);
+        return action('read_record', { id: 'second-source' }, t);
+      },
+      (h, t) => {
+        assert.equal(result<{ text: string }>(h, 'read_record').text, quotes['second-source']);
+        return action('find_evidence', { query: 'zircon' }, t);
+      },
+      (h, t) => {
+        assert.ok(
+          !h.some(
+            (m) =>
+              m.role === 'tool' &&
+              m.toolName === 'read_record' &&
+              JSON.parse(m.content).id === 'first-source',
+          ),
+        );
+        const states = h.filter((m) => m.role === 'user').map((m) => JSON.parse(m.content));
+        assert.deepEqual(
+          [...states.find((v) => v.readIds)?.readIds].sort(),
+          Object.keys(quotes).sort(),
+        );
+        const evidence = states.find((v) => v.evidenceIndex)?.evidenceIndex;
+        for (const [id, quote] of Object.entries(quotes))
+          assert.ok(
+            evidence.some(
+              (c: { sourceId: string; text: string }) =>
+                c.sourceId === id && c.text.includes(quote),
+            ),
+          );
+        return action(
+          'save_brief',
+          {
+            facts: Object.entries(quotes).map(([id, quote]) => ({ sources: [{ id, quote }] })),
+            uncertainty: [],
+            missing: [],
+          },
+          t,
+        );
+      },
+    ]);
+    const cp = await new Agent(store, model).run('incident', { requiredIds: Object.keys(quotes) });
+    assert.equal(cp.status, 'completed', cp.reason ?? '');
+    assert.equal(cp.calls, 4);
+    assert.equal(cp.repairs, 0);
   });
 });

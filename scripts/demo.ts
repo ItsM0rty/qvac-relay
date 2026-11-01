@@ -20,9 +20,9 @@ interface Peer {
   output: string;
 }
 async function until<T>(fn: () => Promise<T | undefined>, timeout = 30_000): Promise<T> {
-  const end = Date.now() + timeout;
+  const end = performance.now() + timeout;
   let last: unknown;
-  while (Date.now() < end) {
+  while (performance.now() < end) {
     try {
       const value = await fn();
       if (value !== undefined) return value;
@@ -89,7 +89,7 @@ const padding =
   );
 const evidenceText = (text: string) => (longEvidence ? padding + text : text);
 let a: Peer | undefined, b: Peer | undefined;
-const started = Date.now();
+const started = performance.now();
 try {
   a = await start('a');
   b = await start('b');
@@ -116,6 +116,7 @@ try {
     ),
   });
   const initial = await call(a, 'work', { case: caseId });
+  assert.equal((await call(a, 'status')).cleanupError, null, 'Initial model cleanup failed');
   events.push({ event: 'initial-work', checkpoint: initial });
   assert.equal(
     initial.status,
@@ -127,6 +128,7 @@ try {
     return records.find((r) => r.kind === 'request' && initial.requestIds.includes(r.id));
   });
   await stop(a);
+  assert.equal(a.child.exitCode, 0, 'Initial peer did not close cleanly');
   events.push({ event: 'a-offline' });
   await call(b, 'evidence', {
     case: caseId,
@@ -155,6 +157,13 @@ try {
     'completed',
     `Automatic resumption failed: ${JSON.stringify(final.checkpoint)}`,
   );
+  const settled = await until(async () => {
+    const status = await call(a!, 'status');
+    return status.active ? undefined : status;
+  }, 45_000);
+  assert.equal(settled.cleanupError, null, 'Resumed model cleanup failed');
+  assert.equal(settled.resumptionError, null, 'Resumption infrastructure failed');
+  events.push({ event: 'model-cleanup-verified' });
   const brief = final.records.find((r) => r.kind === 'brief' && r.id === final.checkpoint.briefId);
   assert.ok(brief?.kind === 'brief');
   if (longEvidence) {
@@ -187,12 +196,19 @@ try {
   const persisted = latestCheckpoint(await call(a, 'inspect', { case: caseId }), a.owner);
   assert.equal(persisted?.runId, runId, 'Repeated scans or restart duplicated completed work');
   events.push({ event: 'restart-deduplication-verified', runId });
+  await stop(a);
+  assert.equal(a.child.exitCode, 0, 'Restarted A did not close cleanly');
+  a = undefined;
+  await stop(b);
+  assert.equal(b.child.exitCode, 0, 'B did not close cleanly');
+  b = undefined;
+  events.push({ event: 'peers-stopped-cleanly' });
   const report = {
     mode: 'live-qvac-two-peer',
     longEvidence,
     selector: process.env.RELAY_SELECTOR ?? 'deterministic',
     passed: true,
-    elapsedMs: Date.now() - started,
+    elapsedMs: performance.now() - started,
     directory,
     events,
   };
@@ -202,7 +218,7 @@ try {
   const report = {
     mode: 'live-qvac-two-peer',
     passed: false,
-    elapsedMs: Date.now() - started,
+    elapsedMs: performance.now() - started,
     error: error instanceof Error ? error.message : String(error),
     events,
   };

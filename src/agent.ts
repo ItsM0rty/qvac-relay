@@ -214,7 +214,9 @@ export function latestCheckpoint(
     .filter((r): r is CheckpointRecord => r.kind === 'checkpoint' && r.owner === owner)
     .sort(
       (a, b) =>
-        b.createdAt.localeCompare(a.createdAt) || b.calls - a.calls || b.id.localeCompare(a.id),
+        Date.parse(b.createdAt) - Date.parse(a.createdAt) ||
+        b.calls - a.calls ||
+        b.id.localeCompare(a.id),
     )[0];
 }
 export function contributions(records: RelayRecord[], checkpoint: CheckpointRecord): string[] {
@@ -338,6 +340,15 @@ export class Agent {
     try {
       checkCancelled(signal);
       let snapshot = await this.store.snapshot(caseId);
+      // Owned records provide a logical lower bound if the host clock moves
+      // backwards between runs. Remote peer clocks cannot advance our clock.
+      clock = snapshot.records.reduce(
+        (latest, record) =>
+          record.owner === this.store.owner
+            ? Math.max(latest, Date.parse(record.createdAt))
+            : latest,
+        clock,
+      );
       const cases = snapshot.records.filter((r) => r.kind === 'case');
       if (cases.length !== 1 || cases[0]!.owner !== this.store.owner)
         throw new RelayError(
@@ -351,7 +362,7 @@ export class Agent {
           (r): r is CheckpointRecord =>
             r.kind === 'checkpoint' && r.runId === runId && r.owner === this.store.owner,
         )
-        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+        .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))[0];
       if (existingRun) return existingRun;
       clock = Math.max(
         clock,
@@ -385,6 +396,7 @@ export class Agent {
       const actions = new Map<string, number>();
       let history: Message[] = [];
       let feedback: string | undefined;
+      let discardRejectedDraft = false;
       const selector = options.selector ?? new DeterministicSelector();
       let cachedKey = '';
       let cached: Awaited<ReturnType<Selector['select']>> | undefined;
@@ -392,7 +404,11 @@ export class Agent {
         select: async (t, c, s) => {
           const key = stableId(t, JSON.stringify(c));
           if (key !== cachedKey) {
-            await this.model.release?.();
+            if (!(
+              selector instanceof DeterministicSelector &&
+              selector.select === DeterministicSelector.prototype.select
+            ))
+              await this.model.release?.();
             try {
               cached = await selector.select(t, c, s);
               if (
@@ -447,7 +463,21 @@ export class Agent {
           signal,
           budget: options.contextBudget,
           feedback,
+          readIds: [...read]
+            .filter(([id, cached]) =>
+              snapshot.records.some(
+                (record) =>
+                  record.kind === 'evidence' &&
+                  record.id === id &&
+                  revision(record) === cached.revision,
+              ),
+            )
+            .map(([id]) => id),
+          discardRejectedDraft,
         });
+        history = context.history.filter(
+          (message) => message.role === 'assistant' || message.role === 'tool',
+        );
         await this.trace(runId, 'context', {
           ...context.selection,
           allowedTools: tools.map((t) => t.name),
@@ -917,9 +947,15 @@ export class Agent {
           repairs++;
           lastFailure = signature;
           feedback = turnError instanceof Error ? turnError.message : String(turnError);
+          discardRejectedDraft =
+            kind === 'validation' &&
+            !saved &&
+            reply.calls.length === 1 &&
+            reply.calls[0]!.name === 'save_brief';
         } else {
           lastFailure = undefined;
           feedback = undefined;
+          discardRejectedDraft = false;
         }
         if (saved) {
           const all = await this.store.list(caseId);
@@ -945,7 +981,7 @@ export class Agent {
         }
         await checkpoint('running');
         // Retain complete protocol groups. Older resolved groups can leave context;
-        // accepted writes remain in the store and citation reads must be repeated if needed.
+        // accepted writes and the trusted read cache remain outside prompt history.
         const groups: Message[][] = [];
         for (const message of history) {
           if (message.role === 'assistant') groups.push([message]);
