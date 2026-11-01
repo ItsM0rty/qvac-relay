@@ -1,0 +1,16 @@
+{
+  "mode": "current-source-recheck-with-verified-dependencies",
+  "passed": true,
+  "sourceCommit": "13eafee",
+  "dependencyInstallationSource": "57fc4d6 clean npm ci; unchanged package-lock verified; dependency files hard-linked into a fresh source archive",
+  "commands": [
+    "npm run bundle:qvac",
+    "npm run build",
+    "npm test"
+  ],
+  "tests": {
+    "passed": 137,
+    "failed": 0
+  },
+  "scope": "Latest committed source and reused, previously clean-installed dependencies. This is not a second fresh npm installation."
+}

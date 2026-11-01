@@ -1,0 +1,267 @@
+{
+  "mode": "live-qvac-laya-passage-probe",
+  "purpose": "Observed candidate order, option order, separate example and crucial-tail sensitivity. Prediction changes are not proof of correctness.",
+  "elapsedMs": 57303.324184,
+  "task": "What is the maximum permitted vaccine cargo temperature in degrees Celsius?",
+  "candidates": [
+    {
+      "id": "answer",
+      "revision": "probe-v1",
+      "title": "Cargo handling rule",
+      "text": "The shipment manifest lists pallet identifiers, seal checks, operator assignments and routine handling notes. The shipment manifest lists pallet identifiers, seal checks, operator assignments and routine handling notes. The shipment manifest lists pallet identifiers, seal checks, operator assignments and routine handling notes. The shipment manifest lists pallet identifiers, seal checks, operator assignments and routine handling notes. The maximum permitted vaccine cargo temperature is8 degrees Celsius, not8 degrees Fahrenheit."
+    },
+    {
+      "id": "background",
+      "revision": "probe-v1",
+      "title": "Cargo routing",
+      "text": "The vaccine cargo travels through the north loading bay. This routing record does not specify temperature limits."
+    },
+    {
+      "id": "unrelated",
+      "revision": "probe-v1",
+      "title": "Modem maintenance",
+      "text": "The satellite modem queue was replaced after packet jitter."
+    }
+  ],
+  "rows": [
+    {
+      "name": "base",
+      "config": {},
+      "selection": {
+        "ids": [
+          "answer",
+          "background"
+        ],
+        "policy": "laya-passage-v2",
+        "usage": {
+          "native": [
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 203,
+              "outputTokens": 0,
+              "stateTokens": 144,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            },
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 129,
+              "outputTokens": 0,
+              "stateTokens": 70,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            }
+          ],
+          "decisionCalls": 1,
+          "loadMs": 8116.1856099999995,
+          "decisionMs": 2968.7740399999984,
+          "candidateIds": [
+            "answer",
+            "background"
+          ],
+          "classes": {
+            "answer": "directly_relevant",
+            "background": "background"
+          },
+          "optionOrder": "forward",
+          "candidateOrder": "forward"
+        }
+      },
+      "ms": 11181.399758
+    },
+    {
+      "name": "candidate-reversed",
+      "config": {
+        "candidateOrder": "reverse"
+      },
+      "selection": {
+        "ids": [
+          "answer",
+          "background"
+        ],
+        "policy": "laya-passage-v2",
+        "usage": {
+          "native": [
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 129,
+              "outputTokens": 0,
+              "stateTokens": 70,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            },
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 203,
+              "outputTokens": 0,
+              "stateTokens": 144,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            }
+          ],
+          "decisionCalls": 1,
+          "loadMs": 8035.300052999999,
+          "decisionMs": 2753.3284310000017,
+          "candidateIds": [
+            "answer",
+            "background"
+          ],
+          "classes": {
+            "answer": "directly_relevant",
+            "background": "background"
+          },
+          "optionOrder": "forward",
+          "candidateOrder": "reverse"
+        }
+      },
+      "ms": 10880.956124
+    },
+    {
+      "name": "options-reversed",
+      "config": {
+        "optionOrder": "reverse"
+      },
+      "selection": {
+        "ids": [
+          "answer",
+          "background"
+        ],
+        "policy": "laya-passage-v2",
+        "usage": {
+          "native": [
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 203,
+              "outputTokens": 0,
+              "stateTokens": 144,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            },
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 129,
+              "outputTokens": 0,
+              "stateTokens": 70,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            }
+          ],
+          "decisionCalls": 1,
+          "loadMs": 8251.485944,
+          "decisionMs": 3138.918010999998,
+          "candidateIds": [
+            "answer",
+            "background"
+          ],
+          "classes": {
+            "answer": "directly_relevant",
+            "background": "background"
+          },
+          "optionOrder": "reverse",
+          "candidateOrder": "forward"
+        }
+      },
+      "ms": 11482.253063
+    },
+    {
+      "name": "contrast-example",
+      "config": {
+        "example": true
+      },
+      "selection": {
+        "ids": [
+          "answer",
+          "background"
+        ],
+        "policy": "laya-passage-v2",
+        "usage": {
+          "native": [
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 221,
+              "outputTokens": 0,
+              "stateTokens": 144,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            },
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 147,
+              "outputTokens": 0,
+              "stateTokens": 70,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            }
+          ],
+          "decisionCalls": 1,
+          "loadMs": 9337.645528000001,
+          "decisionMs": 3276.1216219999988,
+          "candidateIds": [
+            "answer",
+            "background"
+          ],
+          "classes": {
+            "answer": "directly_relevant",
+            "background": "background"
+          },
+          "optionOrder": "forward",
+          "candidateOrder": "forward"
+        }
+      },
+      "ms": 12709.606627000001
+    },
+    {
+      "name": "crucial-tail-changed",
+      "selection": {
+        "ids": [
+          "background",
+          "answer"
+        ],
+        "policy": "laya-passage-v2",
+        "usage": {
+          "native": [
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 129,
+              "outputTokens": 0,
+              "stateTokens": 70,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            },
+            {
+              "model": "laya-rl-agent",
+              "inputTokens": 200,
+              "outputTokens": 0,
+              "stateTokens": 141,
+              "stateTokensDropped": 0,
+              "truncated": false,
+              "truncatedQuestions": []
+            }
+          ],
+          "decisionCalls": 1,
+          "loadMs": 8118.10499,
+          "decisionMs": 2835.4286409999986,
+          "candidateIds": [
+            "background",
+            "answer"
+          ],
+          "classes": {
+            "background": "background",
+            "answer": "background"
+          },
+          "optionOrder": "forward",
+          "candidateOrder": "forward"
+        }
+      }
+    }
+  ]
+}

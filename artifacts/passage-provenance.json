@@ -1,0 +1,41 @@
+{
+  "mode": "artifact-source-reference",
+  "basis": "Parent clean-verify orchestration, archived source manifest, retained raw outputs and peer trace directories",
+  "entries": [
+    {
+      "artifacts": [
+        "clean-install.json",
+        "minilm-native-probe.json",
+        "laya-passage-probe.json",
+        "passage-retrieval-raw-57fc4d6.json",
+        "passage-agent.json",
+        "passage-demo-minilm-57fc4d6-failed.json"
+      ],
+      "note": "Raw archived evaluation reports cannot read Git metadata; this manifest supplies the source attribution, not new inference.",
+      "sourceCommit": "57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4"
+    },
+    {
+      "artifacts": [
+        "passage-demo-lexical-13eafee-failed.json",
+        "current-source-recheck.json"
+      ],
+      "note": "Fresh source with reused verified dependencies.",
+      "sourceCommit": "13eafee"
+    },
+    {
+      "artifacts": [
+        "minilm-native-probe-initial.json"
+      ],
+      "note": "First direct-checkout probe retained from Git; before clean archive probe.",
+      "sourceCommit": "57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4"
+    },
+    {
+      "artifacts": [
+        "passage-ranking-budget-replay.json"
+      ],
+      "note": "Inference-free replay, historical score attribution explicit in report.",
+      "sourceCommit": "b735b535ba1a7a583ccbbdb582890d0f244355fb"
+    }
+  ],
+  "limits": "The manifest is a development record, not a cryptographic attestation. Native predictions, cached rankings, replay and controlled tests remain distinct."
+}

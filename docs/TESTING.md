@@ -4,6 +4,10 @@ Verification uses Ubuntu 24.04 WSL2 on CPU with project-local Linux Node 22.21.1
 
 ## Clean source and tests
 
+The passage implementation passed **143/143 tests** at source `2aa0360` with the existing verified dependencies. This suite includes long-tail passage discovery, actual tool-result recovery, protected required evidence, exact delivered-slice quotations, bounded search/read payloads, ranking-cache invalidation, selector cleanup and cancellation, restart/index reconstruction, history-group compaction, strict replay provenance and real replication. The recorded output is local at `artifacts/local/navigation-final-tests.tap`. This is a controlled harness suite, not native model quality.
+
+Earlier in the same dependency change, fresh Linux `npm ci`, QVAC bundling, build and **129/129 tests** passed at `57fc4d6`, with zero reported audit findings. [The manifest](../artifacts/clean-install.json) names that source. A separate source recheck at `13eafee` passed 137 tests using dependencies hard-linked from that verified install; [its manifest](../artifacts/current-source-recheck.json) explicitly records reuse. Neither is a claim of a second fresh installation of the final source.
+
 ```sh
 bash scripts/clean-verify.sh
 bash scripts/clean-verify.sh --live
@@ -12,7 +16,7 @@ bash scripts/clean-verify.sh --handoff
 
 The default mode archives committed source into a fresh Linux temporary directory, runs `npm ci --maxsockets=2`, bundles QVAC workers, builds and runs all tests. The npm download cache may be used; `node_modules` is fresh. The `--live` mode then runs replay, both native selector arms, their comparison, the selected-model probe, cancellation and the demo sequentially. The `--handoff` mode runs the clean verification and the two-peer demo without repeating the matrix or probes. Reports are copied to `artifacts`; the demo peer stores remain under `.relay` for inspection.
 
-At commit `fd54add9623da1fcd0b59f344a3ddf82ca6e63c0`, clean installation, bundling, compilation and **110/110 tests passed**, with zero npm audit findings. [clean-install.json](../artifacts/clean-install.json) records the source and scope. Tests cover schemas, permissions, tool protocol, quotation policy and whitespace, selector behavior, information needs, bounded recovery, cancellation, recorded-state regrading, restart handling and real separate-process replication. Controlled model tests establish harness behavior, not native model quality.
+At commit `fd54add9623da1fcd0b59f344a3ddf82ca6e63c0`, clean installation, bundling, compilation and **110/110 tests passed**, with zero npm audit findings. [The historical manifest](../artifacts/clean-install-fd54add.json) records the source and scope. Tests cover schemas, permissions, tool protocol, quotation policy and whitespace, selector behavior, information needs, bounded recovery, cancellation, recorded-state regrading, restart handling and real separate-process replication. Controlled model tests establish harness behavior, not native model quality.
 
 ## Native handoff and probes
 
@@ -23,6 +27,20 @@ The earlier v5 [quoted-policy output-limit failure](../artifacts/live-demo-quote
 The successful handoff exercised both repairs live. The initial run corrected an attempted save before tracking the required question. The resumed run first exhausted its output limit without a call, then used the corrective feedback to read both sources and save. The [initial trace](../artifacts/traces/demo-initial.jsonl) and [resumed trace](../artifacts/traces/demo-resumed.jsonl) retain the model events, tool IDs and state transitions. The cancellation timing measures the cancel() call, not a separately timed final-settlement interval.
 
 ## Selector evaluation
+
+The passage ranking experiment and failure evidence are in [RETRIEVAL_EVALUATION.md](RETRIEVAL_EVALUATION.md). The native MiniLM probe, improved Laya order/fact probe, 54-row selection matrix and six failed full-agent runs are distinct measurements. A failed full-agent run does not erase initial selection coverage, and good selection coverage does not establish a completed investigation. Two failed long-record demonstrations are retained at [57fc4d6](../artifacts/passage-demo-minilm-57fc4d6-failed.json) and [13eafee](../artifacts/passage-demo-lexical-13eafee-failed.json), with matching trace files under `artifacts/traces/passage-*`.
+
+To rerun native passage measurements, first prepare the default MiniLM cache:
+
+```sh
+npm run ranker:prepare
+npm run ranker:probe
+npm run evaluate:retrieval -- --mode retrieval --trials 2 --output artifacts/new-passage-retrieval.json
+npm run evaluate:retrieval -- --mode agent --split development --trials 1 --output artifacts/new-development-agent.json
+RELAY_DEMO_LONG=1 RELAY_SELECTOR=deterministic npm run demo
+```
+
+The development command is a new stochastic execution, not a fresh held-out estimate. `bash scripts/clean-verify.sh --retrieval` uses the default `.relay/reranker-cache` rather than a custom ranker path; prepare that cache first. It runs expensive operations sequentially. Existing historical artifacts may be updated by this convenience script, so archive them first when retaining multiple source snapshots.
 
 The v5 native matrix at `872df5c` ran deployment, queue and missing-configuration cases twice each per selector. Deterministic and Laya each passed 6/6 automated checks; both reports were independently regraded from captured records without inference. Laya made six decisions without fallback or truncation. Every initial selection in both arms included the required source and five irrelevant records, so this suite shows no filtering benefit. The model, sampling settings, budgets and fixture identities match across arms; these results do not establish statistical significance, semantic truth, source truth, or general accuracy. See [EVALUATION.md](EVALUATION.md) and the retained [deterministic](../artifacts/live-deterministic.json), [Laya](../artifacts/live-laya.json) and [comparison](../artifacts/live-comparison.json) reports for measurements and scopes. The later v6 handoff and clean verification use a different source commit.
 

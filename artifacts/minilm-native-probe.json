@@ -19,7 +19,7 @@
     "Deployment17 in the unrelated billing incident used a100ms timeout. It did not affect deployment42.",
     "Deployment42 did not change the timeout. Only when retry is enabled does100ms backoff apply."
   ],
-  "loadMs": 3113.3039129999997,
+  "loadMs": 1052.529445,
   "cold": {
     "scores": [
       4.736037731170654,
@@ -33,7 +33,7 @@
       38,
       38
     ],
-    "ms": 46.643974000000526
+    "ms": 24.435371000000032
   },
   "warm": {
     "scores": [
@@ -48,16 +48,16 @@
       38,
       38
     ],
-    "ms": 17.4637500000008
+    "ms": 17.81593100000009
   },
   "orderInvariant": true,
   "overflowRejectedWithoutTruncation": true,
   "passed": true,
   "cleanup": "disposed",
-  "totalMs": 3211.169627,
+  "totalMs": 1125.827923,
   "memory": {
     "scope": "Node process RSS before/after includes local ONNX native allocations; not model-only or peak",
-    "before": 92971008,
-    "after": 348672000
+    "before": 96522240,
+    "after": 353361920
   }
 }

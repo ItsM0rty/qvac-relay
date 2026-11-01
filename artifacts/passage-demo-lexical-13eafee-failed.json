@@ -1,0 +1,39 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 59385,
+  "error": "Live agent did not create pending handoff: {\"id\":\"98dbf2cc5c867ea96e4157aa94c1ec3672ea029c9bf624b0331dd1b93505be13\",\"owner\":\"7b6f1a6ba4f4cf129633c77e32c9ff5e9747f739517c28142a6c5215df78801f\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T19:53:37.743Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"ed4d0f5d-cf3b-4f1a-bd76-434bf779a867\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":1,\"repairs\":0,\"consumed\":[],\"requestIds\":[],\"reason\":\"overflow: Required instructions, tools and protocol exceed the conservative input budget.\"}\n+ actual - expected\n\n+ 'failed'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "7b6f1a6ba4f4cf129633c77e32c9ff5e9747f739517c28142a6c5215df78801f",
+      "p2pPort": 39557
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "28510d8a7bf2442efb5e1eff80ecaaab0c458a4a11ae29fcee4de73b9ae90af5",
+      "p2pPort": 35205
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "98dbf2cc5c867ea96e4157aa94c1ec3672ea029c9bf624b0331dd1b93505be13",
+        "owner": "7b6f1a6ba4f4cf129633c77e32c9ff5e9747f739517c28142a6c5215df78801f",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T19:53:37.743Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "ed4d0f5d-cf3b-4f1a-bd76-434bf779a867",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 1,
+        "repairs": 0,
+        "consumed": [],
+        "requestIds": [],
+        "reason": "overflow: Required instructions, tools and protocol exceed the conservative input budget."
+      }
+    }
+  ]
+}
