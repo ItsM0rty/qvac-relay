@@ -1,13 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { runRetrievalEvaluation, fixtureRecords, type RetrievalEvalRow } from '../src/retrieval-eval.js';
+import {
+  runRetrievalEvaluation,
+  fixtureRecords,
+  type RetrievalEvalRow,
+} from '../src/retrieval-eval.js';
 import { regradePassageReport } from '../src/retrieval-regrade.js';
 import { RETRIEVAL_CASES } from '../src/retrieval-cases.js';
 import { projectPassages } from '../src/retrieval.js';
 
-const asSelection = (row: RetrievalEvalRow) => row.selection as { ids: string[]; fallback?: string; policy: string; usage?: unknown };
+const asSelection = (row: RetrievalEvalRow) =>
+  row.selection as { ids: string[]; fallback?: string; policy: string; usage?: unknown };
 async function captured() {
-  return runRetrievalEvaluation({ mode: 'retrieval', selectors: ['deterministic'], trials: 1, split: 'all', caseIds: ['dev-checkout-1', 'dev-db-1', 'dev-checkout-2', 'held-none-1'] });
+  return runRetrievalEvaluation({
+    mode: 'retrieval',
+    selectors: ['deterministic'],
+    trials: 1,
+    split: 'all',
+    caseIds: ['dev-checkout-1', 'dev-db-1', 'dev-checkout-2', 'held-none-1'],
+  });
 }
 
 test('regrade reconstructs recorded coverage, including null no-answer recall, without mutating input or inference', async () => {
@@ -26,12 +37,29 @@ test('regrade reconstructs recorded coverage, including null no-answer recall, w
   assert.equal(report.regrade.nativeInference, false);
   for (const row of report.rows) {
     const entry = RETRIEVAL_CASES.find((e) => e.id === row.caseId)!;
-    const selected = projectPassages(fixtureRecords(entry)).filter((p) => asSelection(row).ids.includes(p.id));
-    const covered = entry.expectedSpans.filter((s) => selected.some((p) => p.sourceId === s.sourceId && p.text.includes(s.quote)));
-    const distractors = selected.filter((p) => !entry.expectedSpans.some((s) => p.sourceId === s.sourceId && p.text.includes(s.quote))).length;
-    const metrics = row.selected as { recall: number | null; covered: string[]; distractors: number };
-    assert.equal(metrics.recall, entry.expectedSpans.length ? covered.length / entry.expectedSpans.length : null);
-    assert.deepEqual(metrics.covered, covered.map((s) => s.sourceId));
+    const selected = projectPassages(fixtureRecords(entry)).filter((p) =>
+      asSelection(row).ids.includes(p.id),
+    );
+    const covered = entry.expectedSpans.filter((s) =>
+      selected.some((p) => p.sourceId === s.sourceId && p.text.includes(s.quote)),
+    );
+    const distractors = selected.filter(
+      (p) =>
+        !entry.expectedSpans.some((s) => p.sourceId === s.sourceId && p.text.includes(s.quote)),
+    ).length;
+    const metrics = row.selected as {
+      recall: number | null;
+      covered: string[];
+      distractors: number;
+    };
+    assert.equal(
+      metrics.recall,
+      entry.expectedSpans.length ? covered.length / entry.expectedSpans.length : null,
+    );
+    assert.deepEqual(
+      metrics.covered,
+      covered.map((s) => s.sourceId),
+    );
     assert.equal(metrics.distractors, distractors);
     assert.equal(row.nativeRanking, false);
   }
@@ -48,7 +76,9 @@ test('a captured MiniLM fallback cannot become a successful native ranking even 
   const row = input.rows.find((r) => r.caseId === 'dev-checkout-1')!;
   const entry = RETRIEVAL_CASES.find((e) => e.id === row.caseId)!;
   const passages = projectPassages(fixtureRecords(entry));
-  asSelection(row).ids = entry.expectedSpans.map((s) => passages.find((p) => p.sourceId === s.sourceId && p.text.includes(s.quote))!.id);
+  asSelection(row).ids = entry.expectedSpans.map(
+    (s) => passages.find((p) => p.sourceId === s.sourceId && p.text.includes(s.quote))!.id,
+  );
   asSelection(row).fallback = 'MiniLM load failed';
   row.success = true;
   const before = structuredClone(input);
@@ -70,6 +100,7 @@ test('regrade rejects missing, duplicate, or unknown passage identities', async 
   assert.throws(() => regradePassageReport(broken), /unknown/i);
   broken = structuredClone(input);
   const ids = asSelection(broken.rows[0]!).ids;
-  assert.ok(ids.length); ids.push(ids[0]!);
+  assert.ok(ids.length);
+  ids.push(ids[0]!);
   assert.throws(() => regradePassageReport(broken), /duplicate/i);
 });
