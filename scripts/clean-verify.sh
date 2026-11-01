@@ -12,7 +12,17 @@ if [ -d "$project_dir/.tools/node-v22.21.1-linux-x64/bin" ]; then
 fi
 verify_dir="$(mktemp -d /tmp/relay-clean.XXXXXX)"
 case "$verify_dir" in /tmp/relay-clean.*) ;; *) exit 1;; esac
-trap 'case "$verify_dir" in /tmp/relay-clean.*) rm -rf -- "$verify_dir";; esac' EXIT
+cleanup() {
+  local outcome=$?
+  for probe in live-smoke live-cancellation; do
+    if [ -f "$verify_dir/artifacts/$probe.json" ]; then
+      cp -- "$verify_dir/artifacts/$probe.json" "$project_dir/artifacts/$probe-1.7b.json"
+    fi
+  done
+  case "$verify_dir" in /tmp/relay-clean.*) rm -rf -- "$verify_dir";; esac
+  exit "$outcome"
+}
+trap cleanup EXIT
 source_commit="$(git -c safe.directory="$project_dir" rev-parse HEAD)"
 git -c safe.directory="$project_dir" archive HEAD | tar -xf - -C "$verify_dir"
 cd "$verify_dir"
@@ -54,5 +64,5 @@ if [ "$verify_mode" = --live ]; then
   cp -- artifacts/live-smoke.json "$project_dir/artifacts/live-smoke-1.7b.json"
   node --import tsx scripts/cancel-smoke.ts
   cp -- artifacts/live-cancellation.json "$project_dir/artifacts/live-cancellation-1.7b.json"
-  npm run demo -- "$project_dir/.relay/clean-demo-$source_commit"
+  npm run demo -- "$project_dir/.relay/clean-demo-$source_commit-$(date +%s)"
 fi
