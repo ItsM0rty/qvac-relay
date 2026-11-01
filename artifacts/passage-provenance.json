@@ -35,6 +35,20 @@
       ],
       "note": "Inference-free replay, historical score attribution explicit in report.",
       "sourceCommit": "b735b535ba1a7a583ccbbdb582890d0f244355fb"
+    },
+    {
+      "artifacts": [
+        "passage-demo-control-timeout-b735b53-failed.json"
+      ],
+      "sourceCommit": "b735b535ba1a7a583ccbbdb582890d0f244355fb",
+      "note": "Real development attempt; control request failed around300s and coordinator then cancelled peer. Not a successful handoff."
+    },
+    {
+      "artifacts": [
+        "passage-code-verification.json"
+      ],
+      "sourceCommit": "1a1e8c50d3f11d12f9ef6d9174cae4da91e0234e",
+      "note": "147 controlled tests plus build and formatting; existing verified dependencies."
     }
   ],
   "limits": "The manifest is a development record, not a cryptographic attestation. Native predictions, cached rankings, replay and controlled tests remain distinct."

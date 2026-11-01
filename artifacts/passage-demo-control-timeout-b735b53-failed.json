@@ -1,0 +1,20 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 324838,
+  "error": "fetch failed",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "c49d2797f920697620adcb303b1ba9e993be31dece7fc4b271985976c9502bd4",
+      "p2pPort": 34397
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "f9c1ec5a6767349948558add0f544b2dc006a88b1d9c0c26c3301fabfd97d735",
+      "p2pPort": 41841
+    }
+  ]
+}

@@ -4,7 +4,7 @@ Verification uses Ubuntu 24.04 WSL2 on CPU with project-local Linux Node 22.21.1
 
 ## Clean source and tests
 
-The passage implementation passed **143/143 tests** at source `2aa0360` with the existing verified dependencies. This suite includes long-tail passage discovery, actual tool-result recovery, protected required evidence, exact delivered-slice quotations, bounded search/read payloads, ranking-cache invalidation, selector cleanup and cancellation, restart/index reconstruction, history-group compaction, strict replay provenance and real replication. The recorded output is local at `artifacts/local/navigation-final-tests.tap`. This is a controlled harness suite, not native model quality.
+The current passage implementation passed **147/147 tests**, build and formatting at source `1a1e8c5` with the existing verified dependencies. This suite includes long-tail passage discovery, actual tool-result recovery, protected required evidence, exact delivered-slice quotations, bounded search/read payloads, ranking-cache invalidation, selector cleanup and cancellation, restart/index reconstruction, history-group compaction, strict replay provenance, real replication and loopback HTTP deadlines. [The verification manifest](../artifacts/passage-code-verification.json) records its scope; the full output is local at `artifacts/local/control-final-tests.tap`. The earlier source `2aa0360` passed 143 tests before the four HTTP checks were added. This is a controlled harness suite, not native model quality.
 
 Earlier in the same dependency change, fresh Linux `npm ci`, QVAC bundling, build and **129/129 tests** passed at `57fc4d6`, with zero reported audit findings. [The manifest](../artifacts/clean-install.json) names that source. A separate source recheck at `13eafee` passed 137 tests using dependencies hard-linked from that verified install; [its manifest](../artifacts/current-source-recheck.json) explicitly records reuse. Neither is a claim of a second fresh installation of the final source.
 
@@ -29,6 +29,8 @@ The successful handoff exercised both repairs live. The initial run corrected an
 ## Selector evaluation
 
 The passage ranking experiment and failure evidence are in [RETRIEVAL_EVALUATION.md](RETRIEVAL_EVALUATION.md). The native MiniLM probe, improved Laya order/fact probe, 54-row selection matrix and six failed full-agent runs are distinct measurements. A failed full-agent run does not erase initial selection coverage, and good selection coverage does not establish a completed investigation. Two failed long-record demonstrations are retained at [57fc4d6](../artifacts/passage-demo-minilm-57fc4d6-failed.json) and [13eafee](../artifacts/passage-demo-lexical-13eafee-failed.json), with matching trace files under `artifacts/traces/passage-*`.
+
+The later [b735b53 development run](../artifacts/passage-demo-control-timeout-b735b53-failed.json) stopped because its control request failed after roughly 300 seconds while the generator was still working. Peer shutdown then cancelled decode. The retained trace records the late-page read and committed question, not a completed handoff. Source `1a1e8c5` replaces the affected fetch path with a bounded HTTP client; tests check delayed headers, full-body deadlines, cancellation and invalid responses.
 
 To rerun native passage measurements, first prepare the default MiniLM cache:
 
