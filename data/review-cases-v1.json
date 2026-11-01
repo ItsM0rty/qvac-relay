@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "purpose": "Frozen diagnostic cases before observing results. No statistical success-rate claim. Expected quotations are grader-only.",
+  "cases": [
+    { "id": "review-export-handoff-v1", "kind": "peer-handoff", "fixture": "data/review-handoff-v1.json", "plannedExecution": "native QVAC two-peer plus controlled persistence checks" },
+    {
+      "id": "review-preview-paraphrase-v1", "kind": "paraphrase",
+      "task": "Investigate thumbnail generation failures following worker restarts. Save a brief with the observation that identifies the effective mitigation.",
+      "evidence": [
+        { "id": "queue-notes", "title": "Preview rendering notes", "text": "Preview rendering aborted whenever subprocesses relaunched. Disabling recycled execution containers restored successful previews. These observations do not establish the underlying cause." },
+        { "id": "stock-a", "title": "Stationery inventory", "text": "The office received paper, pencils and envelopes on Friday." },
+        { "id": "stock-b", "title": "Parking permits", "text": "Blue parking permits expire next month." }
+      ],
+      "expected": [{ "id": "queue-notes", "quote": "Disabling recycled execution containers restored successful previews." }],
+      "plannedExecution": "controlled Agent loop with actual empty-result broadening and exact stored-state checks"
+    },
+    {
+      "id": "review-cache-late-v1", "kind": "late-detail",
+      "task": "Explain the recorded cache invalidation rule for the map tile renderer. Cite the condition and the unit; preserve uncertainty about why it was chosen.",
+      "evidence": [
+        { "id": "tile-runbook", "title": "Map tile renderer cache runbook", "prefix": "Routine cartography archive: legend colours, desk assignments and page numbers were checked. No cache rule was recorded in this entry.\n\n", "repeat": 24, "tail": "The map tile renderer invalidates cached tiles only after the version marker changes; elapsed time alone does not invalidate them. The fallback refresh interval is 45 seconds, not 45 milliseconds." },
+        { "id": "other-tiles", "title": "Unrelated archive renderer", "text": "An obsolete archive renderer used a 45 millisecond polling loop. That archive rule does not apply to the map tile renderer." }
+      ],
+      "expected": [
+        { "id": "tile-runbook", "quote": "The map tile renderer invalidates cached tiles only after the version marker changes; elapsed time alone does not invalidate them." },
+        { "id": "tile-runbook", "quote": "The fallback refresh interval is 45 seconds, not 45 milliseconds." }
+      ],
+      "plannedExecution": "controlled Agent loop, actual passage offsets and paged reads"
+    },
+    {
+      "id": "review-broker-absent-v1", "kind": "no-relevant-optional",
+      "task": "Investigate the message broker acknowledgement deadline. No relevant evidence may be assumed. If the deadline cannot be established, request the missing broker setting and report the unresolved state.",
+      "evidence": [
+        { "id": "garden", "title": "Garden rota", "text": "The courtyard plants are watered on Tuesday." },
+        { "id": "cafeteria", "title": "Cafeteria furniture", "text": "Six stools were replaced near the south window." }
+      ],
+      "expected": [],
+      "informationNeed": { "id": "ack-deadline", "question": "What acknowledgement deadline is configured for the message broker?" },
+      "plannedExecution": "controlled Agent loop, no fabricated citation or accepted brief; request persists and failure is explicit"
+    }
+  ]
+}

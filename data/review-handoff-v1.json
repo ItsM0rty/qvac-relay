@@ -1,0 +1,13 @@
+{
+  "fixtureId": "review-export-handoff-v1",
+  "caseId": "atlas-export-investigation",
+  "title": "Atlas asset export stall",
+  "task": "Prepare a handoff for the Atlas asset export stall. Read the export journal and the chunk configuration. If the configuration is missing, request it and save pending work. When it arrives, cite both sources and complete the handoff. Distinguish recorded observations from an unverified explanation.",
+  "informationNeeds": [{ "id": "chunk-setting", "question": "What chunk ceiling was applied to the Atlas asset exporter?" }],
+  "evidence": [{ "id": "export-journal", "title": "Atlas export journal", "text": "The Atlas asset export stopped at item 640 at 14:07. A manual retry reached item 768 before stopping. The journal does not record the configured chunk ceiling or establish a cause." }],
+  "contribution": { "id": "chunk-configuration", "title": "Atlas exporter chunk configuration", "needId": "chunk-setting", "text": "The Atlas exporter chunk ceiling was reduced from 512 items to 64 items at 14:00. The change record establishes the applied value, not the reason for the later stall." },
+  "requiredQuotes": [
+    { "id": "export-journal", "quote": "The Atlas asset export stopped at item 640 at 14:07." },
+    { "id": "chunk-configuration", "quote": "The Atlas exporter chunk ceiling was reduced from 512 items to 64 items at 14:00." }
+  ]
+}

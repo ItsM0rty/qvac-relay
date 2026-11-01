@@ -1,0 +1,11 @@
+{
+  "mode": "frozen-review-diagnostics",
+  "version": 1,
+  "frozenBeforeExecution": true,
+  "cases": 4,
+  "files": {
+    "data/review-handoff-v1.json": "c7350574de15320e1981fa728f0b8f12997234ff5e9090b5ca692f2b57208b1b",
+    "data/review-cases-v1.json": "f466ba16cf2384954a051c1c54f04b0e585e7bf8d745b836021ec377b242a075"
+  },
+  "scope": "New incident families fixed before observing retrieval or model results. Outcomes and expected quotes are diagnostic, not statistical estimates. Do not edit fixtures in response to results."
+}
