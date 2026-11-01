@@ -188,3 +188,37 @@ test('quote-only drafts still enforce coverage, revisions and exact quotations',
     await f.close();
   }
 });
+
+test('quotes preserve surrounding source whitespace and reject whitespace-only excerpts', async () => {
+  const f = await fixture();
+  try {
+    const quote = ' refused at 10:19. Queue ';
+    assert.ok(f.source.text.includes(quote));
+    const model = new ScriptedModel([
+      (_h, _tools, t) => action('read_record', { id: f.source.id }, t),
+      (_h, _tools, t) =>
+        action(
+          'save_brief',
+          { facts: [{ sources: [{ id: f.source.id, quote: ' ' }] }], uncertainty: [], missing: [] },
+          t,
+        ),
+      (h, _tools, t) => {
+        assert.equal(result<{ code: string }>(h, 'save_brief').code, 'QUOTE');
+        return action(
+          'save_brief',
+          { facts: [{ sources: [{ id: f.source.id, quote }] }], uncertainty: [], missing: [] },
+          t,
+        );
+      },
+    ]);
+    const checkpoint = await new Agent(f.store, model).run('incident');
+    assert.equal(checkpoint.status, 'completed', checkpoint.reason ?? '');
+    assert.equal(checkpoint.repairs, 1);
+    const brief = (await f.store.list('incident')).find((record) => record.kind === 'brief');
+    assert.ok(brief && brief.kind === 'brief');
+    assert.equal(brief.facts[0]!.text, quote);
+    assert.equal(brief.facts[0]!.sources[0]!.quote, quote);
+  } finally {
+    await f.close();
+  }
+});

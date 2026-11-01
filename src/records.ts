@@ -32,7 +32,11 @@ export const sourceSchema = z.strictObject({
     .refine((quote) => /\S/.test(quote), 'Quote must contain non-whitespace text'),
 });
 export const factSchema = z.strictObject({
-  text: z.string().trim().min(1).max(2000),
+  text: z
+    .string()
+    .min(1)
+    .max(2000)
+    .refine((text) => /\S/.test(text), 'Observation must contain non-whitespace text'),
   sources: z
     .array(sourceSchema)
     .min(1)

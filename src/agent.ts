@@ -607,6 +607,11 @@ export class Agent {
                       'UNREAD_SOURCE',
                       `Read evidence ${source.id} before citing it.`,
                     );
+                  if (!/\S/.test(source.quote))
+                    throw new RelayError(
+                      'QUOTE',
+                      'Quote must contain non-whitespace text from the read source.',
+                    );
                   if (
                     revision(evidence) !== seen.revision ||
                     (source.revision !== undefined && seen.revision !== source.revision)
