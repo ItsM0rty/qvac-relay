@@ -90,14 +90,30 @@ The retained [v6 live demonstration](artifacts/live-demo.json) passed with Qwen3
 
 Cases may declare up to eight structured information needs at creation with `--needs '<JSON array>'`. Each item has a stable `id` and canonical `question`. When the model requests one, it supplies its `needId`; Relay attaches the declared question and stable ID to the request. Undeclared need IDs are rejected. A required need without a matching request prevents acceptance even when the model submits an empty missing list. A brief with unanswered requests is pending. Contributed answers must be read and cited before completion. Context and tool results distinguish unrequested, awaiting-response and answered questions. Free-text tasks do not provide deterministic semantic coverage checks for required missing information. Declare required gaps with `--needs` when that coverage matters, as the checkout example does for deployment configuration.
 
+## Retrieval and context
+
+Relay derives rebuildable passages from accepted original evidence. Passage text is an exact UTF-16 slice with source ID, revision and offsets; long evidence remains searchable through its tail. A deterministic BM25-like lexical search supplies up to twelve candidates to the optional reranker. Required contributions and protocol are protected in the default 7000 estimated-token context budget before QVAC uses the evidence tools. The estimate is conservative and is not an exact tokenizer. Ranking is not proof of relevance or source truth.
+
 ## Model and selector controls
 
 ```sh
 RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic npm run relay -- peer --dir .relay/a --port 7001
 RELAY_MODEL=1.7b RELAY_SELECTOR=laya npm run demo
+RELAY_MODEL=1.7b RELAY_SELECTOR=minilm npm run demo
 ```
 
-The default generator is Qwen3 1.7B Q4 through `@qvac/sdk` 0.22.0. It completed the native handoff on this machine. Qwen3 0.6B Q4 remains available for experiments, but its full-task attempts exposed repeated searches, source-ID confusion and output-budget failures. The default selector is deterministic. Laya typed decisions Q8 is optional and never rewrites evidence. Its bounded `decide()` call can omit optional snippets; mandatory contribution context is protected. Truncation and malformed selector results produce a visible deterministic fallback. A native selector call failure falls back only when cleanup succeeds; cleanup failure is an infrastructure failure that stops the run and is quarantined. Confidence values do not authorize actions.
+The default generator is Qwen3 1.7B Q4 through `@qvac/sdk` 0.22.0. The default `RELAY_SELECTOR=deterministic` uses lexical ranking. `minilm` and `laya` are optional rerankers of the same lexical candidates, not evidence writers. They do not authorize actions. A selector error or truncation produces a visible lexical fallback only after successful cleanup; cleanup failure quarantines the runtime and stops the run.
+
+To use MiniLM, explicitly prepare its four pinned, SHA-256-verified files before selecting it:
+
+```sh
+npm run ranker:prepare
+RELAY_SELECTOR=minilm npm run relay -- peer --dir .relay/a --port 7001
+```
+
+The INT8 ONNX model is pinned to revision `a09144355adeed5f58c8ed011d209bf8ee5a1fec` and runs with `@huggingface/transformers` 4.3.2. Preparation needs network access. Inference uses only the local cache at `.relay/reranker-cache`, or the path in `RELAY_RANKER_CACHE`; model weights are not committed to Git. Cancellation is cooperative and waits for the active ONNX batch to settle.
+
+Laya classifies each full passage as directly relevant, background or unrelated, using bounded batches and optional order probes. It ranks all candidates by class and lexical order, without using confidence or `actProbability` to authorize actions. The native [MiniLM probe](artifacts/minilm-native-probe.json) recorded nonconstant scores, stable reordered results and refusal of overlong input. It is an integration probe, not a held-out quality result. The held-out comparison is in progress, so deterministic remains the default pending measurement.
 
 The [v5 selector matrix](docs/EVALUATION.md) used source snapshot `872df5c`: both deterministic and Laya arms passed 6/6 automated state checks. Laya made six valid decisions without fallback or truncation, but selected all six candidates, including five irrelevant records, on every task. No filtering benefit was observed, so deterministic selection remains the default. This matrix predates the v6 handoff snapshot and does not establish semantic truth or general selector performance.
 
@@ -115,9 +131,14 @@ npm run evaluate -- --mode live --selector deterministic --trials 3 --output art
 npm run evaluate -- --mode live --selector laya --trials 3 --output artifacts/laya.json
 npm run evaluate -- --compare artifacts/baseline.json artifacts/laya.json --output artifacts/comparison.json
 npm run regrade -- artifacts/live-deterministic.json
+npm run evaluate:retrieval -- --mode retrieval --trials 2
+npm run evaluate:retrieval -- --mode agent --split heldout --cases held-cold-1,held-charge-1 --trials 1
+bash scripts/clean-verify.sh --retrieval
 ```
 
 Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. `regrade` reads captured version 2 case state and recomputes checks without inference or store writes. It refuses missing state and mismatched identities, and labels its output as recorded-state-regrade. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Each task includes five irrelevant evidence records. Expected source IDs belong to the grader and are not supplied as mandatory selector context. Version 2 reports check the quoted-observation policy and uncertainty notice; historical version 1 reports are not comparable. Measurements and limitations are included in each report. See [the recorded selector evaluation](docs/EVALUATION.md). The small synthetic suite does not establish general accuracy or statistical significance.
+
+The passage evaluation uses nine frozen version 2 synthetic fixtures, approximately 19,000 characters per case, with disjoint development and held-out families. Expected spans are grader-only and are not forced into context. The clean retrieval pipeline includes native work and is in progress; commands alone are not results. These synthetic span checks do not establish semantic truth or general quality.
 
 ## Boundaries and limitations
 
@@ -125,7 +146,7 @@ Replay is a scripted harness regression using actual tool results and temporary 
 - Freshness means the latest information locally available at validation. A serialized write guard catches prior queued local writes. This is not global consensus or a claim of exactly-once distributed effects.
 - Brief facts are exact source quotations under `quoted-observations-v1`; generated explanations are labelled as unverified uncertainty. The grader checks quotation text, source revisions, required contribution coverage and the root-cause uncertainty notice. These checks do not prove that a source is true or establish semantic entailment.
 - Context uses field projection and a conservative UTF-8 byte estimate with template allowance. This is not an exact tokenizer. Required protocol is never silently removed to fit. Overflow stops visibly.
-- Evidence reads return at most 1000 characters and mark truncation. The model must not cite unread text. Tree scans and remote block waits are bounded. An unreadable paired tree can fail a case read instead of silently hiding evidence.
+- `find_evidence` accepts `skip` and `limit`, defaulting to three results and allowing up to twelve. `read_record` accepts a UTF-16 offset and length up to 1000 characters and returns `nextOffset` for further reads. Quote validation checks each actually read excerpt separately; the model cannot cite unread text or bridge gaps between reads. Tree scans and remote block waits are bounded. An unreadable paired tree can fail a case read instead of silently hiding evidence.
 - Local control uses a random bearer token in each peer's data directory. Do not share that directory or commit it. Source record IDs and tool names appear in traces; unnecessary source content is not logged there.
 
 See [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md) and [current state](docs/STATE.md).

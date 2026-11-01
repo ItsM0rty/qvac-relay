@@ -37,13 +37,14 @@ test('deterministic retrieval reports real passage coverage and distractors with
         ? entry.expectedSpans.filter((s) =>
             ps.some((p) => p.sourceId === s.sourceId && p.text.includes(s.quote)),
           ).length / entry.expectedSpans.length
-        : 1,
+        : null,
       distractors: ps.filter(
         (p) =>
           !entry.expectedSpans.some((s) => p.sourceId === s.sourceId && p.text.includes(s.quote)),
       ).length,
     });
-    assert.equal(row.success, true, String(row.failure));
+    assert.equal(row.executionSucceeded, true, String(row.failure));
+    assert.equal(row.success, expected(selected).recall === 1);
     assert.equal(selection.policy, 'lexical-v1');
     assert.equal((row.lexical as { recall: number }).recall, expected(lexical).recall);
     assert.equal(
@@ -73,6 +74,8 @@ test('deterministic retrieval reports real passage coverage and distractors with
   );
   assert.equal((none.rows[0]!.lexical as { noRelevantOptional: boolean }).noRelevantOptional, true);
   assert.equal(none.rows[0]!.outcome, undefined);
+  assert.equal((none.rows[0]!.selected as { recall: null }).recall, null);
+  assert.equal(none.rows[0]!.success, false);
 });
 
 test('validator rejects missing, duplicate and unknown case, trial, selector and configuration identities', async () => {

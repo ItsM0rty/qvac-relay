@@ -7,8 +7,6 @@ import { RelayStore } from './store.js';
 import { parseRecord, stableId } from './records.js';
 import { Agent, latestCheckpoint } from './agent.js';
 import { QvacModel } from './qvac.js';
-import { DeterministicSelector } from './context.js';
-import { LayaSelector } from './laya.js';
 import { createSelector } from './selectors.js';
 import { Resumer } from './resume.js';
 
@@ -41,7 +39,7 @@ const usage = `Relay: local inference and peer handoffs
   evidence --dir <own-directory> --case <case-id> --title <title> --text <text> [--request <request-id>] [--id <operation-id>]
   work|inspect --dir <own-directory> --case <case-id>
 Use --file instead of --text for a local UTF-8 evidence file.
-RELAY_MODEL=0.6b|1.7b RELAY_SELECTOR=deterministic|laya (default deterministic).`;
+RELAY_MODEL=0.6b|1.7b RELAY_SELECTOR=deterministic|minilm|laya (default deterministic).`;
 const output = (value: unknown) => console.log(JSON.stringify(value, null, 2));
 function need(value: string | undefined, name: string): string {
   if (!value) throw new Error(`Missing --${name}`);
@@ -83,9 +81,9 @@ async function main(): Promise<void> {
     return;
   }
   const mode = process.env.RELAY_SELECTOR ?? 'deterministic';
+  const selector = createSelector(mode);
   const model = new QvacModel();
   const store = await RelayStore.open(directory);
-  const selector = createSelector(mode);
   const agent = new Agent(store, model);
   const resumer = new Resumer(store, agent, { selector, maxCalls: 20, timeoutMs: 600_000 });
   let manual: Promise<unknown> | undefined;

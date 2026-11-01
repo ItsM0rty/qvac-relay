@@ -52,7 +52,7 @@ function coverage(entry: RetrievalCase, passages: Array<{ sourceId: string; text
     passages.some((p) => p.sourceId === span.sourceId && p.text.includes(span.quote)),
   );
   return {
-    recall: entry.expectedSpans.length ? covered.length / entry.expectedSpans.length : 1,
+    recall: entry.expectedSpans.length ? covered.length / entry.expectedSpans.length : null,
     covered: covered.map((s) => s.sourceId),
     omitted: entry.expectedSpans.filter((s) => !covered.includes(s)).map((s) => s.sourceId),
     distractors: passages.filter(
@@ -61,6 +61,18 @@ function coverage(entry: RetrievalCase, passages: Array<{ sourceId: string; text
     ).length,
     noRelevantOptional: entry.expectedSpans.length === 0,
   };
+}
+export function rankingOrigin(
+  selector: string,
+  selection: { fallback?: string; usage?: unknown },
+): string {
+  if (selection.fallback) return 'lexical-fallback';
+  if (selector === 'deterministic') return 'lexical';
+  const usage = selection.usage as
+    { cacheHit?: boolean; decisionCalls?: number; batchMs?: unknown[] } | undefined;
+  if (usage?.cacheHit) return 'cached-ranking';
+  if ((usage?.decisionCalls ?? 0) > 0 || (usage?.batchMs?.length ?? 0) > 0) return 'native-ranking';
+  return 'empty-candidates';
 }
 export interface RetrievalEvaluationOptions {
   mode: 'retrieval' | 'agent';
@@ -210,6 +222,9 @@ export async function runRetrievalEvaluation(
               row.selection = context.selection;
               row.selected = coverage(entry, selected);
               row.estimatedInputTokens = context.estimatedTokens;
+              row.fallback = context.selection.fallback ?? null;
+              row.rankingOrigin = rankingOrigin(selectorMode, context.selection);
+              row.nativeRanking = row.rankingOrigin === 'native-ranking';
               row.coldMs = performance.now() - started;
               const warmStart = performance.now();
               const warm = await buildContext({
@@ -223,7 +238,11 @@ export async function runRetrievalEvaluation(
               });
               row.warmMs = performance.now() - warmStart;
               row.warmUsage = warm.selection.usage ?? null;
-              row.success = true;
+              row.executionSucceeded = true;
+              const quality = row.selected as { recall: number | null; distractors: number };
+              row.success =
+                !context.selection.fallback &&
+                (quality.recall === null ? quality.distractors === 0 : quality.recall === 1);
             } else {
               directory = await mkdtemp(join(tmpdir(), 'relay-passage-eval-'));
               store = await RelayStore.open(directory);
@@ -256,10 +275,14 @@ export async function runRetrievalEvaluation(
                   f.sources.map((s) => ({ sourceId: s.id, text: s.quote })),
                 ) ?? [];
               row.outcome = coverage(entry, actualQuotes);
+              row.fallback = contexts
+                .filter((e) => e.fallback !== undefined)
+                .map((e) => e.fallback);
               row.success =
+                entry.expectedSpans.length > 0 &&
                 cp.status === 'completed' &&
                 brief?.factPolicy === 'quoted-observations-v1' &&
-                (row.outcome as { recall: number }).recall === 1;
+                (row.outcome as { recall: number | null }).recall === 1;
               row.recoveryCalls = tools.filter((e) => e.name === 'find_evidence').length;
               row.readCalls = tools.filter((e) => e.name === 'read_record').length;
               row.generatorUsage = turns.map((e) => e.stats);
@@ -320,13 +343,14 @@ export async function runRetrievalEvaluation(
       }
     }
   }
-  let sourceCommit = 'unavailable';
+  let sourceCommit = process.env.RELAY_VERIFIED_COMMIT ?? 'unavailable';
   try {
-    sourceCommit = execFileSync(
-      'git',
-      ['-c', `safe.directory=${process.cwd()}`, 'rev-parse', 'HEAD'],
-      { encoding: 'utf8' },
-    ).trim();
+    if (sourceCommit === 'unavailable')
+      sourceCommit = execFileSync(
+        'git',
+        ['-c', `safe.directory=${process.cwd()}`, 'rev-parse', 'HEAD'],
+        { encoding: 'utf8' },
+      ).trim();
   } catch {}
   return validateRetrievalReport({
     mode:
