@@ -1,0 +1,27 @@
+{
+  "name": "prac-sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.21.0 || >=24.9.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsx --test --test-concurrency=1 test/*.test.ts",
+    "relay": "tsx src/cli.ts",
+    "smoke": "tsx scripts/smoke.ts",
+    "bundle:qvac": "node scripts/bundle.mjs"
+  },
+  "dependencies": {
+    "@qvac/sdk": "0.22.0",
+    "corestore": "7.16.1",
+    "hyperbee2": "2.21.2",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}

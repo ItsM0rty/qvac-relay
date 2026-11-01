@@ -1,0 +1,8 @@
+{
+  "plugins": ["@qvac/sdk/llamacpp-completion/plugin", "@qvac/sdk/llamacpp-decision/plugin"],
+  "cacheDirectory": "./.qvac/models",
+  "httpDownloadConcurrency": 2,
+  "httpConnectionTimeoutMs": 15000,
+  "loggerLevel": "warn",
+  "loggerConsoleOutput": true
+}

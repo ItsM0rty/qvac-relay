@@ -1,0 +1,8 @@
+node_modules/
+.tools/
+.relay/
+.qvac/
+dist/
+artifacts/local/
+*.log
+qvac/
