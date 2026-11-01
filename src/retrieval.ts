@@ -11,7 +11,7 @@ export interface Passage {
 }
 
 export const RETRIEVAL_CONFIG = Object.freeze({
-  version: 1,
+  version: 2,
   target: 550,
   max: 900,
   overlap: 100,
@@ -79,7 +79,12 @@ export function projectPassages(records: readonly RelayRecord[]): Passage[] {
 }
 
 function tokens(text: string): string[] {
-  return text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+  const common = new Set(
+    'a an the and or of to in on at for from with is are was were be been being do does did what which where why how when this that these those it its them their by as about'.split(
+      ' ',
+    ),
+  );
+  return (text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []).filter((token) => !common.has(token));
 }
 
 export function lexicalRetrieve(

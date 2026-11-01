@@ -94,7 +94,9 @@ interface Fixture {
   directory: string;
   close(): Promise<void>;
 }
-async function fixture(): Promise<Fixture> {
+async function fixture(
+  task = 'Write a source-referenced handoff about the deployment timeout. Request configuration evidence if needed.',
+): Promise<Fixture> {
   const directory = await mkdtemp(join(tmpdir(), 'relay-agent-'));
   const store = await RelayStore.open(directory);
   const base = {
@@ -108,7 +110,7 @@ async function fixture(): Promise<Fixture> {
     id: stableId(store.owner, 'case'),
     kind: 'case',
     title: 'Deployment incident',
-    task: 'Write a source-referenced handoff about the deployment timeout. Request configuration evidence if needed.',
+    task,
   });
   const source: EvidenceRecord = {
     ...base,
@@ -212,7 +214,7 @@ test('a different valid sequence can directly read the indexed evidence and save
 });
 
 test('re-finding an evicted known ID refreshes its read permission', async () => {
-  const f = await fixture();
+  const f = await fixture('Summarize the incident.');
   try {
     for (let index = 0; index < 11; index++)
       await f.store.put({
@@ -242,7 +244,8 @@ test('re-finding an evicted known ID refreshes its read permission', async () =>
     const thirteenthNewId = newRecords.at(-1)!.id;
 
     const model = new ScriptedModel([
-      (_history, _signal, turn) => action('find_evidence', { query: 'New evidence' }, turn),
+      (_history, _signal, turn) =>
+        action('find_evidence', { query: 'New evidence', limit: 12 }, turn),
       (_history, _signal, turn) => action('find_evidence', { query: thirteenthNewId }, turn),
       (_history, _signal, turn) => {
         assert.equal(model.readableIds[0]!.length, 12);
@@ -272,7 +275,7 @@ test('re-finding an evicted known ID refreshes its read permission', async () =>
       },
     ]);
 
-    const checkpoint = await new Agent(f.store, model).run('incident');
+    const checkpoint = await new Agent(f.store, model).run('incident', { contextBudget: 16000 });
     assert.equal(checkpoint.status, 'completed', checkpoint.reason ?? '');
     assert.equal(checkpoint.calls, 5);
     assert.equal(checkpoint.repairs, 0);

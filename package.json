@@ -15,9 +15,13 @@
     "demo": "tsx scripts/demo.ts",
     "evaluate": "tsx scripts/evaluate.ts",
     "regrade": "tsx scripts/regrade.ts",
+    "ranker:prepare": "tsx scripts/ranker-prepare.ts",
+    "ranker:probe": "tsx scripts/ranker-probe.ts",
+    "evaluate:retrieval": "tsx scripts/retrieval-evaluate.ts",
     "format:check": "prettier --check src scripts test package.json tsconfig.json qvac.config.mjs"
   },
   "dependencies": {
+    "@huggingface/transformers": "4.3.2",
     "@qvac/sdk": "0.22.0",
     "corestore": "7.16.1",
     "hyperbee2": "2.21.2",

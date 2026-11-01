@@ -40,14 +40,24 @@ const args = {
 };
 test('baseline selection uses task overlap and stable ID tie breaks', async () => {
   const selection = await new DeterministicSelector().select(args.task, project(records));
-  assert.deepEqual(selection.ids, ['a', 'b', 'z']);
+  assert.deepEqual(selection.ids, ['a', 'b']);
 });
-test('projection bounds snippets and carries full-record revisions', () => {
+test('projection covers original evidence in bounded exact passages with full-record revisions', () => {
   const record = evidence('long', 'Long log', 'x'.repeat(2000));
-  const candidate = project([record])[0]!;
-  assert.equal(candidate.text.length, 240);
-  assert.equal(candidate.revision, revision(record));
-  assert.equal('owner' in candidate, false);
+  const candidates = project([record]);
+  assert.ok(candidates.length > 1);
+  let covered = 0;
+  for (const candidate of candidates) {
+    assert.equal(candidate.sourceId, record.id);
+    assert.equal(candidate.revision, revision(record));
+    assert.equal('owner' in candidate, false);
+    assert.ok(candidate.start !== undefined && candidate.end !== undefined);
+    assert.ok(candidate.start <= covered);
+    assert.ok(candidate.end - candidate.start <= 900);
+    assert.equal(candidate.text, record.text.slice(candidate.start, candidate.end));
+    covered = Math.max(covered, candidate.end);
+  }
+  assert.equal(covered, record.text.length);
 });
 test('context preserves trusted instructions, task, feedback, requests and tool protocol', async () => {
   const history: Message[] = [
@@ -103,9 +113,9 @@ test('selector errors, duplicate IDs and unknown IDs visibly fall back', async (
   ];
   for (const selector of selectors) {
     const context = await buildContext({ ...args, selector });
-    assert.equal(context.selection.policy, 'deterministic');
+    assert.equal(context.selection.policy, 'lexical-v1');
     assert.ok(context.selection.fallback);
-    assert.deepEqual(context.selection.ids, ['a', 'b', 'z']);
+    assert.deepEqual(context.selection.ids, ['a', 'b']);
   }
 });
 test('budget prunes optional evidence and refuses to prune required protocol', async () => {

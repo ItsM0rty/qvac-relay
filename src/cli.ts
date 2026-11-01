@@ -9,6 +9,7 @@ import { Agent, latestCheckpoint } from './agent.js';
 import { QvacModel } from './qvac.js';
 import { DeterministicSelector } from './context.js';
 import { LayaSelector } from './laya.js';
+import { createSelector } from './selectors.js';
 import { Resumer } from './resume.js';
 
 const { values, positionals } = parseArgs({
@@ -82,11 +83,9 @@ async function main(): Promise<void> {
     return;
   }
   const mode = process.env.RELAY_SELECTOR ?? 'deterministic';
-  if (mode !== 'deterministic' && mode !== 'laya')
-    throw new Error('RELAY_SELECTOR must be deterministic or laya');
   const model = new QvacModel();
   const store = await RelayStore.open(directory);
-  const selector = mode === 'laya' ? new LayaSelector() : new DeterministicSelector();
+  const selector = createSelector(mode);
   const agent = new Agent(store, model);
   const resumer = new Resumer(store, agent, { selector, maxCalls: 20, timeoutMs: 600_000 });
   let manual: Promise<unknown> | undefined;
@@ -260,7 +259,7 @@ async function main(): Promise<void> {
     const failures: unknown[] = [];
     for (const cleanup of [
       async () => {
-        if (selector instanceof LayaSelector) await selector.close();
+        await selector.close?.();
       },
       () => model.close(),
       () => store.close(),

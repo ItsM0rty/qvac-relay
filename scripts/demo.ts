@@ -89,6 +89,12 @@ async function call(peer: Peer, command: string, args: Record<string, unknown> =
   return value;
 }
 const caseId = 'rollback-investigation';
+const longEvidence = process.env.RELAY_DEMO_LONG === '1';
+const padding =
+  'Routine shift archive: inventory counts and operator assignments were reviewed. No incident configuration was recorded in this entry.\n\n'.repeat(
+    28,
+  );
+const evidenceText = (text: string) => (longEvidence ? padding + text : text);
 let a: Peer | undefined, b: Peer | undefined;
 const started = Date.now();
 try {
@@ -112,7 +118,9 @@ try {
     case: caseId,
     id: 'health-log',
     title: 'Checkout health log',
-    text: 'Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration.',
+    text: evidenceText(
+      'Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration.',
+    ),
   });
   const initial = await call(a, 'work', { case: caseId });
   events.push({ event: 'initial-work', checkpoint: initial });
@@ -132,7 +140,9 @@ try {
     id: 'deployment-config',
     title: 'Deployment 42 configuration',
     request: request.id,
-    text: 'Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification.',
+    text: evidenceText(
+      'Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification.',
+    ),
   });
   events.push({ event: 'b-contributed-offline', id: 'deployment-config', requestId: request.id });
   const previousOwner = a.owner;
@@ -154,6 +164,22 @@ try {
   );
   const brief = final.records.find((r) => r.kind === 'brief' && r.id === final.checkpoint.briefId);
   assert.ok(brief?.kind === 'brief');
+  if (longEvidence) {
+    assert.ok(
+      brief.facts.some((f) =>
+        f.sources.some((s) => s.id === 'health-log' && s.quote.includes('0.2% to 8%')),
+      ),
+      'Long-record handoff must quote the late health-log fact',
+    );
+    assert.ok(
+      brief.facts.some((f) =>
+        f.sources.some(
+          (s) => s.id === 'deployment-config' && s.quote.includes('3000 ms to 100 ms'),
+        ),
+      ),
+      'Long-record handoff must quote the late configuration value',
+    );
+  }
   assert.ok(
     brief.facts.some((f) => f.sources.some((s) => s.id === 'deployment-config')),
     'Resumed brief must cite contribution',
@@ -170,6 +196,8 @@ try {
   events.push({ event: 'restart-deduplication-verified', runId });
   const report = {
     mode: 'live-qvac-two-peer',
+    longEvidence,
+    selector: process.env.RELAY_SELECTOR ?? 'deterministic',
     passed: true,
     elapsedMs: Date.now() - started,
     directory,

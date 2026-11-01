@@ -3,8 +3,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 project_dir="$PWD"
 verify_mode="${1:-}"
-if [ -n "$verify_mode" ] && [ "$verify_mode" != --live ] && [ "$verify_mode" != --handoff ]; then
-  printf 'Usage: bash scripts/clean-verify.sh [--live|--handoff]\n' >&2
+if [ -n "$verify_mode" ] && [ "$verify_mode" != --live ] && [ "$verify_mode" != --handoff ] && [ "$verify_mode" != --retrieval ]; then
+  printf 'Usage: bash scripts/clean-verify.sh [--live|--handoff|--retrieval]\n' >&2
   exit 1
 fi
 if [ -d "$project_dir/.tools/node-v22.21.1-linux-x64/bin" ]; then
@@ -49,7 +49,7 @@ await writeFile(join(directory, 'clean-install.json'), JSON.stringify({
 }, null, 2) + '\n');
 JS
 printf 'Clean source installation, build and tests passed for commit %s\n' "$source_commit"
-if [ "$verify_mode" = --live ] || [ "$verify_mode" = --handoff ]; then
+if [ "$verify_mode" = --live ] || [ "$verify_mode" = --handoff ] || [ "$verify_mode" = --retrieval ]; then
   # Reuse only cached model downloads, never node_modules or peer stores.
   if [ -d "$project_dir/.qvac/models" ] && [ ! -e .qvac/models ]; then
     mkdir -p .qvac
@@ -57,6 +57,17 @@ if [ "$verify_mode" = --live ] || [ "$verify_mode" = --handoff ]; then
   fi
   export RELAY_MODEL=1.7b
   export RELAY_SELECTOR=deterministic
+  if [ "$verify_mode" = --retrieval ]; then
+    export RELAY_RANKER_CACHE="$project_dir/.relay/reranker-cache"
+    npm run ranker:probe
+    cp -- artifacts/minilm-native-probe.json "$project_dir/artifacts/minilm-native-probe.json"
+    npm run evaluate:retrieval -- --mode retrieval --trials 2 --output "$project_dir/artifacts/passage-retrieval.json"
+    node --import tsx scripts/laya-passage-probe.ts > "$project_dir/artifacts/local/laya-passage-probe.log"
+    cp -- artifacts/laya-passage-probe.json "$project_dir/artifacts/laya-passage-probe.json"
+    npm run evaluate:retrieval -- --mode agent --split heldout --cases held-cold-1,held-charge-1 --trials 1 --output "$project_dir/artifacts/passage-agent.json"
+    export RELAY_SELECTOR=minilm
+    export RELAY_DEMO_LONG=1
+  fi
   if [ "$verify_mode" = --live ]; then
     npm run evaluate -- --mode replay --trials 3 --output "$project_dir/artifacts/replay.json"
     npm run evaluate -- --mode live --selector deterministic --trials 2 --output "$project_dir/artifacts/live-deterministic.json"

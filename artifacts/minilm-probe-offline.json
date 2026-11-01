@@ -3,7 +3,7 @@
   "modelId": "Xenova/ms-marco-MiniLM-L-6-v2",
   "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
   "dtype": "int8",
-  "runtime": "@huggingface/transformers@3.8.1",
+  "runtime": "@huggingface/transformers@4.3.2",
   "offline": true,
   "query": "Which database timeout setting did deployment 42 change?",
   "passages": [
@@ -12,55 +12,55 @@
     "Deployment 17 in the unrelated billing incident used a timeout of 100 ms. It did not affect deployment 42.",
     "Deployment 42 did not change the database timeout. Only when the retry flag is enabled does the 100 ms backoff apply."
   ],
-  "loadMs": 423.9126309999999,
+  "loadMs": 439.25557200000003,
   "cold": {
     "scores": [
-      8.165661811828613,
-      -11.050930976867676,
-      4.194195747375488,
-      7.565497398376465
+      8.1769380569458,
+      -11.051766395568848,
+      4.16500186920166,
+      7.5601019859313965
     ],
     "dims": [
       4,
       1
     ],
     "pairTokens": 39,
-    "ms": 29.271613999999772
+    "ms": 36.455553999999665
   },
   "warm": {
     "scores": [
-      8.165661811828613,
-      -11.050930976867676,
-      4.194195747375488,
-      7.565497398376465
+      8.1769380569458,
+      -11.051766395568848,
+      4.16500186920166,
+      7.5601019859313965
     ],
     "dims": [
       4,
       1
     ],
     "pairTokens": 39,
-    "ms": 18.945444999999836
+    "ms": 15.776761000000079
   },
   "reordered": {
     "scores": [
-      7.565497398376465,
-      4.194195747375488,
-      -11.050930976867676,
-      8.165661811828613
+      7.5601019859313965,
+      4.16500186920166,
+      -11.051766395568848,
+      8.1769380569458
     ],
     "dims": [
       4,
       1
     ],
     "pairTokens": 39,
-    "ms": 15.961076999999932
+    "ms": 12.68766000000005
   },
   "passed": true,
   "cleanup": "disposed",
-  "totalMs": 498.62628199999995,
+  "totalMs": 514.2246380000001,
   "memory": {
     "scope": "Node process RSS includes local ONNX runtime, single before/after samples, not peak or model-only attribution",
-    "rssBefore": 84774912,
-    "rssAfter": 143368192
+    "rssBefore": 85876736,
+    "rssAfter": 155131904
   }
 }

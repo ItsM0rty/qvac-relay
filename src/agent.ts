@@ -14,6 +14,7 @@ import {
 } from './records.js';
 import { buildContext, DeterministicSelector, type Selector } from './context.js';
 import type { Message, Model, ToolSpec } from './qvac.js';
+import { PassageIndex } from './retrieval.js';
 import {
   checkCancelled,
   classify,
@@ -24,8 +25,16 @@ import {
 } from './policy.js';
 
 const schemas = {
-  find_evidence: z.strictObject({ query: z.string().max(200) }),
-  read_record: z.strictObject({ id: idSchema }),
+  find_evidence: z.strictObject({
+    query: z.string().max(200),
+    skip: z.number().int().min(0).max(2048).optional(),
+    limit: z.number().int().min(1).max(12).optional(),
+  }),
+  read_record: z.strictObject({
+    id: idSchema,
+    offset: z.number().int().min(0).max(15999).optional(),
+    length: z.number().int().min(1).max(1000).optional(),
+  }),
   request_information: z.strictObject({
     question: z.string().trim().min(1).max(500),
     needId: idSchema.optional(),
@@ -76,8 +85,10 @@ export const TOOLS: ToolSpec[] = Object.entries(schemas).map(([name, schema]) =>
   name,
   description: (
     {
-      find_evidence: 'Search this case. Read matching records before citing.',
-      read_record: 'Read evidence with its ID and revision.',
+      find_evidence:
+        'Search all passages in this case. Returns source IDs, exact excerpts and character offsets. Read matching locations before citing.',
+      read_record:
+        'Read original evidence with its source ID and revision. Use offset from search/context to recover later details; length defaults to1000. Offsets are UTF-16 character positions, not passage IDs.',
       request_information:
         'Persist a question for another peer. For a required informationNeed include its needId. Reuse existing questions.',
       save_brief:
@@ -214,6 +225,7 @@ export class Agent {
   private active = false;
   lastCleanupError?: string;
   private controller?: AbortController;
+  private readonly index = new PassageIndex();
   get isActive(): boolean {
     return this.active;
   }
@@ -339,7 +351,7 @@ export class Agent {
           context: options.contextBudget ?? 7000,
         },
       });
-      const read = new Map<string, { revision: string; text: string }>();
+      const read = new Map<string, { revision: string; text: string; excerpts: string[] }>();
       const knownIds = new Set(
         snapshot.records
           .filter((record) => record.kind === 'evidence')
@@ -389,6 +401,11 @@ export class Agent {
             requestIds.includes(record.requestId)
           )
             requiredIds.add(record.id);
+        this.index.sync(snapshot.records);
+        for (const { passage } of this.index.search(task, 12)) {
+          knownIds.delete(passage.sourceId);
+          knownIds.add(passage.sourceId);
+        }
         const tools = offerTools([...read.keys()], [...requiredIds], [...knownIds].slice(-24));
         const context = await buildContext({
           task,
@@ -511,15 +528,23 @@ export class Agent {
                   : 'This action already returned a result twice against unchanged data. Use the existing result, read a relevant record, or request missing information.',
               );
             if (call.name === 'find_evidence') {
-              const found = searchEvidence(current.records, String(args.query));
-              for (const record of found) {
-                knownIds.delete(record.id);
-                knownIds.add(record.id);
+              this.index.sync(current.records);
+              const skip = Number(args.skip ?? 0),
+                limit = Number(args.limit ?? 3);
+              const found = this.index.search(String(args.query), skip + limit).slice(skip);
+              for (const { passage } of found) {
+                knownIds.delete(passage.sourceId);
+                knownIds.add(passage.sourceId);
               }
-              result = found.map((r) => ({
-                id: r.id,
-                revision: revision(r),
-                title: r.kind === 'evidence' ? r.title : '',
+              result = found.map(({ passage, score }) => ({
+                id: passage.sourceId,
+                passageId: passage.id,
+                offset: passage.start,
+                end: passage.end,
+                revision: passage.revision,
+                title: passage.title,
+                text: passage.text,
+                lexicalScore: score,
               }));
             } else if (call.name === 'read_record') {
               const record = current.records.find((r) => r.id === args.id && r.kind === 'evidence');
@@ -528,13 +553,34 @@ export class Agent {
                   'RECORD_NOT_FOUND',
                   `Evidence ${String(args.id)} is not available in this case.`,
                 );
-              const text = record.text.slice(0, 1000);
-              read.set(record.id, { revision: revision(record), text });
+              const offset = Number(args.offset ?? 0),
+                length = Number(args.length ?? 1000);
+              if (offset >= record.text.length)
+                throw new RelayError(
+                  'READ_LOCATION',
+                  'offset must point inside the original record.',
+                );
+              const text = record.text.slice(offset, offset + length);
+              const rev = revision(record),
+                previous = read.get(record.id);
+              const excerpts =
+                previous?.revision === rev ? [...new Set([...previous.excerpts, text])] : [text];
+              if (excerpts.length > 32)
+                throw new RelayError(
+                  'READ_LIMIT',
+                  'At most32 distinct excerpts per record may be retained in a run.',
+                  'overflow',
+                );
+              read.set(record.id, { revision: rev, text, excerpts });
               result = {
                 id: record.id,
                 revision: revision(record),
                 text,
-                truncated: text.length !== record.text.length,
+                offset,
+                end: offset + text.length,
+                totalLength: record.text.length,
+                nextOffset: offset + text.length < record.text.length ? offset + text.length : null,
+                truncated: offset > 0 || offset + text.length < record.text.length,
               };
             } else if (call.name === 'request_information') {
               const needs =
@@ -620,7 +666,7 @@ export class Agent {
                     (source.revision !== undefined && seen.revision !== source.revision)
                   )
                     throw new RelayError('REVISION', `Use the current revision for ${source.id}.`);
-                  if (!seen.text.includes(source.quote))
+                  if (!seen.excerpts.some((text) => text.includes(source.quote)))
                     throw new RelayError(
                       'QUOTE',
                       `Quote must be an exact substring of the read result for ${source.id}.`,

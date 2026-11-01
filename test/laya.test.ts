@@ -27,25 +27,22 @@ function deferred<T>(id: string) {
   );
   return { promise, resolve, reject };
 }
-function result(keys = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5']) {
+function result(choice = 'directly_relevant') {
   return {
     model: 'laya-test-boundary',
-    answers: Object.fromEntries(
-      keys.map((key, i) => [
-        key,
-        {
-          type: 'choice',
-          choice: i % 2 === 0 ? 'include' : 'omit',
-          probabilities: { include: 0.5, omit: 0.5 },
-          confidence: 0.5,
-          answerConfidence: 0.5,
-          action: { actProbability: i % 2 ? 1 : 0 },
-        },
-      ]),
-    ),
+    answers: {
+      relevance: {
+        type: 'choice',
+        choice,
+        probabilities: { directly_relevant: 0.5, background: 0.3, unrelated: 0.2 },
+        confidence: 0.5,
+        answerConfidence: 0.5,
+        action: { actProbability: 0 },
+      },
+    },
     usage: {
       inputTokens: 100,
-      outputTokens: 6,
+      outputTokens: 1,
       stateTokens: 90,
       stateTokensDropped: 0,
       truncated: false,
@@ -53,9 +50,9 @@ function result(keys = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5']) {
     },
   };
 }
-function fixture(output: unknown = result()) {
+function fixture(output?: unknown) {
   const events: string[] = [];
-  let input: LayaInput | undefined;
+  const inputs: LayaInput[] = [];
   const runtime: LayaRuntime = {
     load: () => {
       events.push('load');
@@ -64,8 +61,11 @@ function fixture(output: unknown = result()) {
     decide: (id, request) => {
       assert.equal(id, 'model-1');
       events.push('decide');
-      input = request;
-      return pending(output, 'decision-1');
+      inputs.push(request);
+      return pending(
+        output === undefined ? request.states.map(() => result()) : output,
+        'decision-1',
+      );
     },
     unload: async (id) => {
       assert.equal(id, 'model-1');
@@ -75,33 +75,69 @@ function fixture(output: unknown = result()) {
       events.push(`cancel:${id}`);
     },
   };
-  return { selector: new LayaSelector(async () => runtime), runtime, events, input: () => input };
+  return {
+    selector: new LayaSelector(async () => runtime),
+    runtime,
+    events,
+    input: () => inputs[0],
+    inputs,
+  };
 }
 
-test('Laya makes one bounded request and unloads before returning selection', async () => {
+test('Laya classifies complete passages in bounded batches and unloads', async () => {
   const f = fixture();
-  const selection = await f.selector.select('Deployment '.repeat(50), candidates, signal);
-  assert.deepEqual(selection.ids, ['e0', 'e2', 'e4']);
-  assert.equal(selection.policy, 'laya');
-  assert.deepEqual(f.events, ['load', 'decide', 'unload']);
-  const input = f.input()!;
-  assert.equal(input.state.task.length, 240);
-  assert.equal(input.state.candidates.length, 6);
-  assert.ok(input.state.candidates.every((c) => c.title.length <= 40 && c.text.length <= 80));
-  assert.equal(Object.keys(input.questions).length, 6);
-  assert.equal(input.maxLen, 1024);
-  assert.equal(input.headMaxLen, 256);
+  const selection = await f.selector.select('Deployment', candidates, signal);
+  assert.deepEqual(
+    selection.ids,
+    candidates.map((c) => c.id),
+  );
+  assert.equal(selection.policy, 'laya-passage-v2');
+  assert.deepEqual(f.events, ['load', 'decide', 'decide', 'unload']);
+  assert.deepEqual(
+    f.inputs.map((input) => input.states.length),
+    [6, 2],
+  );
+  assert.equal(f.inputs[0]!.states[0]!.passage.text, candidates[0]!.text);
+  assert.equal(f.inputs[0]!.maxLen, 1024);
+  assert.equal(f.inputs[0]!.headMaxLen, 256);
+  assert.equal(Object.keys(f.inputs[0]!.questions).join(), 'relevance');
   await f.selector.close();
 });
 
-test('empty candidates avoid native model loading', async () => {
+test('reversed batches and options map results back by passage and rank by class', async () => {
   const f = fixture();
-  assert.deepEqual((await f.selector.select('Task', [], signal)).ids, []);
-  assert.deepEqual(f.events, []);
+  f.runtime.decide = (_id, input) => {
+    f.events.push('decide');
+    f.inputs.push(input);
+    return pending(
+      input.states.map(({ passage }) =>
+        result(passage.text.includes('critical tail') ? 'directly_relevant' : 'background'),
+      ),
+      'decision',
+    );
+  };
+  const cs = [
+    { ...candidates[0]!, text: 'Deployment background' },
+    { ...candidates[1]!, text: `Deployment ${'x'.repeat(700)} critical tail` },
+    { ...candidates[2]!, text: 'Deployment context' },
+  ];
+  const normal = await f.selector.select('Deployment', cs, signal);
+  const reverse = new LayaSelector(async () => f.runtime, {
+    candidateOrder: 'reverse',
+    optionOrder: 'reverse',
+  });
+  const reversed = await reverse.select('Deployment', cs, signal);
+  assert.deepEqual(reversed.ids, normal.ids);
+  assert.deepEqual(reversed.ids, ['e1', 'e0', 'e2']);
+  assert.deepEqual(f.inputs.at(-1)!.questions.relevance!.optionOrder, [2, 1, 0]);
+  assert.ok(f.inputs.at(-1)!.states.some((state) => state.passage.text.endsWith('critical tail')));
+  const changed = cs.map((c) => ({ ...c, text: c.text.replace('critical tail', 'ordinary tail') }));
+  assert.deepEqual((await reverse.select('Deployment', changed, signal)).ids, ['e0', 'e2', 'e1']);
 });
 
-test('pre-cancelled and duplicate inputs do not acquire a native model', async () => {
+test('empty, pre-cancelled, oversized and duplicate inputs avoid native model loading', async () => {
   const f = fixture();
+  assert.deepEqual((await f.selector.select('Task', [], signal)).ids, []);
   const controller = new AbortController();
   controller.abort();
   await assert.rejects(f.selector.select('Deployment', candidates, controller.signal), {
@@ -111,30 +147,34 @@ test('pre-cancelled and duplicate inputs do not acquire a native model', async (
     f.selector.select('Deployment', [candidates[0]!, candidates[0]!], signal),
     /duplicate candidate/,
   );
+  await assert.rejects(f.selector.select('x'.repeat(1501), candidates, signal), /LAYA_INPUT/);
+  await assert.rejects(
+    f.selector.select('Deployment', [{ ...candidates[0]!, text: 'x'.repeat(901) }], signal),
+    /LAYA_INPUT/,
+  );
   assert.deepEqual(f.events, []);
 });
 
-test('malformed, missing, unknown and truncated answers reject after unload', async () => {
+test('malformed, missing, unknown and truncated batch results reject after unload', async () => {
   const truncated = result();
   truncated.usage.truncated = true;
   const dropped = result();
   dropped.usage.stateTokensDropped = 1;
   const questions = result();
-  questions.usage.truncatedQuestions = ['c0'];
-  const badChoice = result();
-  badChoice.answers.c0!.choice = 'invented';
+  questions.usage.truncatedQuestions = ['relevance'];
+  const badChoice = result('invented');
   const badProbabilities = result();
-  badProbabilities.answers.c0!.probabilities.include = Number.NaN;
+  badProbabilities.answers.relevance.probabilities.background = Number.NaN;
   for (const output of [
     null,
     {},
-    result(['c0']),
-    result(['c0', 'c1', 'c2', 'c3', 'c4', 'unknown']),
-    truncated,
-    dropped,
-    questions,
-    badChoice,
-    badProbabilities,
+    [],
+    [result()],
+    [truncated, result(), result(), result(), result(), result()],
+    [dropped, result(), result(), result(), result(), result()],
+    [questions, result(), result(), result(), result(), result()],
+    [badChoice, result(), result(), result(), result(), result()],
+    [badProbabilities, result(), result(), result(), result(), result()],
   ]) {
     const f = fixture(output);
     await assert.rejects(f.selector.select('Deployment', candidates, signal), /LAYA_/);
@@ -142,7 +182,7 @@ test('malformed, missing, unknown and truncated answers reject after unload', as
   }
 });
 
-test('buildContext visibly falls back and protects required evidence', async () => {
+test('buildContext visibly falls back on malformed native output and protects required evidence', async () => {
   const records = candidates.slice(0, 2).map(
     (c) =>
       parseRecord({
@@ -158,14 +198,9 @@ test('buildContext visibly falls back and protects required evidence', async () 
   );
   const args = { task: 'Deployment', records, history: [], tools: [], requiredIds: ['e1'], signal };
   const broken = await buildContext({ ...args, selector: fixture({}).selector });
-  assert.equal(broken.selection.policy, 'deterministic');
+  assert.equal(broken.selection.policy, 'lexical-v1');
   assert.match(broken.selection.fallback!, /LAYA_OUTPUT/);
-  const omit = result(['c0', 'c1']);
-  Object.values(omit.answers).forEach((answer) => {
-    answer.choice = 'omit';
-  });
-  const selected = await buildContext({ ...args, selector: fixture(omit).selector });
-  assert.deepEqual(selected.selection.ids, ['e1']);
+  assert.ok(broken.selection.ids.includes('e1'));
 });
 
 test('cancellation waits for native decision settlement and unload', async () => {
@@ -188,7 +223,7 @@ test('cancellation waits for native decision settlement and unload', async () =>
   await entered.promise;
   controller.abort(new DOMException('Cancelled', 'AbortError'));
   assert.equal(f.events.includes('unload'), false);
-  decision.resolve(result());
+  decision.resolve(candidates.slice(0, 6).map(() => result()));
   await Promise.resolve();
   assert.equal(
     f.events.includes('unload'),
@@ -248,12 +283,12 @@ test('failed unload quarantines the retained model and close retries the same re
     error.cause === cause;
   await assert.rejects(f.selector.select('Deployment', candidates, signal), isCleanupFailure);
   await assert.rejects(f.selector.select('Deployment', candidates, signal), isCleanupFailure);
-  assert.deepEqual(f.events, ['load', 'decide', 'unload']);
+  assert.deepEqual(f.events, ['load', 'decide', 'decide', 'unload']);
   await assert.rejects(f.selector.close(), isCleanupFailure);
-  assert.deepEqual(f.events, ['load', 'decide', 'unload', 'unload']);
+  assert.deepEqual(f.events, ['load', 'decide', 'decide', 'unload', 'unload']);
   fails = false;
   await f.selector.close();
-  assert.deepEqual(f.events, ['load', 'decide', 'unload', 'unload', 'unload']);
+  assert.deepEqual(f.events, ['load', 'decide', 'decide', 'unload', 'unload', 'unload']);
   await assert.rejects(f.selector.select('Deployment', candidates, signal), /LAYA_CLOSED/);
 });
 
@@ -303,7 +338,7 @@ test('failed load cancellation still releases an acquired model before fallback'
 });
 
 test('selector cleanup failure propagates through buildContext instead of allowing generator fallback', async () => {
-  const f = fixture(result(['c0']));
+  const f = fixture([result()]);
   f.runtime.unload = async () => {
     f.events.push('unload');
     throw new Error('Uncertain native residency');
@@ -367,7 +402,7 @@ test('ordinary decision errors still fall back after successful native cleanup',
     selector: f.selector,
     signal,
   });
-  assert.equal(context.selection.policy, 'deterministic');
+  assert.equal(context.selection.policy, 'lexical-v1');
   assert.match(context.selection.fallback!, /Native decision unavailable/);
   assert.deepEqual(context.selection.ids, ['e0']);
   assert.deepEqual(f.events, ['load', 'unload']);
