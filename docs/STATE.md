@@ -1,10 +1,16 @@
 # Current state
 
-Updated 2026-11-01. The reviewer reliability pass is complete at application snapshot `cd4b146d29981574c70897e5ff479e1658f7ca3e`. Subsequent commits add ordinary documentation and recorded evidence only. The working branch is `code-fix/reviewer-reliability`; the private repository's default branch remains `code-fix/relay-handoff`.
+Updated 2026-11-01. Current application source is `c4702c214abff5f507cb0a5f342b4973e9f93b41`, fixing all three independent-review findings reproduced at `e9731d0`. It passed bundle, build, formatting, 187 tests, three controlled incident checks and nine replay rows using existing dependencies. No new native inference ran on this source. The historical native reliability pass remains at `cd4b146d29981574c70897e5ff479e1658f7ca3e`; evidence and documentation through `e9731d0` did not change that older application source. The working branch is `code-fix/reviewer-reliability`; the private repository's default branch remains `code-fix/relay-handoff`.
 
 The canonical checkout is `C:\Users\m0rty\Desktop\Programming\Research\New folder\byteask\relay-agent`. Use Ubuntu 24.04 WSL2 CPU with Linux Node 22.21.1, or the documented supported Node range. Windows Node 22.20 and the observed Vulkan 1.3 path are not the verified inference environment. Do not change global tools or drivers.
 
-## Verified final snapshot
+## Independent review repair status
+
+All three defects are fixed and regression-tested, including committed-brief recovery for owner-written linked answers. Store close attempts every captured resource, aggregates failures and allows an explicit retry of only rejected steps while rejecting new work. Diagnostic failures retain their report and exit nonzero. See docs/REVIEW_RESULTS.md and artifacts/review-fixes-e9731d0/verification.json for exact scope and pre-fix reproductions. Evaluation identities are v15 and passage configuration 11.
+
+The full verifier that includes fresh installation and native handoffs was not rerun. A new native run, if desired before submission, must be attributed to this changed source rather than combined with the historical three-pass set. No current failure remains from the three review findings. The final WSL process check found no Node, Bare, npm or tsx processes. Personal design prose stays deferred; access and historical stores/reports remain unchanged.
+
+## Historical native-tested snapshot
 
 Fresh Git archive source and fresh npm ci passed Linux QVAC bundle, build, formatting and **181/181 tests**. Existing Node, available npm downloads and cached QVAC weights were reused. The two-call native smoke passed with exact reproduction of a fresh tool-result token in 29314.50 ms. Uncached model download and fresh offline installation were not tested.
 

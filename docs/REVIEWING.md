@@ -38,7 +38,7 @@ npm run relay -- inspect --dir .relay/demo-EXAMPLE/a --case rollback-investigati
 npm run relay -- inspect --dir .relay/demo-EXAMPLE/b --case rollback-investigation
 ```
 
-A `pending` checkpoint means a required question is recorded but still awaits a contribution; it is not a completed handoff. `status` shows whether work is active, checkpoints, and cleanup or resumption errors. The `work` command waits for its checkpoint; a separate terminal can request cancellation:
+A `pending` checkpoint means work still awaits a contribution or a refresh of a brief that does not yet cite a locally known linked answer. The answer may come from either peer, including the case owner. It is not a completed handoff. `status` shows whether work is active, checkpoints, and cleanup or resumption errors. The `work` command waits for its checkpoint; a separate terminal can request cancellation:
 
 ```sh
 npm run relay -- cancel --dir .relay/demo-EXAMPLE/a

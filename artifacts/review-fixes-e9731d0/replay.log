@@ -1,0 +1,14 @@
+
+> prac-sdk@0.1.0 evaluate
+> tsx scripts/evaluate.ts --mode replay --trials 3 --output artifacts/review-fixes-e9731d0/replay.json
+
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"deployment","trial":1,"status":"completed","success":true,"calls":3,"repairs":0,"failure":null}
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"queue","trial":1,"status":"completed","success":true,"calls":4,"repairs":1,"failure":null}
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"missing-config","trial":1,"status":"pending","success":true,"calls":4,"repairs":0,"failure":null}
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"deployment","trial":2,"status":"completed","success":true,"calls":3,"repairs":0,"failure":null}
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"queue","trial":2,"status":"completed","success":true,"calls":4,"repairs":1,"failure":null}
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"missing-config","trial":2,"status":"pending","success":true,"calls":4,"repairs":0,"failure":null}
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"deployment","trial":3,"status":"completed","success":true,"calls":3,"repairs":0,"failure":null}
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"queue","trial":3,"status":"completed","success":true,"calls":4,"repairs":1,"failure":null}
+{"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"missing-config","trial":3,"status":"pending","success":true,"calls":4,"repairs":0,"failure":null}
+{"written":"/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/artifacts/review-fixes-e9731d0/replay.json"}

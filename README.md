@@ -75,7 +75,7 @@ npm run relay -- status --dir .relay/a
 npm run relay -- inspect --dir .relay/a --case checkout
 ```
 
-The owner resumes pending work when it sees an unconsumed remote contribution linked to its request. Status includes checkpoints and failures. Repeated notifications and restart do not restart completed work. `scan` requests an immediate check; a periodic check also runs. A failed run remains visible and requires an explicit `work` command to retry.
+The owner resumes pending work when it sees an unconsumed remote contribution linked to its request. If an accepted brief omits a locally known linked answer, the brief also requires refresh, including when the owner wrote that answer. Status includes checkpoints and failures. Repeated notifications and restart do not restart completed work. `scan` requests an immediate check; a periodic check also runs. A failed run remains visible and requires an explicit `work` command to retry.
 
 ```sh
 npm run relay -- cancel --dir .relay/a

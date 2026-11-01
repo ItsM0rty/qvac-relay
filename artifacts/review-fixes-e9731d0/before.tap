@@ -1,0 +1,158 @@
+TAP version 13
+# Subtest: a owner contribution arriving after the brief commit keeps the final checkpoint pending
+not ok 1 - a owner contribution arriving after the brief commit keeps the final checkpoint pending
+  ---
+  duration_ms: 366.2478
+  type: 'test'
+  location: '/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/agent.test.ts:1:32035'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'completed'
+    - 'pending'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'pending'
+  actual: 'completed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/agent.test.ts:1219:14)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: recovery resumes a committed brief when a request answer arrived after its citations (owner)
+not ok 2 - recovery resumes a committed brief when a request answer arrived after its citations (owner)
+  ---
+  duration_ms: 294.396877
+  type: 'test'
+  location: '/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/resume.test.ts:1:6072'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    -   'pending',
+        'completed'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'pending'
+    1: 'completed'
+  actual:
+    0: 'completed'
+  operator: 'deepStrictEqual'
+  stack: |-
+    <anonymous> (/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/resume.test.ts:243:12)
+    async fixture (/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/resume.test.ts:27:5)
+    async TestContext.<anonymous> (/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/resume.test.ts:220:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: recovery completes without inference when the committed brief already cites the answer revision (owner)
+ok 3 - recovery completes without inference when the committed brief already cites the answer revision (owner)
+  ---
+  duration_ms: 124.490122
+  type: 'test'
+  ...
+# Subtest: store cleanup attempts every tree and core, shares concurrent close and retries only failed steps
+not ok 4 - store cleanup attempts every tree and core, shares concurrent close and retries only failed steps
+  ---
+  duration_ms: 296.837665
+  type: 'test'
+  location: '/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/reviewer-regressions.test.ts:1:252'
+  failureType: 'testCodeFailure'
+  error: |-
+    One failed close must not skip remaining resources
+    + actual - expected
+    
+      [
+        1,
+        1,
+    +   0,
+    +   0
+    -   1,
+    -   1
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 1
+    1: 1
+    2: 1
+    3: 1
+  actual:
+    0: 1
+    1: 1
+    2: 0
+    3: 0
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/reviewer-regressions.test.ts:47:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: controlled diagnostic subprocess retains report and exits nonzero on failure
+not ok 5 - controlled diagnostic subprocess retains report and exits nonzero on failure
+  ---
+  duration_ms: 4034.629451
+  type: 'test'
+  location: '/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/reviewer-regressions.test.ts:1:2487'
+  failureType: 'testCodeFailure'
+  error: |-
+    Report persisted but wrong process status: {
+      "output": "/tmp/relay-diagnostic-regression-DlRhd4/report.json",
+      "rows": [
+        {
+          "id": "review-preview-paraphrase-v1",
+          "passed": false,
+          "reason": "Injected controlled diagnostic failure"
+        },
+        {
+          "id": "review-cache-late-v1",
+          "passed": false,
+          "reason": "Injected controlled diagnostic failure"
+        },
+        {
+          "id": "review-broker-absent-v1",
+          "passed": false,
+          "reason": "Injected controlled diagnostic failure"
+        }
+      ]
+    }
+    
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/test/reviewer-regressions.test.ts:105:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: controlled diagnostic subprocess retains report and exits zero on success
+ok 6 - controlled diagnostic subprocess retains report and exits zero on success
+  ---
+  duration_ms: 4047.590211
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 2
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21288.037237

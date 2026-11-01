@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: a remote contribution arriving after the brief commit keeps the final checkpoint pending
+ok 1 - a remote contribution arriving after the brief commit keeps the final checkpoint pending
+  ---
+  duration_ms: 435.63234
+  type: 'test'
+  ...
+# Subtest: a owner contribution arriving after the brief commit keeps the final checkpoint pending
+ok 2 - a owner contribution arriving after the brief commit keeps the final checkpoint pending
+  ---
+  duration_ms: 137.674982
+  type: 'test'
+  ...
+# Subtest: recovery resumes a committed brief when a request answer arrived after its citations (remote)
+ok 3 - recovery resumes a committed brief when a request answer arrived after its citations (remote)
+  ---
+  duration_ms: 353.584449
+  type: 'test'
+  ...
+# Subtest: recovery resumes a committed brief when a request answer arrived after its citations (owner)
+ok 4 - recovery resumes a committed brief when a request answer arrived after its citations (owner)
+  ---
+  duration_ms: 129.607968
+  type: 'test'
+  ...
+# Subtest: recovery completes without inference when the committed brief already cites the answer revision (remote)
+ok 5 - recovery completes without inference when the committed brief already cites the answer revision (remote)
+  ---
+  duration_ms: 148.922698
+  type: 'test'
+  ...
+# Subtest: recovery completes without inference when the committed brief already cites the answer revision (owner)
+ok 6 - recovery completes without inference when the committed brief already cites the answer revision (owner)
+  ---
+  duration_ms: 110.035619
+  type: 'test'
+  ...
+# Subtest: store cleanup attempts every tree and core, shares concurrent close and retries only failed steps
+ok 7 - store cleanup attempts every tree and core, shares concurrent close and retries only failed steps
+  ---
+  duration_ms: 341.85486
+  type: 'test'
+  ...
+# Subtest: controlled diagnostic subprocess retains report and exits nonzero on failure
+ok 8 - controlled diagnostic subprocess retains report and exits nonzero on failure
+  ---
+  duration_ms: 4337.018815
+  type: 'test'
+  ...
+# Subtest: controlled diagnostic subprocess retains report and exits zero on success
+ok 9 - controlled diagnostic subprocess retains report and exits zero on success
+  ---
+  duration_ms: 4284.234411
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 22904.890613

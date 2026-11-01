@@ -1,0 +1,879 @@
+{
+  "mode": "frozen-review-controlled-diagnostics",
+  "sourceCommit": "c4702c214abff5f507cb0a5f342b4973e9f93b41",
+  "sourceCommitBasis": "caller archive manifest",
+  "fixtureFreeze": {
+    "mode": "frozen-review-diagnostics",
+    "version": 1,
+    "frozenBeforeExecution": true,
+    "cases": 4,
+    "files": {
+      "data/review-handoff-v1.json": "c7350574de15320e1981fa728f0b8f12997234ff5e9090b5ca692f2b57208b1b",
+      "data/review-cases-v1.json": "f466ba16cf2384954a051c1c54f04b0e585e7bf8d745b836021ec377b242a075"
+    },
+    "scope": "New incident families fixed before observing retrieval or model results. Outcomes and expected quotes are diagnostic, not statistical estimates. Do not edit fixtures in response to results."
+  },
+  "model": "controlled-review-fixture-not-live",
+  "selector": "deterministic",
+  "trialsPerCase": 1,
+  "nativeInference": false,
+  "rows": [
+    {
+      "caseId": "review-preview-paraphrase-v1",
+      "kind": "paraphrase",
+      "execution": "controlled-agent-real-store",
+      "nativeInference": false,
+      "model": "controlled-review-fixture-not-live",
+      "selector": "deterministic",
+      "passed": true,
+      "status": "completed",
+      "reason": null,
+      "calls": 4,
+      "repairs": 0,
+      "latencyMs": 74.74124699999993,
+      "actions": [
+        "find_evidence",
+        "find_evidence",
+        "read_record",
+        "save_brief"
+      ],
+      "initialLexicalPassages": [],
+      "initialSpanCoverage": 0,
+      "coveredSpans": 1,
+      "expectedSpans": 1,
+      "readOffset": 0,
+      "requests": 0,
+      "briefs": 1,
+      "safelyUnresolved": false,
+      "trace": [
+        {
+          "at": "2026-11-01T16:05:31.427Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "running",
+          "calls": 0,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.428Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "start",
+          "briefInputPolicy": "native-source-quotes-v1",
+          "model": "controlled-review-fixture-not-live",
+          "configuration": null,
+          "requiredIds": [],
+          "consumed": [],
+          "budgets": {
+            "calls": 8,
+            "repairs": 1,
+            "context": 7000
+          }
+        },
+        {
+          "at": "2026-11-01T16:05:31.430Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "context",
+          "ids": [],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [],
+          "locations": [],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information"
+          ],
+          "estimatedInputTokens": 3449,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "8673bd5840031479f8be0f57d6d18691bb09aaa82d57d6fb61e2814cf640fc24"
+        },
+        {
+          "at": "2026-11-01T16:05:31.433Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "running",
+          "calls": 1,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.433Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [
+            {
+              "id": "review-1",
+              "name": "find_evidence"
+            }
+          ],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.436Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "tool",
+          "callId": "review-1",
+          "name": "find_evidence",
+          "ok": true,
+          "resultIds": [],
+          "resultCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.438Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "running",
+          "calls": 1,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.440Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "context",
+          "ids": [],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [],
+          "locations": [],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information"
+          ],
+          "estimatedInputTokens": 3789,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "8673bd5840031479f8be0f57d6d18691bb09aaa82d57d6fb61e2814cf640fc24"
+        },
+        {
+          "at": "2026-11-01T16:05:31.442Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "running",
+          "calls": 2,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.443Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [
+            {
+              "id": "review-2",
+              "name": "find_evidence"
+            }
+          ],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.445Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "tool",
+          "callId": "review-2",
+          "name": "find_evidence",
+          "ok": true,
+          "resultIds": [
+            "queue-notes",
+            "stock-a",
+            "stock-b"
+          ],
+          "resultCount": 3
+        },
+        {
+          "at": "2026-11-01T16:05:31.448Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "running",
+          "calls": 2,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.450Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "context",
+          "ids": [],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [],
+          "locations": [],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information"
+          ],
+          "estimatedInputTokens": 4641,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "8673bd5840031479f8be0f57d6d18691bb09aaa82d57d6fb61e2814cf640fc24"
+        },
+        {
+          "at": "2026-11-01T16:05:31.452Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "running",
+          "calls": 3,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.452Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [
+            {
+              "id": "review-3",
+              "name": "read_record"
+            }
+          ],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.455Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "tool",
+          "callId": "review-3",
+          "name": "read_record",
+          "ok": true,
+          "recordId": "queue-notes",
+          "requestedId": "queue-notes",
+          "offset": 0,
+          "end": 187,
+          "requestedLength": 1000,
+          "returnedLength": 187,
+          "resultBytes": 370
+        },
+        {
+          "at": "2026-11-01T16:05:31.456Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "running",
+          "calls": 3,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.458Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "context",
+          "ids": [],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [],
+          "locations": [],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information",
+            "save_brief"
+          ],
+          "estimatedInputTokens": 5662,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "8673bd5840031479f8be0f57d6d18691bb09aaa82d57d6fb61e2814cf640fc24"
+        },
+        {
+          "at": "2026-11-01T16:05:31.460Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "running",
+          "calls": 4,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.460Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [
+            {
+              "id": "review-4",
+              "name": "save_brief"
+            }
+          ],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.463Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "observations_projected",
+          "policy": "quoted-observations-v1",
+          "quoteCount": 1,
+          "interpretationCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.467Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "tool",
+          "callId": "review-4",
+          "name": "save_brief",
+          "ok": true,
+          "recordId": "e1f4276194f3639a3d0ce119b14f598ec13d3a278651e42666fdd986c42c8d0b"
+        },
+        {
+          "at": "2026-11-01T16:05:31.470Z",
+          "runId": "f5f23506-8e2b-4b22-a635-10a57a7f9df3",
+          "peer": "b3e4c0ad009b00696fa1e21d1257e8d5d03412ef096a6875a73ce8087b91488f",
+          "event": "transition",
+          "status": "completed",
+          "calls": 4,
+          "repairs": 0
+        }
+      ]
+    },
+    {
+      "caseId": "review-cache-late-v1",
+      "kind": "late-detail",
+      "execution": "controlled-agent-real-store",
+      "nativeInference": false,
+      "model": "controlled-review-fixture-not-live",
+      "selector": "deterministic",
+      "passed": true,
+      "status": "completed",
+      "reason": null,
+      "calls": 3,
+      "repairs": 0,
+      "latencyMs": 36.93041600000015,
+      "actions": [
+        "find_evidence",
+        "read_record",
+        "save_brief"
+      ],
+      "initialLexicalPassages": [
+        "tile-runbook:p2718-3394",
+        "tile-runbook:p0-636",
+        "tile-runbook:p1086-1724",
+        "tile-runbook:p1630-2268",
+        "tile-runbook:p2174-2812",
+        "tile-runbook:p542-1180",
+        "other-tiles",
+        "tile-runbook:p3264-3460"
+      ],
+      "initialSpanCoverage": 1,
+      "coveredSpans": 2,
+      "expectedSpans": 2,
+      "readOffset": 3264,
+      "requests": 0,
+      "briefs": 1,
+      "safelyUnresolved": false,
+      "trace": [
+        {
+          "at": "2026-11-01T16:05:31.523Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "transition",
+          "status": "running",
+          "calls": 0,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.524Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "start",
+          "briefInputPolicy": "native-source-quotes-v1",
+          "model": "controlled-review-fixture-not-live",
+          "configuration": null,
+          "requiredIds": [],
+          "consumed": [],
+          "budgets": {
+            "calls": 8,
+            "repairs": 1,
+            "context": 7000
+          }
+        },
+        {
+          "at": "2026-11-01T16:05:31.527Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "context",
+          "ids": [
+            "tile-runbook:p2718-3394",
+            "tile-runbook:p0-636",
+            "tile-runbook:p1086-1724",
+            "other-tiles",
+            "tile-runbook:p3264-3460"
+          ],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [
+            "tile-runbook",
+            "other-tiles"
+          ],
+          "locations": [
+            {
+              "id": "tile-runbook:p2718-3394",
+              "sourceId": "tile-runbook",
+              "start": 2718,
+              "end": 3394,
+              "revision": "9cc3ccb334db0a2b9872c869aed5a3e62583e797d3107413ddfbdd4411cd7309"
+            },
+            {
+              "id": "tile-runbook:p0-636",
+              "sourceId": "tile-runbook",
+              "start": 0,
+              "end": 636,
+              "revision": "9cc3ccb334db0a2b9872c869aed5a3e62583e797d3107413ddfbdd4411cd7309"
+            },
+            {
+              "id": "tile-runbook:p1086-1724",
+              "sourceId": "tile-runbook",
+              "start": 1086,
+              "end": 1724,
+              "revision": "9cc3ccb334db0a2b9872c869aed5a3e62583e797d3107413ddfbdd4411cd7309"
+            },
+            {
+              "id": "other-tiles",
+              "sourceId": "other-tiles",
+              "start": 0,
+              "end": 123,
+              "revision": "8927da90671988346db79a10b0059f33c951c9f8bb7d747600d87f08cd903ccd"
+            },
+            {
+              "id": "tile-runbook:p3264-3460",
+              "sourceId": "tile-runbook",
+              "start": 3264,
+              "end": 3460,
+              "revision": "9cc3ccb334db0a2b9872c869aed5a3e62583e797d3107413ddfbdd4411cd7309"
+            }
+          ],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information"
+          ],
+          "estimatedInputTokens": 6929,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "d6c76c24043ae32b1d82a91d8cb724f9b90e991a39312c632b42633cc5c994a2"
+        },
+        {
+          "at": "2026-11-01T16:05:31.529Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "transition",
+          "status": "running",
+          "calls": 1,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.529Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [
+            {
+              "id": "review-1",
+              "name": "find_evidence"
+            }
+          ],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.532Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "tool",
+          "callId": "review-1",
+          "name": "find_evidence",
+          "ok": true,
+          "resultIds": [
+            "tile-runbook",
+            "tile-runbook"
+          ],
+          "resultCount": 2
+        },
+        {
+          "at": "2026-11-01T16:05:31.534Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "transition",
+          "status": "running",
+          "calls": 1,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.536Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "context",
+          "ids": [
+            "tile-runbook:p2718-3394",
+            "tile-runbook:p0-636",
+            "tile-runbook:p1086-1724"
+          ],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [
+            "tile-runbook"
+          ],
+          "locations": [
+            {
+              "id": "tile-runbook:p2718-3394",
+              "sourceId": "tile-runbook",
+              "start": 2718,
+              "end": 3394,
+              "revision": "9cc3ccb334db0a2b9872c869aed5a3e62583e797d3107413ddfbdd4411cd7309"
+            },
+            {
+              "id": "tile-runbook:p0-636",
+              "sourceId": "tile-runbook",
+              "start": 0,
+              "end": 636,
+              "revision": "9cc3ccb334db0a2b9872c869aed5a3e62583e797d3107413ddfbdd4411cd7309"
+            },
+            {
+              "id": "tile-runbook:p1086-1724",
+              "sourceId": "tile-runbook",
+              "start": 1086,
+              "end": 1724,
+              "revision": "9cc3ccb334db0a2b9872c869aed5a3e62583e797d3107413ddfbdd4411cd7309"
+            }
+          ],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information"
+          ],
+          "estimatedInputTokens": 6917,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "d6c76c24043ae32b1d82a91d8cb724f9b90e991a39312c632b42633cc5c994a2"
+        },
+        {
+          "at": "2026-11-01T16:05:31.537Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "transition",
+          "status": "running",
+          "calls": 2,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.538Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [
+            {
+              "id": "review-2",
+              "name": "read_record"
+            }
+          ],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.540Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "tool",
+          "callId": "review-2",
+          "name": "read_record",
+          "ok": true,
+          "recordId": "tile-runbook",
+          "requestedId": "tile-runbook",
+          "offset": 3264,
+          "end": 3460,
+          "requestedLength": 1000,
+          "returnedLength": 196,
+          "resultBytes": 384
+        },
+        {
+          "at": "2026-11-01T16:05:31.542Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "transition",
+          "status": "running",
+          "calls": 2,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.544Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "context",
+          "ids": [
+            "tile-runbook:p2718-3394",
+            "other-tiles"
+          ],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [
+            "tile-runbook",
+            "other-tiles"
+          ],
+          "locations": [
+            {
+              "id": "tile-runbook:p2718-3394",
+              "sourceId": "tile-runbook",
+              "start": 2718,
+              "end": 3394,
+              "revision": "9cc3ccb334db0a2b9872c869aed5a3e62583e797d3107413ddfbdd4411cd7309"
+            },
+            {
+              "id": "other-tiles",
+              "sourceId": "other-tiles",
+              "start": 0,
+              "end": 123,
+              "revision": "8927da90671988346db79a10b0059f33c951c9f8bb7d747600d87f08cd903ccd"
+            }
+          ],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information",
+            "save_brief"
+          ],
+          "estimatedInputTokens": 6861,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "d6c76c24043ae32b1d82a91d8cb724f9b90e991a39312c632b42633cc5c994a2"
+        },
+        {
+          "at": "2026-11-01T16:05:31.546Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "transition",
+          "status": "running",
+          "calls": 3,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.546Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [
+            {
+              "id": "review-3",
+              "name": "save_brief"
+            }
+          ],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.547Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "observations_projected",
+          "policy": "quoted-observations-v1",
+          "quoteCount": 1,
+          "interpretationCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.550Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "tool",
+          "callId": "review-3",
+          "name": "save_brief",
+          "ok": true,
+          "recordId": "95a4a47755f99198c1de37b101641f88d34757e04db901eb68491d6dd95dbaa3"
+        },
+        {
+          "at": "2026-11-01T16:05:31.552Z",
+          "runId": "fcd99584-321a-46e5-9106-921ab0b386bd",
+          "peer": "f9849bdaf108894b2401b1c859372b587e6561f0625b45780e4643fa9d5cf1f3",
+          "event": "transition",
+          "status": "completed",
+          "calls": 3,
+          "repairs": 0
+        }
+      ]
+    },
+    {
+      "caseId": "review-broker-absent-v1",
+      "kind": "no-relevant-optional",
+      "execution": "controlled-agent-real-store",
+      "nativeInference": false,
+      "model": "controlled-review-fixture-not-live",
+      "selector": "deterministic",
+      "passed": true,
+      "status": "pending",
+      "reason": "Awaiting requested peer evidence; no observations accepted.",
+      "calls": 2,
+      "repairs": 0,
+      "latencyMs": 22.06208599999991,
+      "actions": [
+        "request_information",
+        "ordinary-waiting-completion"
+      ],
+      "initialLexicalPassages": [],
+      "initialSpanCoverage": null,
+      "coveredSpans": 0,
+      "expectedSpans": 0,
+      "readOffset": null,
+      "requests": 1,
+      "briefs": 0,
+      "safelyUnresolved": true,
+      "trace": [
+        {
+          "at": "2026-11-01T16:05:31.617Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "transition",
+          "status": "running",
+          "calls": 0,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.618Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "start",
+          "briefInputPolicy": "native-source-quotes-v1",
+          "model": "controlled-review-fixture-not-live",
+          "configuration": null,
+          "requiredIds": [],
+          "consumed": [],
+          "budgets": {
+            "calls": 8,
+            "repairs": 1,
+            "context": 7000
+          }
+        },
+        {
+          "at": "2026-11-01T16:05:31.619Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "context",
+          "ids": [],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [],
+          "locations": [],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information"
+          ],
+          "estimatedInputTokens": 3752,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "d7f7ed36e22c31b97227dabbe651ae67003b4e0ee3046ee64706d0ac8f1aa19b"
+        },
+        {
+          "at": "2026-11-01T16:05:31.620Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "transition",
+          "status": "running",
+          "calls": 1,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.621Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [
+            {
+              "id": "review-1",
+              "name": "request_information"
+            }
+          ],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.624Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "tool",
+          "callId": "review-1",
+          "name": "request_information",
+          "ok": true,
+          "recordId": "b8a05e924d52afdbcccb44916a446fddcb554f289e9939a81954923790804333"
+        },
+        {
+          "at": "2026-11-01T16:05:31.625Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "transition",
+          "status": "running",
+          "calls": 1,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.626Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "context",
+          "ids": [],
+          "policy": "lexical-v1",
+          "historyGroupsDropped": 0,
+          "recordIds": [],
+          "locations": [],
+          "allowedTools": [
+            "find_evidence",
+            "read_record",
+            "request_information"
+          ],
+          "estimatedInputTokens": 4818,
+          "tokenAccounting": "conservative UTF-8 byte estimate plus template allowance",
+          "fingerprint": "7efc6c914ade6ef1e1087f6856940008268de384416459b22ee2ce1852da88ec"
+        },
+        {
+          "at": "2026-11-01T16:05:31.628Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "transition",
+          "status": "running",
+          "calls": 2,
+          "repairs": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.628Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "model",
+          "stopReason": "eos",
+          "calls": [],
+          "toolErrorCount": 0
+        },
+        {
+          "at": "2026-11-01T16:05:31.629Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "pending_without_brief",
+          "requestIds": [
+            "b8a05e924d52afdbcccb44916a446fddcb554f289e9939a81954923790804333"
+          ],
+          "reason": "Awaiting requested peer evidence; no observations accepted."
+        },
+        {
+          "at": "2026-11-01T16:05:31.630Z",
+          "runId": "d9901c76-22be-4c77-be5d-06c11dc36a08",
+          "peer": "9972a3f8444ff1e958acd5c576d80a24366db62df0ee19f0a6af3a3bc3596ace",
+          "event": "transition",
+          "status": "pending",
+          "calls": 2,
+          "repairs": 0,
+          "reason": "Awaiting requested peer evidence; no observations accepted."
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Scripted fixtures assert actual protocol and tool results, not model reasoning or paraphrase understanding.",
+    "Empty-query navigation recovers an omitted candidate in the controlled case; native recovery is unverified.",
+    "Expected spans are diagnostic grader checks, not semantic truth."
+  ]
+}

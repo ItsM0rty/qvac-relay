@@ -1,0 +1,27 @@
+
+> prac-sdk@0.1.0 diagnose:review
+> tsx scripts/review-diagnostics.ts artifacts/review-fixes-e9731d0/controlled.json
+
+{
+  "output": "artifacts/review-fixes-e9731d0/controlled.json",
+  "rows": [
+    {
+      "id": "review-preview-paraphrase-v1",
+      "passed": true,
+      "status": "completed",
+      "reason": null
+    },
+    {
+      "id": "review-cache-late-v1",
+      "passed": true,
+      "status": "completed",
+      "reason": null
+    },
+    {
+      "id": "review-broker-absent-v1",
+      "passed": true,
+      "status": "pending",
+      "reason": "Awaiting requested peer evidence; no observations accepted."
+    }
+  ]
+}

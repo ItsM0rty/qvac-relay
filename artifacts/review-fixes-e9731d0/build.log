@@ -1,0 +1,5 @@
+
+> prac-sdk@0.1.0 build
+> tsc -p tsconfig.json
+
+src/store.ts(367,36): error TS2339: Property 'code' does not exist on type 'Error'.
