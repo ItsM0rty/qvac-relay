@@ -1,0 +1,46 @@
+{
+  "mode": "user-paused-native-demonstration",
+  "sourceCommit": "538481a2f79cb1e716abc6d56c0547e6ee76fd32",
+  "countsTowardQuality": false,
+  "reason": "User requested a clean pause before shutting down the laptop.",
+  "rawReport": {
+    "mode": "live-qvac-two-peer",
+    "passed": false,
+    "elapsedMs": 97530.72123099999,
+    "error": "Live agent did not create pending handoff: {\"id\":\"eaa5047003dd975cdd04e8e7c067b2e062871f33f88bd999f762bb2ecb51ac53\",\"owner\":\"cd858d4182b235bd48f9f408c4473558a1bc6e07977a58c4cda46426c4188432\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-11-01T03:22:15.307Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"48b43945-f4f4-471b-8923-5549beb82f3c\",\"status\":\"cancelled\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":1,\"repairs\":0,\"consumed\":[],\"requestIds\":[],\"reason\":\"cancelled: Inference cancelled.\"}\n+ actual - expected\n\n+ 'cancelled'\n- 'pending'\n",
+    "events": [
+      {
+        "event": "peer-started",
+        "name": "a",
+        "owner": "cd858d4182b235bd48f9f408c4473558a1bc6e07977a58c4cda46426c4188432",
+        "p2pPort": 41059
+      },
+      {
+        "event": "peer-started",
+        "name": "b",
+        "owner": "801e96564c46c3cd60192209f52ddee379bf2bdc0d5417bbf2ac7a0b18113d95",
+        "p2pPort": 46107
+      },
+      {
+        "event": "initial-work",
+        "checkpoint": {
+          "id": "eaa5047003dd975cdd04e8e7c067b2e062871f33f88bd999f762bb2ecb51ac53",
+          "owner": "cd858d4182b235bd48f9f408c4473558a1bc6e07977a58c4cda46426c4188432",
+          "caseId": "rollback-investigation",
+          "createdAt": "2026-11-01T03:22:15.307Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "48b43945-f4f4-471b-8923-5549beb82f3c",
+          "status": "cancelled",
+          "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+          "calls": 1,
+          "repairs": 0,
+          "consumed": [],
+          "requestIds": [],
+          "reason": "cancelled: Inference cancelled."
+        }
+      }
+    ]
+  },
+  "nextAction": "Run a fresh long-record development demo in a new directory. The cancelled run is terminal."
+}

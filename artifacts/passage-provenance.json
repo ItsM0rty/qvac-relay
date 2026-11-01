@@ -45,10 +45,25 @@
     },
     {
       "artifacts": [
-        "passage-code-verification.json"
+        "passage-code-verification-1a1e8c5.json"
       ],
       "sourceCommit": "1a1e8c50d3f11d12f9ef6d9174cae4da91e0234e",
       "note": "147 controlled tests plus build and formatting; existing verified dependencies."
+    },
+    {
+      "artifacts": [
+        "passage-demo-read-progress-1a1e8c5-failed.json"
+      ],
+      "sourceCommit": "1a1e8c5",
+      "note": "Pending work and replication succeeded; resumed read loop, incomplete coverage and overflow failed. Cleanup reported unload failure. WSL wall-clock drift occurred mid-run."
+    },
+    {
+      "artifacts": [
+        "passage-code-verification.json",
+        "passage-demo-user-paused-538481a.json"
+      ],
+      "sourceCommit": "538481a2f79cb1e716abc6d56c0547e6ee76fd32",
+      "note": "153 tests plus build and formatting passed. Native demonstration was cancelled on user request before its first reply and is not quality evidence."
     }
   ],
   "limits": "The manifest is a development record, not a cryptographic attestation. Native predictions, cached rankings, replay and controlled tests remain distinct."

@@ -8,7 +8,13 @@
 
 Recent assistant calls and their results are kept as complete groups. If necessary, context drops the oldest resolved group while preserving the latest complete group and mandatory application state. It never keeps a tool result without its call. A single oversized latest group or required state fails explicitly. The budget uses UTF-8 JSON bytes plus a template allowance as a conservative token estimate, not an exact generator tokenizer.
 
+Fresh source IDs read during the current run remain in protected `readIds` after protocol compaction. These IDs mean some excerpt was delivered, not that the whole record was read. The exact delivered excerpts remain in the trusted citation cache. Required source passages remain protected separately; if a needed quotation is absent from the current prompt, another page read can still be necessary. Restart reconstructs application progress from records and requires new citation reads.
+
+Under budget pressure, an explicitly rejected save draft can also leave context as a whole resolved call/result group. This exception requires concrete retained feedback and a validation failure with no committed brief. Unresolved calls, successful effects and infrastructure failures do not qualify. Repairs rebuild from trusted store data and read progress; repair counts and equivalent-failure detection are unchanged.
+
 `minilm.ts` uses an explicitly prepared, hash-verified INT8 ONNX cross-encoder through Transformers.js. Inference is local-only. Cancellation waits cooperatively for any running ONNX batch. `laya.ts` submits full individual passage states in batches for three-class decisions, preserves lexical order on ties, and supports candidate and option-order probes. Neither confidence nor `actProbability` authorizes actions. Selector errors or truncation fall back visibly only after successful cleanup; cleanup failure stops the run and quarantines the runtime.
+
+The generator is released before a native selector runs, keeping their heavy work sequential. The trusted pure lexical implementation does not unload it on a query refresh. The generator still unloads after each agent run. Checkpoint timestamps have an owned-record logical lower bound, so a host-clock rollback across restart does not make new progress older than prior local progress. Ordering compares parsed instants, including accepted offset-form timestamps. This is local ordering, not clock synchronization or distributed consensus.
 
 `qvac.ts` adapts native SDK responses to the harness model interface. It preserves assistant tool calls and tool result IDs. Loading and decode use targeted cancellation, and the generator unloads after a run. Peer status exposes `cleanupError` when runtime cleanup failed.
 
@@ -19,6 +25,8 @@ Accepted briefs use factPolicy quoted-observations-v1. Trusted code turns each v
 `resume.ts` scans owned pending or interrupted cases. A remote evidence record matters when it references an outstanding request and its contribution ID has not been consumed. Child run IDs derive from persisted prior work and contribution IDs. Checkpoints carry consumed IDs and cumulative budgets. Recovery can settle an already committed brief without reexecuting its write. Completed, cancelled and failed runs do not automatically restart.
 
 `cli.ts` hosts a peer and a loopback control API. Other CLI invocations read only that peer's control metadata and submit authenticated commands. The live demo starts separate processes and directories. Its coordinator never opens peer core files.
+
+`control-client.ts` supplies the shared CLI/demo JSON transport. Its 720-second wall-clock deadline covers delayed headers and the full response, while the agent retains its separate ten-minute work limit. It bounds response bytes and closes requests on timeout or cancellation. It never performs inference or changes peer state except through the existing authenticated commands.
 
 `retrieval-eval.ts` evaluates nine frozen version 2 synthetic cases with disjoint development and held-out families. Grader-only spans are not forced into context. `eval.ts` runs synthetic cases through the same Agent and real temporary stores. Replay is a scripted model fixture that inspects protocol and tool results. Live evaluation uses QVAC. State checks grade persisted outcomes. Comparison validates identities and configuration before calculating deltas.
 
