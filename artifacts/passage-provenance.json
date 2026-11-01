@@ -74,11 +74,25 @@
     },
     {
       "artifacts": [
-        "passage-code-verification.json",
-        "passage-ranking-budget-replay.json"
+        "passage-code-verification-cf3b330.json"
       ],
       "sourceCommit": "cf3b330ef89a149f80f8a10d9809fa69d8eb6bda",
       "note": "160 tests, build and formatting with verified unchanged dependencies. Budget replay uses captured historical scores with no inference."
+    },
+    {
+      "artifacts": [
+        "passage-demo-cf3b330-failed.json"
+      ],
+      "sourceCommit": "cf3b330",
+      "note": "Long-record native attempt: pending at10calls1repair; offline contribution and realreplication; failed resumption at15calls2repairs after NO_PROGRESS feedback overflow. Terminal cleanup and resumption status null."
+    },
+    {
+      "artifacts": [
+        "passage-code-verification.json",
+        "passage-ranking-budget-replay.json"
+      ],
+      "sourceCommit": "ae3a53f7f8c975cd1af6e9f584bf56d04a8eb4f9",
+      "note": "164 tests, build, format. Captured ranking budget replay is inference-free with explicit57fc attribution."
     }
   ],
   "limits": "The manifest is a development record, not a cryptographic attestation. Native predictions, cached rankings, replay and controlled tests remain distinct."

@@ -5,7 +5,7 @@
   "rawReportSourceCommit": "unavailable",
   "scoreSourceBasis": "Caller asserts clean-archive manifest attribution; raw report lacked Git metadata. Configuration hash does not authenticate recorded scores.",
   "assertedScoreSourceCommit": "57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4",
-  "currentSourceCommit": "cf3b330ef89a149f80f8a10d9809fa69d8eb6bda",
+  "currentSourceCommit": "ae3a53f7f8c975cd1af6e9f584bf56d04a8eb4f9",
   "currentContextBudget": 7000,
   "fixtureVersion": "retrieval-cases-v2",
   "datasetHash": "306b32f7ae3f22823f76e34d03cb07858ce1befd2e709949ade16784a56d2bf4",
@@ -928,14 +928,14 @@
         "ids": [
           "cold-release",
           "held-cold-2-archive-5:p0-623",
-          "held-cold-2-other"
+          "held-cold-2-archive-7:p0-612"
         ],
         "policy": "recorded-ranking-replay",
         "historyGroupsDropped": 0,
         "recordIds": [
           "cold-release",
           "held-cold-2-archive-5",
-          "held-cold-2-other"
+          "held-cold-2-archive-7"
         ],
         "locations": [
           {
@@ -953,11 +953,11 @@
             "revision": "665cf61fa061357b495cd67b1edf62d15204ee301f2ce89812c87fd9cec6908f"
           },
           {
-            "id": "held-cold-2-other",
-            "sourceId": "held-cold-2-other",
+            "id": "held-cold-2-archive-7:p0-612",
+            "sourceId": "held-cold-2-archive-7",
             "start": 0,
-            "end": 374,
-            "revision": "de18e8d80a1b513fda95f5a168fbfcb4287af75a89ec2480e0f5730d762735e3"
+            "end": 612,
+            "revision": "e32553ce740322fa052e310469edcd7d5ad265817ce211bd0b0838787431bbc9"
           }
         ]
       },
@@ -2071,14 +2071,14 @@
         "ids": [
           "cold-release",
           "held-cold-2-archive-5:p0-623",
-          "held-cold-2-other"
+          "held-cold-2-archive-7:p0-612"
         ],
         "policy": "recorded-ranking-replay",
         "historyGroupsDropped": 0,
         "recordIds": [
           "cold-release",
           "held-cold-2-archive-5",
-          "held-cold-2-other"
+          "held-cold-2-archive-7"
         ],
         "locations": [
           {
@@ -2096,11 +2096,11 @@
             "revision": "665cf61fa061357b495cd67b1edf62d15204ee301f2ce89812c87fd9cec6908f"
           },
           {
-            "id": "held-cold-2-other",
-            "sourceId": "held-cold-2-other",
+            "id": "held-cold-2-archive-7:p0-612",
+            "sourceId": "held-cold-2-archive-7",
             "start": 0,
-            "end": 374,
-            "revision": "de18e8d80a1b513fda95f5a168fbfcb4287af75a89ec2480e0f5730d762735e3"
+            "end": 612,
+            "revision": "e32553ce740322fa052e310469edcd7d5ad265817ce211bd0b0838787431bbc9"
           }
         ]
       },

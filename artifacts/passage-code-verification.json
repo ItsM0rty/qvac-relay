@@ -1,7 +1,7 @@
 {
   "mode": "working-checkout-verification",
   "passed": true,
-  "sourceCommit": "cf3b330ef89a149f80f8a10d9809fa69d8eb6bda",
+  "sourceCommit": "ae3a53f7f8c975cd1af6e9f584bf56d04a8eb4f9",
   "platform": "Ubuntu24.04 WSL2 CPU, localNode22.21.1",
   "commands": [
     "npm run build",
@@ -9,10 +9,10 @@
     "npm test"
   ],
   "tests": {
-    "durationMs": 152555.846458,
+    "passed": 164,
     "failed": 0,
-    "passed": 160
+    "durationMs": 164768.305095
   },
-  "dependencyScope": "Existing verified dependencies, unchanged lockfile; fresh npm ci separately verified at57fc4d6.",
-  "scope": "Controlled harness suite includes real process replication. Native handoff and ranker quality are separate evidence."
+  "dependencyScope": "Existing verified dependencies with unchanged lockfile. Fresh npm ci separately verified at57fc4d6.",
+  "scope": "Controlled harness includes real replication and long-record no-progress repair. Native completion remains separate evidence."
 }

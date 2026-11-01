@@ -1,0 +1,85 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 766543.811631,
+  "error": "Automatic resumption failed: {\"id\":\"dc64ed6de8f5aa02ca7b69abf8ab726ea6ac0bebacbb8cd203bd160219f0e4fe\",\"owner\":\"272e2e6f6180a4523f03891b2da609544be2e94d5f242809704b9b588c2e0f8b\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-11-01T04:05:35.342Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"12c510fa3b3e0f6e1360323acb663565e5d855a08c016e2981451f13716051bc\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":15,\"repairs\":2,\"consumed\":[\"deployment-config\"],\"lastFailure\":\"validation:NO_PROGRESS:This action already returned a result twice against unchanged data. Use the existing result, read a relevant record, or request missing information.\",\"requiredIds\":[\"deployment-config\",\"health-log\"],\"requestIds\":[\"ee1efa14373633eafc36ccdf62131e5ed4a9cbb712815768c8262660ac204eb1\"],\"reason\":\"overflow: Required instructions, tools and protocol exceed the conservative input budget.\"}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "272e2e6f6180a4523f03891b2da609544be2e94d5f242809704b9b588c2e0f8b",
+      "p2pPort": 41149
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "a58a33e523e662ea525f3cf27ca9ea39c4a2b82a41a606d02950a2b242a7d7db",
+      "p2pPort": 33907
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "f80c3b69b592750b43a3d5c0f74332211c059517f547349ec1efbf1e0624c742",
+        "owner": "272e2e6f6180a4523f03891b2da609544be2e94d5f242809704b9b588c2e0f8b",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T04:00:57.995Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "c68b24b6-756f-4c09-a07f-8fad61d2f21c",
+        "status": "pending",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 10,
+        "repairs": 1,
+        "consumed": [],
+        "briefId": "002190496c36d95d3187498bbc5182f469c2980be3c3186e3913ea673a375800",
+        "requestIds": [
+          "ee1efa14373633eafc36ccdf62131e5ed4a9cbb712815768c8262660ac204eb1"
+        ]
+      }
+    },
+    {
+      "event": "a-offline"
+    },
+    {
+      "event": "b-contributed-offline",
+      "id": "deployment-config",
+      "requestId": "ee1efa14373633eafc36ccdf62131e5ed4a9cbb712815768c8262660ac204eb1"
+    },
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "272e2e6f6180a4523f03891b2da609544be2e94d5f242809704b9b588c2e0f8b",
+      "p2pPort": 33599
+    },
+    {
+      "event": "terminal-run-settled",
+      "checkpoint": {
+        "id": "dc64ed6de8f5aa02ca7b69abf8ab726ea6ac0bebacbb8cd203bd160219f0e4fe",
+        "owner": "272e2e6f6180a4523f03891b2da609544be2e94d5f242809704b9b588c2e0f8b",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T04:05:35.342Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "12c510fa3b3e0f6e1360323acb663565e5d855a08c016e2981451f13716051bc",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 15,
+        "repairs": 2,
+        "consumed": [
+          "deployment-config"
+        ],
+        "lastFailure": "validation:NO_PROGRESS:This action already returned a result twice against unchanged data. Use the existing result, read a relevant record, or request missing information.",
+        "requiredIds": [
+          "deployment-config",
+          "health-log"
+        ],
+        "requestIds": [
+          "ee1efa14373633eafc36ccdf62131e5ed4a9cbb712815768c8262660ac204eb1"
+        ],
+        "reason": "overflow: Required instructions, tools and protocol exceed the conservative input budget."
+      },
+      "cleanupError": null,
+      "resumptionError": null
+    }
+  ]
+}
