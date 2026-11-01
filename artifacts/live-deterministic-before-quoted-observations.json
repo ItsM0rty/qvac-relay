@@ -1,0 +1,714 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "relay-engineering-handoff-v1",
+  "datasetHash": "80a951b25b42c9fd4f1356d6069055428ea73c6e67cb04b6b34e0ee63e288851",
+  "generatedAt": "2026-10-31T16:09:10.458Z",
+  "config": {
+    "harnessHash": "2ffddecc65f2731add55ebfcbcaf66e7a9afe9d1858e00eb3da04697972a754d",
+    "mode": "live",
+    "selector": "deterministic",
+    "generator": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+    "sdkVersion": "0.22.0",
+    "ctxSize": 8192,
+    "maxCalls": 12,
+    "maxRepairs": 2,
+    "contextBudget": 7000,
+    "timeoutMs": 600000,
+    "trials": 2,
+    "caseIds": [
+      "deployment",
+      "queue",
+      "missing-config"
+    ],
+    "temperature": 0.7,
+    "topP": 0.8,
+    "topK": 20,
+    "minP": null,
+    "reasoningBudget": 0,
+    "lifecycle": "Generator unloaded before each task; subsequent turns warm within task. OS/file caches uncontrolled."
+  },
+  "memoryScope": "25 ms sampled parent Node process RSS and system free memory before/after. Native child worker memory is not attributed. This is not machine-wide peak model memory.",
+  "limitations": [
+    "State checks verify shape, exact quotations, required fixture-source coverage and pending/completed outcome. They do not establish semantic truth.",
+    "Three synthetic cases and small repeated trials do not establish statistical significance or general model accuracy.",
+    "Replay is a scripted harness regression, not live inference. Every trial writes only isolated temporary stores that are removed after completion.",
+    "Generator unloads between cases; no separate cross-task warm benchmark is claimed.",
+    "Latency includes fixture-store setup and agent execution, and excludes cleanup. Selector fallbacks count context deliveries using fallback, not distinct native attempts."
+  ],
+  "results": [
+    {
+      "caseId": "deployment",
+      "trial": 1,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "briefs": [
+          {
+            "id": "fbea05e76ace029c6e014b3f65f5eb53a3dbed799c4d0865fec5fbba54af2742",
+            "owner": "f0762564f470695e6bc03d97901766a90e4348e2b6781758e91e768530a0ad7b",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T15:57:56.335Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "facts": [
+              {
+                "text": "The deployment failed due to a timeout at 09:14.",
+                "sources": [
+                  {
+                    "id": "deployment-source",
+                    "revision": "911eca153cadeecb743d5dca3ed6756720f5135ac4488455f07fa6fdbfcf1072",
+                    "quote": "Deployment 42 timed out at 09:14. The previous deployment completed at 09:10."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [],
+            "missing": [],
+            "basedOn": "7c2b4ab767fa6117c1bc7b349f67ef08fe8e43999710c469ffd6f2d6a7a95d7a"
+          }
+        ],
+        "requests": [],
+        "checkpoint": {
+          "id": "0481760f4533374590ded15c4fe412773d0659a56291937e7f00cf0871451fbe",
+          "owner": "f0762564f470695e6bc03d97901766a90e4348e2b6781758e91e768530a0ad7b",
+          "caseId": "deployment",
+          "createdAt": "2026-10-31T15:57:56.344Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "b0304b1f-b253-4784-95c5-e76ca6cffd64",
+          "status": "completed",
+          "task": "Investigate the deployment failure. Read the deployment evidence and save a brief with its exact quotation. State that the log alone does not establish root cause.",
+          "calls": 2,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "fbea05e76ace029c6e014b3f65f5eb53a3dbed799c4d0865fec5fbba54af2742",
+          "requestIds": []
+        }
+      },
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 95029.329565,
+        "generatorInputTokens": 3187,
+        "generatorOutputTokens": 230,
+        "loadMs": 19765.644355,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [],
+        "estimatedInputTokens": 10155,
+        "parentRssBefore": 163782656,
+        "parentRssAfter": 100540416,
+        "parentRssSampledPeak": 176906240,
+        "systemFreeBefore": 3447795712,
+        "systemFreeAfter": 3261906944
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "deployment-source",
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "irrelevantIds": [
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "queue",
+      "trial": 1,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "briefs": [
+          {
+            "id": "9ec68180a88517d0a01c5acaca20304fd1d21cbb64ffd902efbb202501d31357",
+            "owner": "28e5845c9029d73a6ec0261def643df069103082104c2c85f5991e834c67bce5",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T15:59:38.326Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "facts": [
+              {
+                "text": "The queue depth reached 500 at 10:20, leading to connection refusals in worker logs at 10:19.",
+                "sources": [
+                  {
+                    "id": "queue-source",
+                    "revision": "8cde8ed9f39f1477bcfd61f1b8865fbb2ba76e391aa47a04f015ec5e6000017c",
+                    "quote": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+                  }
+                ]
+              },
+              {
+                "text": "The queue depth reached 500 at 10:20, resulting in connection refusals at 10:19.",
+                "sources": [
+                  {
+                    "id": "queue-source",
+                    "revision": "8cde8ed9f39f1477bcfd61f1b8865fbb2ba76e391aa47a04f015ec5e6000017c",
+                    "quote": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+                  }
+                ]
+              },
+              {
+                "text": "The queue depth reached 500 at 10:20, causing connection refusals at 10:19.",
+                "sources": [
+                  {
+                    "id": "queue-source",
+                    "revision": "8cde8ed9f39f1477bcfd61f1b8865fbb2ba76e391aa47a04f015ec5e6000017c",
+                    "quote": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [],
+            "missing": [],
+            "basedOn": "eec3acd7d65f8b22268792c5fc80341a6b418b02468684c821a2b49cee73f6ae"
+          }
+        ],
+        "requests": [],
+        "checkpoint": {
+          "id": "f160b4b9dd0a8bd044a75471826972b169587ff5e58923d2ef2c2f2818c4674b",
+          "owner": "28e5845c9029d73a6ec0261def643df069103082104c2c85f5991e834c67bce5",
+          "caseId": "queue",
+          "createdAt": "2026-10-31T15:59:38.332Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "22ccf4e2-4685-42c8-80c0-b9e987eb046b",
+          "status": "completed",
+          "task": "Investigate the queue failure. Read the queue evidence and save a brief with its exact quotation. Distinguish observation from possible causes.",
+          "calls": 2,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "9ec68180a88517d0a01c5acaca20304fd1d21cbb64ffd902efbb202501d31357",
+          "requestIds": []
+        }
+      },
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 101888.80583999999,
+        "generatorInputTokens": 3212,
+        "generatorOutputTokens": 283,
+        "loadMs": 19748.574234,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [],
+        "estimatedInputTokens": 9976,
+        "parentRssBefore": 101494784,
+        "parentRssAfter": 100052992,
+        "parentRssSampledPeak": 105951232,
+        "systemFreeBefore": 3563020288,
+        "systemFreeAfter": 3276181504
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "queue-source",
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "irrelevantIds": [
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 1,
+      "success": true,
+      "status": "pending",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "briefs": [
+          {
+            "id": "0e22e8955ebe761c2ba024cd871e532a55785dfd2fbe88933a8c6b8080fa0959",
+            "owner": "73632631c47c08cdbfd6cb3b8510cfa22f72ef3a803b81d28a1afaae40fc1234",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:02:40.213Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "facts": [
+              {
+                "text": "The deployed timeout setting is missing from the incident log, causing requests to time out after the release.",
+                "sources": [
+                  {
+                    "id": "missing-config-source",
+                    "revision": "c54df3d232de5617059d69f10715111fb8ca8a34243a0f92994fdad8e326ae41",
+                    "quote": "Requests timed out after the release. The deployed timeout setting is absent from the incident log."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [
+              "The deployed timeout setting is missing from the incident log, but the exact cause of the timeout is unclear."
+            ],
+            "missing": [
+              "What timeout setting was deployed?"
+            ],
+            "basedOn": "d033fa43904717f41090dc30aa83255c3801280d5283e7276970ad9150f88d76"
+          }
+        ],
+        "requests": [
+          {
+            "id": "406755b9d4a05d3a14674cc0f47dc8db11cbfb2567e25fe987138020f9e0391b",
+            "owner": "73632631c47c08cdbfd6cb3b8510cfa22f72ef3a803b81d28a1afaae40fc1234",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:01:54.554Z",
+            "schemaVersion": 1,
+            "kind": "request",
+            "question": "What timeout setting was deployed?",
+            "needId": "deployed-timeout"
+          }
+        ],
+        "checkpoint": {
+          "id": "c40526468dc46933e1811ade541e50494644ae2bfb62cf8f7b0cc08ffe1ffafe",
+          "owner": "73632631c47c08cdbfd6cb3b8510cfa22f72ef3a803b81d28a1afaae40fc1234",
+          "caseId": "missing-config",
+          "createdAt": "2026-10-31T16:02:40.220Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "23f1d8e9-9cf3-474c-a7b2-607be0944187",
+          "status": "pending",
+          "task": "Investigate the configuration incident. Read the configuration evidence, request the missing deployed timeout setting, and save a pending brief with its exact quotation. The deployed setting is unavailable.",
+          "calls": 4,
+          "repairs": 1,
+          "consumed": [],
+          "briefId": "0e22e8955ebe761c2ba024cd871e532a55785dfd2fbe88933a8c6b8080fa0959",
+          "requestIds": [
+            "406755b9d4a05d3a14674cc0f47dc8db11cbfb2567e25fe987138020f9e0391b"
+          ]
+        }
+      },
+      "metrics": {
+        "calls": 4,
+        "repairs": 1,
+        "latencyMs": 181868.145983,
+        "generatorInputTokens": 7062,
+        "generatorOutputTokens": 334,
+        "loadMs": 20130.608544999996,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [],
+        "estimatedInputTokens": 24428,
+        "parentRssBefore": 100184064,
+        "parentRssAfter": 99790848,
+        "parentRssSampledPeak": 100315136,
+        "systemFreeBefore": 3301101568,
+        "systemFreeAfter": 3326816256
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "missing-config-source",
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "irrelevantIds": [
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "deployment",
+      "trial": 2,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "briefs": [
+          {
+            "id": "9ccfa415891fca13a35ceefab20016a68c1e66dff3a17b31b335dc8c08231805",
+            "owner": "469d305dfa64e04f8ca5088e40c3d65bf81262940cbeeb82ecde6d22aef93b6b",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:04:19.929Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "facts": [
+              {
+                "text": "The deployment failed at 09:14 due to timeout, with the previous deployment completing at 09:10.",
+                "sources": [
+                  {
+                    "id": "deployment-source",
+                    "revision": "411a1abe64aea9f70fb7e5e868911ce0ea3c3e10c1a6e6207780123973b867bf",
+                    "quote": "Deployment 42 timed out at 09:14. The previous deployment completed at 09:10."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [],
+            "missing": [],
+            "basedOn": "9641453d5bb64f1842f957d4131d0b57248ed7c8791edbd52638983eb23bc4ff"
+          }
+        ],
+        "requests": [],
+        "checkpoint": {
+          "id": "d84255162f13f3c4557931704dd42edbdfd46425c3692202106b98749913613a",
+          "owner": "469d305dfa64e04f8ca5088e40c3d65bf81262940cbeeb82ecde6d22aef93b6b",
+          "caseId": "deployment",
+          "createdAt": "2026-10-31T16:04:19.932Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "b4c40412-7127-41b1-9cf8-984c868c1c39",
+          "status": "completed",
+          "task": "Investigate the deployment failure. Read the deployment evidence and save a brief with its exact quotation. State that the log alone does not establish root cause.",
+          "calls": 2,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "9ccfa415891fca13a35ceefab20016a68c1e66dff3a17b31b335dc8c08231805",
+          "requestIds": []
+        }
+      },
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 99705.23370600003,
+        "generatorInputTokens": 3204,
+        "generatorOutputTokens": 193,
+        "loadMs": 23558.393446000002,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [],
+        "estimatedInputTokens": 10155,
+        "parentRssBefore": 99790848,
+        "parentRssAfter": 100446208,
+        "parentRssSampledPeak": 100446208,
+        "systemFreeBefore": 3338428416,
+        "systemFreeAfter": 3311071232
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "deployment-source",
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "irrelevantIds": [
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "queue",
+      "trial": 2,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "briefs": [
+          {
+            "id": "dbe2ee26d88a44b0a4d06d8554b640148d6f7d2eaf369fe60114592d25704e35",
+            "owner": "c91d317a8dd80265e267796d7462afdd43c50509eac9abf7cdc6516b4b77bf69",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:06:07.246Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "facts": [
+              {
+                "text": "The queue depth reached 500 at 10:20, leading to connection refusals in worker logs at 10:19.",
+                "sources": [
+                  {
+                    "id": "queue-source",
+                    "revision": "d119c72caa27f404a645dabda2e529229841b463ebc76cf6e816344b57ecfdfb",
+                    "quote": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+                  }
+                ]
+              },
+              {
+                "text": "The queue depth reached 500 at 10:20, resulting in connection refusals at 10:19.",
+                "sources": [
+                  {
+                    "id": "queue-source",
+                    "revision": "d119c72caa27f404a645dabda2e529229841b463ebc76cf6e816344b57ecfdfb",
+                    "quote": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+                  }
+                ]
+              },
+              {
+                "text": "The queue depth reached 500 at 10:20, causing connection refusals at 10:19.",
+                "sources": [
+                  {
+                    "id": "queue-source",
+                    "revision": "d119c72caa27f404a645dabda2e529229841b463ebc76cf6e816344b57ecfdfb",
+                    "quote": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [],
+            "missing": [],
+            "basedOn": "7a3818ee75f4d545028b92b8ed944ed6db3a2e9feb57bbb7ed43f41a5d814e4d"
+          }
+        ],
+        "requests": [],
+        "checkpoint": {
+          "id": "e8eb7ade925d433d1df5eca3df5214ad39672d9fed35d8002c4d4e052f0fd391",
+          "owner": "c91d317a8dd80265e267796d7462afdd43c50509eac9abf7cdc6516b4b77bf69",
+          "caseId": "queue",
+          "createdAt": "2026-10-31T16:06:07.250Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "ea205bf0-8340-4f54-8e57-30cbfc849198",
+          "status": "completed",
+          "task": "Investigate the queue failure. Read the queue evidence and save a brief with its exact quotation. Distinguish observation from possible causes.",
+          "calls": 2,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "dbe2ee26d88a44b0a4d06d8554b640148d6f7d2eaf369fe60114592d25704e35",
+          "requestIds": []
+        }
+      },
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 107325.83493399998,
+        "generatorInputTokens": 3207,
+        "generatorOutputTokens": 284,
+        "loadMs": 23661.451709000045,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [],
+        "estimatedInputTokens": 9976,
+        "parentRssBefore": 100446208,
+        "parentRssAfter": 99921920,
+        "parentRssSampledPeak": 101101568,
+        "systemFreeBefore": 3332079616,
+        "systemFreeAfter": 3282558976
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "queue-source",
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "irrelevantIds": [
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 2,
+      "success": true,
+      "status": "pending",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "briefs": [
+          {
+            "id": "cddd664dc17989082eef2f6e5c9d8012725717b03b81f654d77483a83c859fa2",
+            "owner": "a241e5bfaec206af3a604c1c20275b4cdabf061f8e5b4d109932b9f73e616b53",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:09:10.092Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "facts": [
+              {
+                "text": "The deployed timeout setting is unavailable and not recorded in the incident log.",
+                "sources": [
+                  {
+                    "id": "missing-config-source",
+                    "revision": "251d3aba5d89714dcc6e27db4f9784cb815739c747b1ad62cd0027ef2e03d077",
+                    "quote": "Requests timed out after the release. The deployed timeout setting is absent from the incident log."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [
+              "The deployed timeout setting is unavailable and not recorded in the incident log."
+            ],
+            "missing": [
+              "What timeout setting was deployed?"
+            ],
+            "basedOn": "0d215b9249ce1cd0bbeec0eecf7f77c7cf764e33671a93e17d27b53e7a39f5ca"
+          }
+        ],
+        "requests": [
+          {
+            "id": "81d1f03e443fd75ab9808646c3afc133e4ece0428acff0fb73d2d070b25e387d",
+            "owner": "a241e5bfaec206af3a604c1c20275b4cdabf061f8e5b4d109932b9f73e616b53",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:08:27.361Z",
+            "schemaVersion": 1,
+            "kind": "request",
+            "question": "What timeout setting was deployed?",
+            "needId": "deployed-timeout"
+          }
+        ],
+        "checkpoint": {
+          "id": "96c9f75d76e555d02bdad62c076d5bebd9ad07427a29ae995ad0c1ac78344b58",
+          "owner": "a241e5bfaec206af3a604c1c20275b4cdabf061f8e5b4d109932b9f73e616b53",
+          "caseId": "missing-config",
+          "createdAt": "2026-10-31T16:09:10.095Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "f589e8c6-bc25-400e-8a1d-fe0dfbfec55e",
+          "status": "pending",
+          "task": "Investigate the configuration incident. Read the configuration evidence, request the missing deployed timeout setting, and save a pending brief with its exact quotation. The deployed setting is unavailable.",
+          "calls": 4,
+          "repairs": 1,
+          "consumed": [],
+          "briefId": "cddd664dc17989082eef2f6e5c9d8012725717b03b81f654d77483a83c859fa2",
+          "requestIds": [
+            "81d1f03e443fd75ab9808646c3afc133e4ece0428acff0fb73d2d070b25e387d"
+          ]
+        }
+      },
+      "metrics": {
+        "calls": 4,
+        "repairs": 1,
+        "latencyMs": 182872.0378109999,
+        "generatorInputTokens": 6987,
+        "generatorOutputTokens": 302,
+        "loadMs": 21733.812023999984,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [],
+        "estimatedInputTokens": 24256,
+        "parentRssBefore": 99921920,
+        "parentRssAfter": 97423360,
+        "parentRssSampledPeak": 100184064,
+        "systemFreeBefore": 3294683136,
+        "systemFreeAfter": 3379884032
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "missing-config-source",
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "irrelevantIds": [
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    }
+  ]
+}

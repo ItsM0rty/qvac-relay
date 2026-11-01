@@ -26,6 +26,7 @@ trap cleanup EXIT
 source_commit="$(git -c safe.directory="$project_dir" rev-parse HEAD)"
 git -c safe.directory="$project_dir" archive HEAD | tar -xf - -C "$verify_dir"
 cd "$verify_dir"
+rm -f -- artifacts/live-smoke.json artifacts/live-cancellation.json
 mkdir -p "$project_dir/artifacts/local"
 NODE_OPTIONS=--max-old-space-size=384 npm ci --maxsockets=2
 npm run bundle:qvac

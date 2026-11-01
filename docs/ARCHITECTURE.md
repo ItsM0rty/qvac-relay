@@ -10,6 +10,8 @@
 
 `agent.ts` owns the model-to-tool-to-result loop. The model can find evidence, read records, request information and propose a brief. Code owns schemas, permissions, acceptance and state transitions. A failed proposal receives specific tool feedback; committed requests remain. Repeated equivalent failures, attempt limits, native failures, overflow and cancellation stop work. Call attempts are checkpointed before inference so a crash cannot reset the budget.
 
+Accepted briefs use factPolicy quoted-observations-v1. Trusted code turns each validated source quotation into a fact with the same text and one reference. The native save schema offers source quotes instead of generated fact prose. Legacy draft prose is retained only as a labelled unverified interpretation in uncertainty. Every new brief includes a trusted root-cause uncertainty notice. This separates reported observations from model explanations without claiming to verify the truth of a source or the entailment of a hypothesis. Earlier immutable briefs without this policy are legacy records.
+
 `resume.ts` scans owned pending or interrupted cases. A remote evidence record matters when it references an outstanding request and its contribution ID has not been consumed. Child run IDs derive from persisted prior work and contribution IDs. Checkpoints carry consumed IDs and cumulative budgets. Recovery can settle an already committed brief without reexecuting its write. Completed, cancelled and failed runs do not automatically restart.
 
 `cli.ts` hosts a peer and a loopback control API. Other CLI invocations read only that peer's control metadata and submit authenticated commands. The live demo starts separate processes and directories. Its coordinator never opens peer core files.

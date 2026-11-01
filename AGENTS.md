@@ -8,6 +8,7 @@ Relay is an engineering handoff agent using local QVAC inference and independent
 - Repository-local author and committer: Suyash Bhattarai <bhattarai.suyash777@gmail.com>. No coauthor trailers.
 - Preserve source reference projects unchanged.
 - Trusted code controls record acceptance, permissions, budgets and transitions.
+- New brief facts are exact source quotations under quoted-observations-v1. Generated interpretations belong in labelled uncertainty. Automated evaluation passes are not semantic truth scores. Version 1 reports predate these guards; current comparisons require report version 2.
 - Never substitute replay for a live model result. Never read another peer directory to simulate replication.
 - Leave the assessment's personal design prose to Suyash. Ordinary setup and reference documentation can be maintained here.
 
@@ -35,6 +36,7 @@ Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents 
 
 - npm run build
 - npm test (102 tests passed from clean source at commit 27edb4a)
+- npm test (105 current-source tests passed after the quoted-observation change; a new clean matrix is pending)
 - npm run smoke (native 0.6B tool result round trip, exact format false)
 - node --import tsx scripts/cancel-smoke.ts (native cancellation)
 - npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json

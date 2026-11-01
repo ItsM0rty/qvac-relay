@@ -135,6 +135,7 @@ test('comparison refuses missing/duplicate identities, changed cases and incompa
 });
 test('report validation rejects inconsistent success and invalid measurements', async () => {
   const report = await fixture();
+  assert.throws(() => validateReport({ ...report, schemaVersion: 1 }), /Version 2/);
   report.results[0]!.success = false;
   assert.throws(() => validateReport(report), /Inconsistent/);
   const invalid = await fixture();
@@ -189,6 +190,59 @@ test('state grader catches valid-shaped citations to unexpected or omitted evide
   );
 });
 
+test('state grader requires exact quoted observations and the root-cause uncertainty notice', () => {
+  const base = {
+    schemaVersion: 1,
+    owner: 'a'.repeat(64),
+    caseId: EVAL_CASES[0].id,
+    createdAt: '2026-10-31T00:00:00Z',
+  };
+  const source = parseRecord({
+    ...base,
+    id: 'deployment-source',
+    kind: 'evidence',
+    title: EVAL_CASES[0].sourceTitle,
+    text: EVAL_CASES[0].sourceText,
+  });
+  assert.equal(source.kind, 'evidence');
+  const quote = EVAL_CASES[0].sourceText;
+  const citation = { id: source.id, revision: revision(source), quote };
+  const notice = 'Source quotations alone do not establish root cause.';
+  const check = (text: string, factPolicy?: string, uncertainty: string[] = [notice]) => {
+    const brief = parseRecord({
+      ...base,
+      id: 'brief',
+      kind: 'brief',
+      ...(factPolicy === undefined ? {} : { factPolicy }),
+      facts: [{ text, sources: [citation] }],
+      uncertainty,
+      missing: [],
+      basedOn: stableId('snapshot'),
+    });
+    return checkOutcome(EVAL_CASES[0], [source, brief], 'completed', source.id);
+  };
+
+  const supportedCitationButUnsupportedText = check(
+    'The database caused deployment 42 to time out.',
+  );
+  assert.equal(supportedCitationButUnsupportedText.checks.citationsValid, true);
+  assert.equal(supportedCitationButUnsupportedText.checks.quotedObservations, false);
+  assert.equal(supportedCitationButUnsupportedText.checks.uncertaintyMarked, true);
+
+  const exactQuoteWithoutPolicy = check(quote);
+  assert.equal(exactQuoteWithoutPolicy.checks.quotedObservations, false);
+
+  const corrected = check(quote, 'quoted-observations-v1');
+  assert.equal(corrected.checks.quotedObservations, true);
+  assert.equal(corrected.checks.uncertaintyMarked, true);
+  assert.equal(corrected.success, true);
+
+  const missingNotice = check(quote, 'quoted-observations-v1', []);
+  assert.equal(missingNotice.checks.quotedObservations, true);
+  assert.equal(missingNotice.checks.uncertaintyMarked, false);
+  assert.equal(missingNotice.success, false);
+});
+
 test('missing-information grader requires the matching open request and pending checkpoint linkage', () => {
   const entry = EVAL_CASES[2];
   const base = {
@@ -207,6 +261,7 @@ test('missing-information grader requires the matching open request and pending 
   const brief = parseRecord({
     ...base,
     id: 'brief',
+    factPolicy: 'quoted-observations-v1',
     kind: 'brief',
     facts: [
       {
@@ -214,7 +269,7 @@ test('missing-information grader requires the matching open request and pending 
         sources: [{ id: evidence.id, revision: revision(evidence), quote: entry.sourceText }],
       },
     ],
-    uncertainty: [],
+    uncertainty: ['Source quotations alone do not establish root cause.'],
     missing: [entry.question],
     basedOn: stableId('snapshot'),
   });

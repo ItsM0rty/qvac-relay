@@ -34,7 +34,7 @@ const schemas = {
     facts: z
       .array(
         z.strictObject({
-          text: z.string().trim().min(1).max(600),
+          text: z.string().trim().min(1).max(600).optional(),
           sources: z
             .array(
               z.strictObject({
@@ -81,7 +81,7 @@ export const TOOLS: ToolSpec[] = Object.entries(schemas).map(([name, schema]) =>
       request_information:
         'Persist a question for another peer. For a required informationNeed include its needId. Reuse existing questions.',
       save_brief:
-        'Save a short brief. Use one distinct fact per source with exact quotes. Revision is optional; trusted code attaches the version read. Persist missing questions before saving.',
+        'Save source observations as exact quotes, with uncertainty and missing questions. Do not add generated explanations to facts. Revision is optional; trusted code attaches the version read. Persist missing questions before saving.',
     } as Record<string, string>
   )[name]!,
   parameters: z.toJSONSchema(schema) as Record<string, unknown>,
@@ -90,6 +90,7 @@ interface SchemaNode {
   properties?: Record<string, SchemaNode>;
   items?: SchemaNode;
   enum?: string[];
+  required?: string[];
 }
 function offerTools(readIds: string[], requiredIds: string[], knownIds: string[]): ToolSpec[] {
   const canSave = readIds.length > 0 && requiredIds.every((id) => readIds.includes(id));
@@ -113,6 +114,11 @@ function offerTools(readIds: string[], requiredIds: string[], knownIds: string[]
     }
     if (tool.name !== 'save_brief') return tool;
     const parameters = structuredClone(tool.parameters);
+    const factNode = (parameters as SchemaNode).properties?.facts?.items;
+    if (factNode?.properties) {
+      delete factNode.properties.text;
+      factNode.required = factNode.required?.filter((field) => field !== 'text');
+    }
     const sourceId = (parameters as SchemaNode).properties?.facts?.items?.properties?.sources?.items
       ?.properties?.id;
     if (!sourceId)
@@ -667,13 +673,29 @@ export class Agent {
                   requestIds: open.map((record) => record.id),
                   added: missing.length - draft.missing.length,
                 });
-              const facts = draft.facts.map((fact) => ({
-                ...fact,
-                sources: fact.sources.map((source) => ({
-                  ...source,
-                  revision: read.get(source.id)!.revision,
+              const observations = draft.facts.flatMap((fact) =>
+                fact.sources.map((source) => ({
+                  text: source.quote,
+                  sources: [{ ...source, revision: read.get(source.id)!.revision }],
                 })),
-              }));
+              );
+              const facts = [
+                ...new Map(observations.map((fact) => [JSON.stringify(fact), fact])).values(),
+              ];
+              const uncertainty = [
+                ...new Set([
+                  'Source quotations alone do not establish root cause.',
+                  ...draft.uncertainty.map((text) => `Unverified model interpretation: ${text}`),
+                  ...draft.facts.flatMap((fact) =>
+                    fact.text ? [`Unverified model interpretation: ${fact.text}`] : [],
+                  ),
+                ]),
+              ];
+              await this.trace(runId, 'observations_projected', {
+                policy: 'quoted-observations-v1',
+                quoteCount: facts.length,
+                interpretationCount: uncertainty.length - 1,
+              });
               const record = parseRecord({
                 schemaVersion: 1,
                 kind: 'brief',
@@ -682,6 +704,8 @@ export class Agent {
                 caseId,
                 createdAt: stamp(),
                 ...draft,
+                factPolicy: 'quoted-observations-v1',
+                uncertainty,
                 missing,
                 facts,
                 basedOn: current.fingerprint,

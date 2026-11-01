@@ -2,7 +2,7 @@
 
 Relay keeps an engineering investigation alive across two local peers. A local QVAC model reads evidence through tools, requests missing information and saves a cited brief. A collaborator writes an answer into its own persistent tree. When the case owner reconnects, Relay consumes the relevant contribution and resumes unfinished work.
 
-The repository is an assessment implementation. See [testing evidence](docs/TESTING.md) for the distinction between controlled tests, real replication and native inference. Generated interpretations can still be wrong even when their citations pass validation.
+The repository is an assessment implementation. See [testing evidence](docs/TESTING.md) for the distinction between controlled tests, real replication and native inference. Accepted observations are verbatim source quotations. Generated explanations are labelled as unverified in uncertainty and can still be wrong. A quotation establishes what a source reports, not that the source is true.
 
 ## Requirements and setup
 

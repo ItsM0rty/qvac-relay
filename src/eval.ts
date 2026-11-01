@@ -14,6 +14,8 @@ import {
   briefSchema,
   requestSchema,
   checkpointSchema,
+  evidenceSchema,
+  caseSchema,
   type BriefRecord,
   type RelayRecord,
 } from './records.js';
@@ -57,7 +59,7 @@ export type EvalCase = (typeof EVAL_CASES)[number];
 export const EVAL_SUITE_ID = 'relay-engineering-handoff-v1';
 export const EVAL_DATASET_HASH = stableId(JSON.stringify(EVAL_CASES));
 export const EVAL_HARNESS_HASH = stableId(
-  'native-permissions-v4-information-needs',
+  'native-permissions-v5-quoted-observations',
   INSTRUCTIONS,
   JSON.stringify(TOOLS),
 );
@@ -162,6 +164,8 @@ const checksSchema = z.strictObject({
   noUnexpectedCitations: z.boolean(),
   missingInformation: z.boolean(),
   noDuplicateBriefs: z.boolean(),
+  quotedObservations: z.boolean(),
+  uncertaintyMarked: z.boolean(),
 });
 const metricsSchema = z.strictObject({
   calls: nonnegative.int().nullable(),
@@ -193,6 +197,8 @@ const resultSchema = z.strictObject({
   failure: z.string().nullable(),
   storedOutcome: z
     .strictObject({
+      case: caseSchema,
+      evidence: z.array(evidenceSchema),
       briefs: z.array(briefSchema),
       requests: z.array(requestSchema),
       checkpoint: checkpointSchema,
@@ -209,7 +215,7 @@ const resultSchema = z.strictObject({
     .nullable(),
 });
 export const reportSchema = z.strictObject({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
   suiteId: z.string(),
   datasetHash: z.string(),
   generatedAt: z.iso.datetime({ offset: true }),
@@ -246,6 +252,15 @@ export interface EvaluationOptions {
   modelCandidate?: '0.6b' | '1.7b';
 }
 export function validateReport(input: unknown): EvalReport {
+  if (
+    input === null ||
+    typeof input !== 'object' ||
+    !('schemaVersion' in input) ||
+    input.schemaVersion !== 2
+  )
+    throw new Error(
+      'Unsupported evaluation report schema. Version 2 requires quoted-observation and uncertainty checks; older reports remain historical evidence.',
+    );
   const report = reportSchema.parse(input);
   const ids = report.config.caseIds;
   if (report.config.mode === 'replay' && report.config.selector !== 'deterministic')
@@ -295,7 +310,7 @@ export function compareReports(baselineInput: unknown, currentInput: unknown) {
     };
   });
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     suiteId: current.suiteId,
     baselineSelector: baseline.config.selector,
     currentSelector: current.config.selector,
@@ -379,6 +394,15 @@ export function checkOutcome(
         )
       : Boolean(brief && brief.missing.length === 0),
     noDuplicateBriefs: briefs.length === 1,
+    quotedObservations: Boolean(
+      brief?.factPolicy === 'quoted-observations-v1' &&
+      brief.facts.every(
+        (fact) => fact.sources.length === 1 && fact.text === fact.sources[0]?.quote,
+      ),
+    ),
+    uncertaintyMarked: Boolean(
+      brief?.uncertainty.includes('Source quotations alone do not establish root cause.'),
+    ),
   };
   return {
     checks,
@@ -469,6 +493,8 @@ async function evaluateOne(
       ...outcome,
       failure: checkpoint.reason ?? null,
       storedOutcome: {
+        case: records.find((record) => record.kind === 'case')!,
+        evidence: records.filter((record) => record.kind === 'evidence'),
         briefs: records.filter((record) => record.kind === 'brief'),
         requests: records.filter((record) => record.kind === 'request'),
         checkpoint,
@@ -524,6 +550,8 @@ async function evaluateOne(
       noUnexpectedCitations: false,
       missingInformation: false,
       noDuplicateBriefs: false,
+      quotedObservations: false,
+      uncertaintyMarked: false,
     };
     const parentRssAfter = process.memoryUsage().rss;
     peak = Math.max(peak, parentRssAfter);
@@ -611,7 +639,7 @@ export async function runEvaluation(options: EvaluationOptions): Promise<EvalRep
     await liveModel?.close();
   }
   return validateReport({
-    schemaVersion: 1,
+    schemaVersion: 2,
     suiteId: EVAL_SUITE_ID,
     datasetHash: EVAL_DATASET_HASH,
     generatedAt: new Date().toISOString(),
@@ -638,11 +666,11 @@ export async function runEvaluation(options: EvaluationOptions): Promise<EvalRep
     memoryScope:
       '25 ms sampled parent Node process RSS and system free memory before/after. Native child worker memory is not attributed. This is not machine-wide peak model memory.',
     limitations: [
-      'State checks verify shape, exact quotations, required fixture-source coverage and pending/completed outcome. They do not establish semantic truth.',
+      'Success means automated protocol, quotation, required-source, uncertainty-label and pending/completed state checks passed. It does not establish semantic truth or interpretation entailment.',
       'Three synthetic cases and small repeated trials do not establish statistical significance or general model accuracy.',
       'Replay is a scripted harness regression, not live inference. Every trial writes only isolated temporary stores that are removed after completion.',
       'Generator unloads between cases; no separate cross-task warm benchmark is claimed.',
-      'Latency includes fixture-store setup and agent execution, and excludes cleanup. Selector fallbacks count context deliveries using fallback, not distinct native attempts.',
+      'Latency includes fixture-store setup and Agent.run, including end-of-run model release. It excludes subsequent temporary-store removal and final SDK shutdown. Selector fallbacks count context deliveries using fallback, not distinct native attempts.',
     ],
     results,
   });

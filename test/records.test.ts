@@ -78,7 +78,15 @@ test('rejects missing, null, malformed and unknown record fields', () => {
   }
 });
 test('brief requires facts, citation shape and distinct references', () => {
+  assert.doesNotThrow(() =>
+    parseRecord({
+      ...brief,
+      factPolicy: 'quoted-observations-v1',
+      facts: [{ text: source.quote, sources: [source] }],
+    }),
+  );
   for (const input of [
+    { ...brief, factPolicy: 'quoted-observations-v1' },
     { ...brief, facts: [] },
     { ...brief, facts: [{ text: 'Claim', sources: [] }] },
     { ...brief, facts: [{ text: 'Claim', sources: [source, source] }] },

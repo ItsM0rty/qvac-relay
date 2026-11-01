@@ -66,21 +66,31 @@ export const requestSchema = z.strictObject({
   question: z.string().trim().min(1).max(2000),
   needId: idSchema.optional(),
 });
-export const briefSchema = z.strictObject({
-  ...base,
-  kind: z.literal('brief'),
-  facts: z
-    .array(factSchema)
-    .min(1)
-    .max(32)
-    .refine(
-      (facts) => unique(facts.map((fact) => JSON.stringify(fact))),
-      'Exact duplicate facts are not allowed',
-    ),
-  uncertainty: notes,
-  missing: notes,
-  basedOn: z.string().regex(/^[a-f0-9]{64}$/),
-});
+export const briefSchema = z
+  .strictObject({
+    ...base,
+    kind: z.literal('brief'),
+    factPolicy: z.literal('quoted-observations-v1').optional(),
+    facts: z
+      .array(factSchema)
+      .min(1)
+      .max(32)
+      .refine(
+        (facts) => unique(facts.map((fact) => JSON.stringify(fact))),
+        'Exact duplicate facts are not allowed',
+      ),
+    uncertainty: notes,
+    missing: notes,
+    basedOn: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .refine(
+    (record) =>
+      record.factPolicy === undefined ||
+      record.facts.every(
+        (fact) => fact.sources.length === 1 && fact.text === fact.sources[0]?.quote,
+      ),
+    'Quoted observations must equal their single source quotation',
+  );
 export const checkpointSchema = z.strictObject({
   ...base,
   kind: z.literal('checkpoint'),
