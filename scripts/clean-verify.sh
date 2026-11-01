@@ -3,8 +3,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 project_dir="$PWD"
 verify_mode="${1:-}"
-if [ -n "$verify_mode" ] && [ "$verify_mode" != --live ]; then
-  printf 'Usage: bash scripts/clean-verify.sh [--live]\n' >&2
+if [ -n "$verify_mode" ] && [ "$verify_mode" != --live ] && [ "$verify_mode" != --handoff ]; then
+  printf 'Usage: bash scripts/clean-verify.sh [--live|--handoff]\n' >&2
   exit 1
 fi
 if [ -d "$project_dir/.tools/node-v22.21.1-linux-x64/bin" ]; then
@@ -49,7 +49,7 @@ await writeFile(join(directory, 'clean-install.json'), JSON.stringify({
 }, null, 2) + '\n');
 JS
 printf 'Clean source installation, build and tests passed for commit %s\n' "$source_commit"
-if [ "$verify_mode" = --live ]; then
+if [ "$verify_mode" = --live ] || [ "$verify_mode" = --handoff ]; then
   # Reuse only cached model downloads, never node_modules or peer stores.
   if [ -d "$project_dir/.qvac/models" ] && [ ! -e .qvac/models ]; then
     mkdir -p .qvac
@@ -57,13 +57,15 @@ if [ "$verify_mode" = --live ]; then
   fi
   export RELAY_MODEL=1.7b
   export RELAY_SELECTOR=deterministic
-  npm run evaluate -- --mode replay --trials 3 --output "$project_dir/artifacts/replay.json"
-  npm run evaluate -- --mode live --selector deterministic --trials 2 --output "$project_dir/artifacts/live-deterministic.json"
-  npm run evaluate -- --mode live --selector laya --trials 2 --output "$project_dir/artifacts/live-laya.json"
-  npm run evaluate -- --compare "$project_dir/artifacts/live-deterministic.json" "$project_dir/artifacts/live-laya.json" --output "$project_dir/artifacts/live-comparison.json"
-  npm run smoke
-  cp -- artifacts/live-smoke.json "$project_dir/artifacts/live-smoke-1.7b.json"
-  node --import tsx scripts/cancel-smoke.ts
-  cp -- artifacts/live-cancellation.json "$project_dir/artifacts/live-cancellation-1.7b.json"
+  if [ "$verify_mode" = --live ]; then
+    npm run evaluate -- --mode replay --trials 3 --output "$project_dir/artifacts/replay.json"
+    npm run evaluate -- --mode live --selector deterministic --trials 2 --output "$project_dir/artifacts/live-deterministic.json"
+    npm run evaluate -- --mode live --selector laya --trials 2 --output "$project_dir/artifacts/live-laya.json"
+    npm run evaluate -- --compare "$project_dir/artifacts/live-deterministic.json" "$project_dir/artifacts/live-laya.json" --output "$project_dir/artifacts/live-comparison.json"
+    npm run smoke
+    cp -- artifacts/live-smoke.json "$project_dir/artifacts/live-smoke-1.7b.json"
+    node --import tsx scripts/cancel-smoke.ts
+    cp -- artifacts/live-cancellation.json "$project_dir/artifacts/live-cancellation-1.7b.json"
+  fi
   npm run demo -- "$project_dir/.relay/clean-demo-$source_commit-$(date +%s)"
 fi

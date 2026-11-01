@@ -436,18 +436,18 @@ export class Agent {
           calls: reply.calls.map((c) => ({ id: c.id, name: c.name })),
           toolErrorCount: reply.toolErrors.length,
         });
-        if (reply.stopReason === 'length' && reply.calls.length === 0)
-          throw new RelayError(
-            'OUTPUT_LIMIT',
-            'Model exhausted output budget without an action.',
-            'model',
-          );
         if (reply.calls.length === 0) {
           const error = new RelayError(
-            reply.toolErrors.length ? 'MALFORMED_CALL' : 'NO_ACTION',
-            reply.toolErrors.length
-              ? 'Native tool output was malformed. Emit a valid declared tool.'
-              : 'No brief saved. Use a tool to investigate or save_brief.',
+            reply.stopReason === 'length'
+              ? 'OUTPUT_LIMIT'
+              : reply.toolErrors.length
+                ? 'MALFORMED_CALL'
+                : 'NO_ACTION',
+            reply.stopReason === 'length'
+              ? 'The response reached its output limit without a complete action. Emit one short declared tool call. Use concise questions and exact source quotes; do not write prose instead of a tool call.'
+              : reply.toolErrors.length
+                ? 'Native tool output was malformed. Emit a valid declared tool.'
+                : 'No brief saved. Use a tool to investigate or save_brief.',
           );
           const signature = failureSignature(error);
           if (
@@ -512,7 +512,10 @@ export class Agent {
               );
             if (call.name === 'find_evidence') {
               const found = searchEvidence(current.records, String(args.query));
-              for (const record of found) knownIds.add(record.id);
+              for (const record of found) {
+                knownIds.delete(record.id);
+                knownIds.add(record.id);
+              }
               result = found.map((r) => ({
                 id: r.id,
                 revision: revision(r),

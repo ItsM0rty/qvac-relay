@@ -24,6 +24,7 @@ class ScriptedModel implements Model {
   name = 'scripted-fixture-not-live';
   histories: Message[][] = [];
   offerings: string[][] = [];
+  readableIds: string[][] = [];
   constructor(private readonly steps: Step[]) {}
   async complete(history: Message[], tools: ToolSpec[], signal: AbortSignal): Promise<ModelReply> {
     validateHistory(history);
@@ -40,6 +41,11 @@ class ScriptedModel implements Model {
     );
     this.histories.push(structuredClone(history));
     this.offerings.push(tools.map((tool) => tool.name));
+    const readSchema = tools.find((tool) => tool.name === 'read_record')?.parameters as
+      { properties?: { id?: { enum?: unknown[] } } } | undefined;
+    this.readableIds.push(
+      (readSchema?.properties?.id?.enum ?? []).filter((id): id is string => typeof id === 'string'),
+    );
     const turn = this.histories.length;
     const step = this.steps[turn - 1];
     assert.ok(step, `Unexpected model turn ${turn}`);
@@ -200,6 +206,79 @@ test('a different valid sequence can directly read the indexed evidence and save
     const checkpoint = await new Agent(f.store, model).run('incident');
     assert.equal(checkpoint.status, 'completed', checkpoint.reason ?? '');
     assert.equal((await state(f)).briefs.length, 1);
+  } finally {
+    await f.close();
+  }
+});
+
+test('re-finding an evicted known ID refreshes its read permission', async () => {
+  const f = await fixture();
+  try {
+    for (let index = 0; index < 11; index++)
+      await f.store.put({
+        ...f.source,
+        id: `q-old-${String(index).padStart(2, '0')}`,
+        title: `Older evidence ${index}`,
+        text: `Older evidence text ${index}.`,
+      });
+    const newRecords: EvidenceRecord[] = Array.from({ length: 13 }, (_, index) => ({
+      ...f.source,
+      id: `z-new-${String(index).padStart(2, '0')}`,
+      title: `New evidence ${index}`,
+      text: `New evidence text ${index}.`,
+    }));
+    for (const record of newRecords) await f.store.put(record);
+
+    const snapshot = await f.store.snapshot('incident');
+    const initiallyKnown = snapshot.records
+      .filter((record): record is EvidenceRecord => record.kind === 'evidence')
+      .slice(0, 12)
+      .map((record) => record.id);
+    assert.equal(initiallyKnown.length, 12);
+    const evictedId = initiallyKnown[0]!;
+    const evictedRecord = snapshot.records.find(
+      (record): record is EvidenceRecord => record.kind === 'evidence' && record.id === evictedId,
+    )!;
+    const thirteenthNewId = newRecords.at(-1)!.id;
+
+    const model = new ScriptedModel([
+      (_history, _signal, turn) => action('find_evidence', { query: 'New evidence' }, turn),
+      (_history, _signal, turn) => action('find_evidence', { query: thirteenthNewId }, turn),
+      (_history, _signal, turn) => {
+        assert.equal(model.readableIds[0]!.length, 12);
+        assert.ok(model.readableIds[0]!.includes(evictedId));
+        assert.equal(model.readableIds[2]!.length, 24);
+        assert.equal(model.readableIds[2]!.includes(evictedId), false);
+        return action('find_evidence', { query: evictedId }, turn);
+      },
+      (history, _signal, turn) => {
+        const found = toolResult<Array<{ id: string }>>(history, 'find_evidence');
+        assert.deepEqual(
+          found.map((record) => record.id),
+          [evictedId],
+        );
+        assert.ok(model.readableIds[3]!.includes(evictedId));
+        assert.equal(model.readableIds[3]!.includes(initiallyKnown[1]!), false);
+        return action('read_record', { id: evictedId }, turn);
+      },
+      (history, _signal, turn) => {
+        const read = toolResult<{ id: string; revision: string; text: string }>(
+          history,
+          'read_record',
+        );
+        assert.equal(read.id, evictedId);
+        assert.equal(read.text, evictedRecord.text);
+        return action('save_brief', briefFromRead(history), turn);
+      },
+    ]);
+
+    const checkpoint = await new Agent(f.store, model).run('incident');
+    assert.equal(checkpoint.status, 'completed', checkpoint.reason ?? '');
+    assert.equal(checkpoint.calls, 5);
+    assert.equal(checkpoint.repairs, 0);
+    const saved = await state(f);
+    assert.equal(saved.briefs.length, 1);
+    assert.equal(saved.briefs[0]!.facts[0]!.sources[0]!.id, evictedId);
   } finally {
     await f.close();
   }
