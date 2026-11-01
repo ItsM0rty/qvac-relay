@@ -4,6 +4,8 @@
 
 Relay is a local engineering handoff agent. Each peer owns its writable tree. Contributions live in their author's tree and reference requests. The generator uses @qvac/sdk with native tools. Laya is optional. Keep the repository private as da-goat37/prac-sdk. Source reference projects remain unchanged. Suyash writes the personal design section without assistance.
 
+The user later revoked the request to invite reviewers. The repository must remain owner-only unless he explicitly asks to add someone. After the interrupted invitation attempt, GitHub reported no pending invitations and only da-goat37 as a collaborator. Privacy remains verified as PRIVATE.
+
 ## Structured information needs
 
 Cases can declare up to eight required information needs as stable IDs paired with canonical questions. The CLI accepts these at creation through `--needs '<JSON array>'`. This gives the trusted harness a deterministic semantic checklist for information that must be requested and received. A request uses `needId`; runtime attaches the declared question and stable ID, and rejects undeclared needs. The save path rejects an unanswered declared need even if the model reports no missing items. Requests remain pending until the linked response has been read and cited. Free-text task wording remains useful guidance, but cannot reliably encode a structured, deterministically checked requirement for a missing answer.

@@ -1,6 +1,6 @@
 # Relay project notes
 
-Relay is an engineering handoff agent using local QVAC inference and independently owned Hyperbee2 trees. The private GitHub repository name is prac-sdk, with intended owner da-goat37. Do not publish publicly.
+Relay is an engineering handoff agent using local QVAC inference and independently owned Hyperbee2 trees. The repository is https://github.com/da-goat37/prac-sdk and its privacy is verified. Do not publish publicly. The user explicitly revoked the earlier collaborator invitation request. Do not invite reviewers or add any other account without a new explicit instruction.
 
 ## Conventions
 

@@ -30,5 +30,5 @@ A clean npm install was observed around 2.8 GiB RSS. Running it concurrently wit
 
 1. Complete repeated live deterministic and Laya runs on the same task set. Compare compatible reports and retain failures and fallback details.
 2. Finish final live checks and documentation review.
-3. Publish private da-goat37/prac-sdk and verify privacy and invitations for Drache93, mialso and NamelsKing. GitHub CLI is authenticated as da-goat37. Publication is not yet recorded here.
+3. Push final verification reports to the existing private https://github.com/da-goat37/prac-sdk. Source is published on code-fix/relay-handoff. The user revoked reviewer invitations. GitHub confirms no pending invitations and only da-goat37 with access. Do not invite anyone.
 4. Insert the required personally written design section verbatim when Suyash supplies it. He explicitly deferred this section until later. No AI prose should replace it.
