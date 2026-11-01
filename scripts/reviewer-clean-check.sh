@@ -8,7 +8,7 @@ fi
 source_commit="$(git -c safe.directory="$project_dir" rev-parse HEAD)"
 source_short="${source_commit:0:8}"
 report_dir="$project_dir/artifacts/reviewer-check-$source_short-$(date +%s)"
-mkdir -p "$report_dir"
+mkdir -p "$report_dir" "$project_dir/artifacts/local"
 printf '%s\n' "$report_dir" > "$project_dir/artifacts/local/latest-reviewer-check.txt"
 verify_dir="$(mktemp -d /tmp/relay-review.XXXXXX)"
 case "$verify_dir" in /tmp/relay-review.*) ;; *) exit 1;; esac
