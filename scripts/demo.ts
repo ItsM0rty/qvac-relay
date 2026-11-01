@@ -4,6 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { latestCheckpoint } from '../src/agent.js';
 import type { RelayRecord } from '../src/records.js';
+import { controlPost } from '../src/control-client.js';
 
 // Live-only demonstration. Each child opens only its own persistent directory.
 // The coordinator reads control metadata, never peer data or core files.
@@ -78,15 +79,7 @@ async function stop(peer: Peer): Promise<void> {
   clearTimeout(timer);
 }
 async function call(peer: Peer, command: string, args: Record<string, unknown> = {}): Promise<any> {
-  const response = await fetch(`http://127.0.0.1:${peer.control.port}/command`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${peer.control.token}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ command, ...args }),
-    signal: AbortSignal.timeout(720_000),
-  });
-  const value = await response.json();
-  if (!response.ok) throw new Error(JSON.stringify(value));
-  return value;
+  return controlPost(peer.control, { command, ...args });
 }
 const caseId = 'rollback-investigation';
 const longEvidence = process.env.RELAY_DEMO_LONG === '1';

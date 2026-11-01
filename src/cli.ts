@@ -9,6 +9,7 @@ import { Agent, latestCheckpoint } from './agent.js';
 import { QvacModel } from './qvac.js';
 import { createSelector } from './selectors.js';
 import { Resumer } from './resume.js';
+import { controlPost } from './control-client.js';
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -69,15 +70,8 @@ async function main(): Promise<void> {
       if (content.length > 16000) throw new Error('Evidence file exceeds 16000 bytes');
       text = content.toString('utf8');
     }
-    const response = await fetch(`http://127.0.0.1:${control.port}/command`, {
-      method: 'POST',
-      headers: { authorization: `Bearer ${control.token}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ command, ...values, text }),
-      signal: AbortSignal.timeout(720_000),
-    });
-    const result: unknown = await response.json();
+    const result = await controlPost(control, { command, ...values, text });
     output(result);
-    if (!response.ok) process.exitCode = 1;
     return;
   }
   const mode = process.env.RELAY_SELECTOR ?? 'deterministic';
