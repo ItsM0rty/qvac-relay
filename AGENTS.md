@@ -34,10 +34,10 @@ Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents 
 ## Verified commands
 
 - npm run build
-- npm test (101 current-source tests passed; earlier clean installation passed 70)
+- npm test (102 tests passed from clean source at commit 27edb4a)
 - npm run smoke (native 0.6B tool result round trip, exact format false)
 - node --import tsx scripts/cancel-smoke.ts (native cancellation)
 - npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json
 - npm run demo (one complete native 1.7B handoff with offline contribution and restart deduplication)
 
-Current-source final tests, clean installation and live Laya ablation are being verified. The earlier clean-install result predates later harness changes. Full handoff evidence and current ablation status are in docs/STATE.md and retained artifacts. Do not infer it from the existence of a script. Keep docs/TESTING.md current after meaningful verification.
+The clean source check passed. Live Laya ablation and final native checks are being verified. Full handoff evidence and current ablation status are in docs/STATE.md and retained artifacts. Do not infer it from the existence of a script. Keep docs/TESTING.md current after meaningful verification.

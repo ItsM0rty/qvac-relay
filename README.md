@@ -75,11 +75,13 @@ npm run relay -- scan --dir .relay/a
 
 `cancel` requests cancellation of the active decode and waits for native settlement through the running operation. Ctrl+C cleans up the peer. To add a UTF-8 evidence file, use `--file path` instead of `--text`. A stable `--id` makes equal evidence retries safe; conflicting content under the same ID is rejected.
 
+CPU work can take several minutes. The `work` command waits for its checkpoint; use another terminal for `status` or `cancel`. CLI runs allow at most 20 model calls, two corrective attempts and ten minutes per run. Automatic resumption carries call and repair counts from prior work. These are cooperative execution limits, and cancellation waits for native settlement.
+
 The retained [live demonstration](artifacts/live-demo.json) passed with Qwen3 1.7B Q4 in 358177 ms, using five cumulative calls and zero repairs. It includes offline contribution, automatic resumption and restart deduplication. This is one successful demonstration, not a measured success rate.
 
 `npm run demo` runs the complete live-only handoff in two child processes, retains separate stores under `.relay/demo-*`, and writes a report. It fails visibly if the local model cannot create pending work or use the contribution. It never substitutes scripted output.
 
-Cases may declare up to eight structured information needs at creation with `--needs '<JSON array>'`. Each item has a stable `id` and canonical `question`. When the model requests one, it supplies its `needId`; Relay attaches the declared question and stable ID to the request. Requests for undeclared needs are rejected, including when the model claims there are no missing items. The case remains pending until a linked response has been read and cited in the saved brief. Free-text tasks do not provide deterministic semantic coverage checks for required missing information. Declare required gaps with `--needs` when that coverage matters, as the checkout example does for deployment configuration.
+Cases may declare up to eight structured information needs at creation with `--needs '<JSON array>'`. Each item has a stable `id` and canonical `question`. When the model requests one, it supplies its `needId`; Relay attaches the declared question and stable ID to the request. Undeclared need IDs are rejected. A required need without a matching request prevents acceptance even when the model submits an empty missing list. A brief with unanswered requests is pending. Contributed answers must be read and cited before completion. Context and tool results distinguish unrequested, awaiting-response and answered questions. Free-text tasks do not provide deterministic semantic coverage checks for required missing information. Declare required gaps with `--needs` when that coverage matters, as the checkout example does for deployment configuration.
 
 ## Model and selector controls
 

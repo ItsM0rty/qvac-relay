@@ -12,9 +12,9 @@ Qwen3 1.7B Q4 is now the default because it completed this task on the measured 
 
 ## Verification boundaries
 
-A clean archive of commit 461bf93 passed fresh npm installation, worker bundling, strict compilation and 70 tests. See artifacts/clean-install.json. That check predates later harness changes. The current source passes strict compilation and all 101 controlled tests, including real separate-process replication. Final clean-install verification is pending.
+A clean archive of commit 27edb4a passed fresh npm installation, worker bundling, strict compilation and all 102 tests, including real separate-process replication. See artifacts/clean-install.json. npm reported zero audit findings. Earlier clean evidence for commit 461bf93 remains in artifacts/clean-install-461bf93.json.
 
-The replay report contains three trials over three synthetic engineering tasks. Replay exercises the real harness and temporary stores with scripted model responses. It is not native inference or model-quality evidence. Structured information needs now prevent an empty missing list from bypassing an explicit case requirement. The earlier native deterministic report passed four of six trials and failed both missing-configuration trials. It is retained as artifacts/live-deterministic-before-information-needs.json. A new compatible live pair is running after the correction. Optional Laya has controlled tests. No live selector comparison is claimed yet.
+The replay report passes three trials over three synthetic engineering tasks. Replay exercises the real harness and temporary stores with scripted model responses. It is not native inference or model-quality evidence. Structured information needs now prevent an empty missing list from bypassing an explicit case requirement. The earlier native deterministic report passed four of six trials and failed both missing-configuration trials. It is retained as artifacts/live-deterministic-before-information-needs.json. The corrected run passed six of six, including pending missing-information outcomes, and is retained as artifacts/live-deterministic-with-information-needs.json. A final compatible selector pair is running from the clean Linux checkout with clearer request-state feedback. Optional Laya has controlled tests. No live selector comparison is claimed yet.
 
 Native probe and targeted decode cancellation passed. See artifacts/live-smoke.json and artifacts/live-cancellation.json. The probe separately records functional tool-result consumption and the smaller model's failure to follow exact output formatting. A native probe pass alone is not the full-handoff evidence.
 
@@ -29,6 +29,6 @@ A clean npm install was observed around 2.8 GiB RSS. Running it concurrently wit
 ## Exact remaining work
 
 1. Complete repeated live deterministic and Laya runs on the same task set. Compare compatible reports and retain failures and fallback details.
-2. Finish clean setup verification and final documentation review.
+2. Finish final live checks and documentation review.
 3. Publish private da-goat37/prac-sdk and verify privacy and invitations for Drache93, mialso and NamelsKing. GitHub CLI is authenticated as da-goat37. Publication is not yet recorded here.
-4. Insert the required personally written design section verbatim when Suyash supplies it. He has been asked for it; no AI prose should replace it.
+4. Insert the required personally written design section verbatim when Suyash supplies it. He explicitly deferred this section until later. No AI prose should replace it.
