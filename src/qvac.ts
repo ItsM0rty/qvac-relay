@@ -48,12 +48,12 @@ export class QvacModel implements Model {
   private closing?: Promise<void>;
   private closed = false;
 
-  constructor(candidate = process.env.RELAY_MODEL ?? '0.6b') {
+  constructor(candidate = process.env.RELAY_MODEL ?? '0.6b',private readonly toolChoice:'auto'|'required'='required') {
     if (candidate !== '0.6b' && candidate !== '1.7b') {
       throw new Error('RELAY_MODEL must be 0.6b or 1.7b');
     }
     this.candidate = candidate;
-    this.name = `qvac-0.22.0/qwen3-${candidate}-q4/cpu`;
+    this.name = `qvac-0.22.0/qwen3-${candidate}-q4/cpu/tools-${toolChoice}`;
   }
 
   complete(history: Message[], tools: ToolSpec[], signal: AbortSignal): Promise<ModelReply> {
@@ -69,19 +69,20 @@ export class QvacModel implements Model {
 
   private async cancellable<T>(operation: Promise<T>, requestId: string, signal: AbortSignal): Promise<T> {
     let requested = false;
+    let cancellation:Promise<void>|undefined;
     const abort = () => {
       if (requested) return;
       requested = true;
       this.measurements.cancellations++;
       // Keep awaiting native settlement; a Promise.race would abandon native work.
-      void cancel({ requestId }).catch((error: unknown) => {
+      cancellation=cancel({ requestId }).catch((error: unknown) => {
         this.measurements.cancellationErrors.push(error instanceof Error ? error.message : String(error));
       });
     };
     signal.addEventListener('abort', abort, { once: true });
     if (signal.aborted) abort();
     try { return await operation; }
-    finally { signal.removeEventListener('abort', abort); }
+    finally { signal.removeEventListener('abort', abort); await cancellation; }
   }
 
   private async generate(history: Message[], tools: ToolSpec[], signal: AbortSignal): Promise<ModelReply> {
@@ -112,10 +113,12 @@ export class QvacModel implements Model {
     const run = completion({
       modelId: this.modelId, history: messages, tools: definitions,
       stream: true, captureThinking: true,
-      generationParams: { temp: 0, predict: 768, parallel_tool_calls: false, tool_choice: 'auto' },
+      generationParams: { temp: 0, predict: 768, parallel_tool_calls: false, tool_choice: this.toolChoice },
     });
     this.measurements.calls++;
-    const final = await this.cancellable(run.final, run.requestId, signal);
+    let stopReason='unknown';
+    const events=(async()=>{for await(const event of run.events)if(event.type==='completionDone')stopReason=event.stopReason??'unknown';})();
+    const final = await this.cancellable(Promise.all([run.final,events]).then(([result])=>result), run.requestId, signal);
     const generationMs = performance.now() - started;
     this.measurements.generationMs += generationMs;
     signal.throwIfAborted();
@@ -123,7 +126,7 @@ export class QvacModel implements Model {
       content: final.contentText,
       calls: final.toolCalls.map(({ id, name, arguments: args }) => ({ id, name, arguments: args })),
       toolErrors: final.toolErrors ?? [],
-      stopReason: final.stopReason ?? 'unknown',
+      stopReason,
       stats: { ...final.stats, loadMs: turnLoadMs, generationMs },
     };
   }

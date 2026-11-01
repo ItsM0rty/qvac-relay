@@ -362,3 +362,40 @@ test('required-context overflow fails before invoking the model', async () => {
     assert.equal(model.histories.length, 0);
   } finally { await f.close(); }
 });
+
+test('unchanged repeated actions receive bounded no-progress feedback',async()=>{
+  const f=await fixture();
+  try{
+    const model=new ScriptedModel(Array.from({length:4},(_,index)=>(history:Message[],_signal:AbortSignal,turn:number)=>{
+      if(index===3)assert.equal(toolResult<{code:string}>(history,'find_evidence').code,'NO_PROGRESS');
+      return action('find_evidence',{query:''},turn);
+    }));
+    const checkpoint=await new Agent(f.store,model).run('incident');
+    assert.equal(checkpoint.status,'failed');assert.equal(checkpoint.calls,4);assert.equal(checkpoint.repairs,1);
+    assert.match(checkpoint.reason!,/already returned a result twice/);
+    assert.equal((await state(f)).briefs.length,0);
+  }finally{await f.close();}
+});
+
+test('invalid library options do not leave the peer busy or create unsafe trace paths',async()=>{
+  const f=await fixture();
+  try{
+    const agent=new Agent(f.store,new ScriptedModel([]));
+    for(const timeoutMs of [-1,0,NaN,Infinity]){await assert.rejects(agent.run('incident',{timeoutMs}));assert.equal(agent.isActive,false);}
+    await assert.rejects(agent.run('incident',{runId:'../outside'}));assert.equal(agent.isActive,false);
+    const checkpoint=await agent.run('incident',{maxCalls:0});assert.equal(checkpoint.status,'failed');
+  }finally{await f.close();}
+});
+
+test('failed selector is attempted once per unchanged candidate set and fallback remains visible',async()=>{
+  const f=await fixture();let selections=0;
+  try{
+    const model=new ScriptedModel([
+      (_history,_signal,turn)=>action('read_record',{id:f.source.id},turn),
+      (history,_signal,turn)=>action('save_brief',briefFromRead(history),turn),
+    ]);
+    const checkpoint=await new Agent(f.store,model).run('incident',{selector:{select:async()=>{selections++;throw new Error('selector unavailable');}}});
+    assert.equal(checkpoint.status,'completed');assert.equal(selections,1);
+    assert.equal((await state(f)).events.filter(event=>event.event==='context'&&event.fallback).length,2);
+  }finally{await f.close();}
+});

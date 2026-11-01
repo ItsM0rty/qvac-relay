@@ -7,6 +7,8 @@ test('classification distinguishes model, tool, validation, overflow, infrastruc
   assert.equal(classify(new DOMException('Cancelled','AbortError')),'cancelled');
   const cancelled = new Error('Native cancellation'); cancelled.name='InferenceCancelledError';
   assert.equal(classify(cancelled),'cancelled');
+  cancelled.name='INFERENCE_CANCELLED';assert.equal(classify(cancelled),'cancelled');
+  const overflow=new Error('Native context full');overflow.name='CONTEXT_OVERFLOW';assert.equal(classify(overflow),'overflow');
   for(const error of [null,undefined,'failure',new Error('Disk failure')]) assert.equal(classify(error),'infrastructure');
 });
 test('cancel check prevents work only after signal is aborted', () => {

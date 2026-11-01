@@ -11,7 +11,9 @@
     "test": "tsx --test --test-concurrency=1 test/*.test.ts",
     "relay": "tsx src/cli.ts",
     "smoke": "tsx scripts/smoke.ts",
-    "bundle:qvac": "node scripts/bundle.mjs"
+    "bundle:qvac": "node scripts/bundle.mjs",
+    "demo": "tsx scripts/demo.ts",
+    "evaluate": "tsx scripts/evaluate.ts"
   },
   "dependencies": {
     "@qvac/sdk": "0.22.0",

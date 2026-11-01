@@ -1,0 +1,39 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 212331,
+  "error": "Live agent did not create pending handoff: {\"id\":\"8441bfea6d853ad617a29113bdea8de9fc220d6d4f8a8c454a2a64b697c21e20\",\"owner\":\"b3ebbe4cb4c89bfa2716ad2b5e9875485108f0a3c0a0c37336a82c744942776e\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T12:32:32.729Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"8e7c9243-a5e5-448a-8809-c607d27b4c8f\",\"status\":\"cancelled\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":6,\"repairs\":1,\"consumed\":[],\"requestIds\":[],\"reason\":\"cancelled: Inference cancelled.\"}\n+ actual - expected\n\n+ 'cancelled'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "b3ebbe4cb4c89bfa2716ad2b5e9875485108f0a3c0a0c37336a82c744942776e",
+      "p2pPort": 41167
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "0dce1680e6e0b243294fcfd80d352de50f9ae06dbdd8e233ebcff80496ad0d85",
+      "p2pPort": 33403
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "8441bfea6d853ad617a29113bdea8de9fc220d6d4f8a8c454a2a64b697c21e20",
+        "owner": "b3ebbe4cb4c89bfa2716ad2b5e9875485108f0a3c0a0c37336a82c744942776e",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T12:32:32.729Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "8e7c9243-a5e5-448a-8809-c607d27b4c8f",
+        "status": "cancelled",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 6,
+        "repairs": 1,
+        "consumed": [],
+        "requestIds": [],
+        "reason": "cancelled: Inference cancelled."
+      }
+    }
+  ]
+}

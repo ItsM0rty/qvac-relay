@@ -72,9 +72,18 @@ export class Agent {
       requestIds=snapshot.records.filter(r=>r.kind==='request'&&r.owner===this.store.owner).map(r=>r.id);
       await checkpoint('running');
       await this.trace(runId,'start',{model:this.model.name,requiredIds:options.requiredIds??[],consumed,budgets:{calls:options.maxCalls??10,repairs:options.maxRepairs??2,context:options.contextBudget??7000}});
-      const read=new Map<string,{revision:string,text:string}>(); const usedCallIds=new Set<string>(); let history:Message[]=[]; let feedback:string|undefined;
+      const read=new Map<string,{revision:string,text:string}>(); const usedCallIds=new Set<string>(); const actions=new Map<string,number>(); let history:Message[]=[]; let feedback:string|undefined;
       const selector=options.selector??new DeterministicSelector(); let cachedKey=''; let cached:Awaited<ReturnType<Selector['select']>>|undefined;
-      const memo:Selector={select:async(t,c,s)=>{const key=stableId(t,JSON.stringify(c));if(key!==cachedKey){await this.model.release?.();cached=await selector.select(t,c,s);cachedKey=key;}return cached!;}};
+      const memo:Selector={select:async(t,c,s)=>{
+        const key=stableId(t,JSON.stringify(c));
+        if(key!==cachedKey){
+          await this.model.release?.();
+          try{cached=await selector.select(t,c,s);if(new Set(cached.ids).size!==cached.ids.length||cached.ids.some(id=>!c.some(v=>v.id===id)))throw new Error('Invalid selector IDs');}
+          catch(error){checkCancelled(s);cached={...await new DeterministicSelector().select(t,c),fallback:String(error)};}
+          cachedKey=key;
+        }
+        return cached!;
+      }};
       for(;calls<(options.maxCalls??10);) {
         checkCancelled(signal);
         snapshot=await this.store.snapshot(caseId);
@@ -83,7 +92,7 @@ export class Agent {
         calls++;await checkpoint('running');
         let reply;
         try {reply=await this.model.complete(context.history,TOOLS,signal);}
-        catch(error){if(classify(error)==='cancelled'||signal.aborted)throw new RelayError('CANCELLED','Inference cancelled.','cancelled');throw new RelayError('MODEL_FAILED',error instanceof Error?error.message:String(error),'model');}
+        catch(error){if(classify(error)==='cancelled'||signal.aborted)throw new RelayError('CANCELLED','Inference cancelled.','cancelled');if(classify(error)==='overflow')throw new RelayError('NATIVE_CONTEXT_OVERFLOW','Native context overflow despite the input estimate. Reduce evidence or context budget.','overflow');throw new RelayError('MODEL_FAILED',error instanceof Error?error.message:String(error),'model');}
         checkCancelled(signal);
         await this.trace(runId,'model',{stopReason:reply.stopReason,stats:reply.stats,calls:reply.calls.map(c=>({id:c.id,name:c.name})),toolErrorCount:reply.toolErrors.length});
         if(reply.stopReason==='length'&&reply.calls.length===0) throw new RelayError('OUTPUT_LIMIT','Model exhausted output budget without an action.','model');
@@ -107,6 +116,9 @@ export class Agent {
             const args=validateArguments(call.name,call.arguments);
             const current=await this.store.snapshot(caseId);
             checkCancelled(signal);
+            const actionKey=stableId(call.name,JSON.stringify(args),current.fingerprint);
+            const repetitions=actions.get(actionKey)??0;actions.set(actionKey,repetitions+1);
+            if(repetitions>=2)throw new RelayError('NO_PROGRESS','This action already returned a result twice against unchanged data. Use the existing result, read a relevant record, or request missing information.');
             if(call.name==='find_evidence') {
               const query=String(args.query).toLowerCase();
               result=current.records.filter(r=>r.kind==='evidence'&&`${r.title} ${r.text}`.toLowerCase().includes(query)).slice(0,12).map(r=>({id:r.id,revision:revision(r),title:r.kind==='evidence'?r.title:''}));
@@ -140,7 +152,7 @@ export class Agent {
               checkCancelled(signal);
               await this.store.put(record,{expectedFingerprint:current.fingerprint});briefId=record.id;saved=true;result={id:record.id,persisted:true};
             }
-            await this.trace(runId,'tool',{callId:call.id,name:call.name,ok:true,recordId:typeof result==='object'&&result!==null&&'id' in result?result.id:undefined});
+            await this.trace(runId,'tool',{callId:call.id,name:call.name,ok:true,recordId:typeof result==='object'&&result!==null&&'id' in result?result.id:undefined,...(Array.isArray(result)?{resultIds:result.map(r=>r.id),resultCount:result.length}:{}),...(call.name==='read_record'?{requestedId:args.id}:{})});
             lastFailure=undefined;feedback=undefined;
           }catch(error){
             const kind=classify(error);const signature=failureSignature(error);

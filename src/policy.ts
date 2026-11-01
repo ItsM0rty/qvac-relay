@@ -6,7 +6,8 @@ export class RelayError extends Error {
 }
 export function classify(error: unknown): FailureKind {
   if (error instanceof RelayError) return error.kind;
-  if (error instanceof Error && (error.name === 'AbortError' || error.name === 'InferenceCancelledError')) return 'cancelled';
+  if (error instanceof Error && ['AbortError','InferenceCancelledError','INFERENCE_CANCELLED'].includes(error.name)) return 'cancelled';
+  if (error instanceof Error && error.name === 'CONTEXT_OVERFLOW') return 'overflow';
   return 'infrastructure';
 }
 export function checkCancelled(signal: AbortSignal): void {
