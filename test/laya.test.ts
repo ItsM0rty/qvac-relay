@@ -3,6 +3,7 @@ import test from 'node:test';
 import { LayaSelector, type Cancellable, type LayaInput, type LayaRuntime } from '../src/laya.js';
 import { buildContext, type Candidate } from '../src/context.js';
 import { parseRecord, type EvidenceRecord } from '../src/records.js';
+import { RelayError } from '../src/policy.js';
 
 const signal = new AbortController().signal;
 const candidates: Candidate[] = Array.from({ length: 8 }, (_, i) => ({
@@ -229,4 +230,146 @@ test('native failures unload and concurrent selection is rejected', async () => 
   decision.reject(new Error('native failure'));
   await rejected;
   assert.equal(f.events.at(-1), 'unload');
+});
+
+test('failed unload quarantines the retained model and close retries the same resource', async () => {
+  const f = fixture();
+  const cause = new Error('Native selector unload failed');
+  let fails = true;
+  f.runtime.unload = async (id) => {
+    assert.equal(id, 'model-1');
+    f.events.push('unload');
+    if (fails) throw cause;
+  };
+  const isCleanupFailure = (error: unknown) =>
+    error instanceof RelayError &&
+    error.code === 'MODEL_RELEASE_FAILED' &&
+    error.kind === 'infrastructure' &&
+    error.cause === cause;
+  await assert.rejects(f.selector.select('Deployment', candidates, signal), isCleanupFailure);
+  await assert.rejects(f.selector.select('Deployment', candidates, signal), isCleanupFailure);
+  assert.deepEqual(f.events, ['load', 'decide', 'unload']);
+  await assert.rejects(f.selector.close(), isCleanupFailure);
+  assert.deepEqual(f.events, ['load', 'decide', 'unload', 'unload']);
+  fails = false;
+  await f.selector.close();
+  assert.deepEqual(f.events, ['load', 'decide', 'unload', 'unload', 'unload']);
+  await assert.rejects(f.selector.select('Deployment', candidates, signal), /LAYA_CLOSED/);
+});
+
+test('failed load cancellation still releases an acquired model before fallback', async () => {
+  const f = fixture();
+  const loading = deferred<string>('load-pending');
+  const controller = new AbortController();
+  const cancelCause = new Error('Native cancellation acknowledgement failed');
+  const unloadCause = new Error('Native unload failed after cancellation');
+  let unloadFails = true;
+  f.runtime.load = () => {
+    f.events.push('load');
+    return loading.promise;
+  };
+  f.runtime.cancel = async (id) => {
+    f.events.push(`cancel:${id}`);
+    throw cancelCause;
+  };
+  f.runtime.unload = async (id) => {
+    assert.equal(id, 'model-1');
+    f.events.push('unload');
+    if (unloadFails) throw unloadCause;
+  };
+
+  const selecting = f.selector.select('Deployment', candidates, controller.signal);
+  const rejected = assert.rejects(
+    selecting,
+    (error: unknown) =>
+      error instanceof RelayError &&
+      error.code === 'MODEL_RELEASE_FAILED' &&
+      error.kind === 'infrastructure' &&
+      error.cause === unloadCause,
+  );
+  await new Promise<void>((resolve) => setImmediate(resolve));
+  controller.abort(new DOMException('Cancelled', 'AbortError'));
+  loading.resolve('model-1');
+  await rejected;
+  assert.deepEqual(f.events, ['load', 'cancel:load-pending', 'unload']);
+  await assert.rejects(
+    f.selector.select('Deployment', candidates, signal),
+    (error: unknown) => error instanceof RelayError && error.code === 'MODEL_RELEASE_FAILED',
+  );
+
+  unloadFails = false;
+  await f.selector.close();
+  assert.deepEqual(f.events, ['load', 'cancel:load-pending', 'unload', 'unload']);
+});
+
+test('selector cleanup failure propagates through buildContext instead of allowing generator fallback', async () => {
+  const f = fixture(result(['c0']));
+  f.runtime.unload = async () => {
+    f.events.push('unload');
+    throw new Error('Uncertain native residency');
+  };
+  const record = parseRecord({
+    schemaVersion: 1,
+    kind: 'evidence',
+    id: 'e0',
+    owner: 'a'.repeat(64),
+    caseId: 'case-1',
+    createdAt: '2026-10-31T00:00:00Z',
+    title: 'Deployment',
+    text: 'Deployment completed.',
+  });
+  const args = {
+    task: 'Deployment',
+    records: [record],
+    history: [],
+    tools: [],
+    selector: f.selector,
+    signal,
+  };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await assert.rejects(
+      buildContext(args),
+      (error: unknown) =>
+        error instanceof RelayError &&
+        error.code === 'MODEL_RELEASE_FAILED' &&
+        error.kind === 'infrastructure',
+    );
+  }
+  assert.deepEqual(f.events, ['load', 'decide', 'unload']);
+  await assert.rejects(
+    f.selector.close(),
+    (error: unknown) => error instanceof RelayError && error.code === 'MODEL_RELEASE_FAILED',
+  );
+  assert.deepEqual(f.events, ['load', 'decide', 'unload', 'unload']);
+});
+
+test('ordinary decision errors still fall back after successful native cleanup', async () => {
+  const f = fixture();
+  f.runtime.decide = () =>
+    Object.assign(Promise.reject(new Error('Native decision unavailable')), {
+      requestId: 'decision-failed',
+    });
+  const record = parseRecord({
+    schemaVersion: 1,
+    kind: 'evidence',
+    id: 'e0',
+    owner: 'a'.repeat(64),
+    caseId: 'case-1',
+    createdAt: '2026-10-31T00:00:00Z',
+    title: 'Deployment',
+    text: 'Deployment completed.',
+  });
+  const context = await buildContext({
+    task: 'Deployment',
+    records: [record],
+    history: [],
+    tools: [],
+    selector: f.selector,
+    signal,
+  });
+  assert.equal(context.selection.policy, 'deterministic');
+  assert.match(context.selection.fallback!, /Native decision unavailable/);
+  assert.deepEqual(context.selection.ids, ['e0']);
+  assert.deepEqual(f.events, ['load', 'unload']);
+  await f.selector.close();
 });

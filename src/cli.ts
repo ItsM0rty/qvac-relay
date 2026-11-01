@@ -22,6 +22,7 @@ const { values, positionals } = parseArgs({
     id: { type: 'string' },
     title: { type: 'string' },
     task: { type: 'string' },
+    needs: { type: 'string' },
     text: { type: 'string' },
     file: { type: 'string' },
     request: { type: 'string' },
@@ -35,7 +36,7 @@ const usage = `Relay: local inference and peer handoffs
   pair --dir <own-directory> --key <remote-owner-key>
   connect --dir <own-directory> --port <remote-port>
   disconnect --dir <own-directory>
-  create --dir <own-directory> --id <case-id> --title <title> --task <task>
+  create --dir <own-directory> --id <case-id> --title <title> --task <task> [--needs '<JSON array of {id,question}>']
   evidence --dir <own-directory> --case <case-id> --title <title> --text <text> [--request <request-id>] [--id <operation-id>]
   work|inspect --dir <own-directory> --case <case-id>
 Use --file instead of --text for a local UTF-8 evidence file.
@@ -73,7 +74,7 @@ async function main(): Promise<void> {
       method: 'POST',
       headers: { authorization: `Bearer ${control.token}`, 'content-type': 'application/json' },
       body: JSON.stringify({ command, ...values, text }),
-      signal: AbortSignal.timeout(360_000),
+      signal: AbortSignal.timeout(720_000),
     });
     const result: unknown = await response.json();
     output(result);
@@ -87,7 +88,7 @@ async function main(): Promise<void> {
   const store = await RelayStore.open(directory);
   const selector = mode === 'laya' ? new LayaSelector() : new DeterministicSelector();
   const agent = new Agent(store, model);
-  const resumer = new Resumer(store, agent, { selector, maxCalls: 20, timeoutMs: 300_000 });
+  const resumer = new Resumer(store, agent, { selector, maxCalls: 20, timeoutMs: 600_000 });
   let manual: Promise<unknown> | undefined;
   const token = randomBytes(24).toString('hex');
   const server = createServer(async (req, res) => {
@@ -122,6 +123,7 @@ async function main(): Promise<void> {
             active: agent.isActive,
             selector: mode,
             model: model.name,
+            cleanupError: agent.lastCleanupError ?? null,
             resumptionError: resumer.lastError ? String(resumer.lastError) : null,
             remotes: store.remoteStatus(),
             cases: records
@@ -163,6 +165,7 @@ async function main(): Promise<void> {
             createdAt: new Date().toISOString(),
             title: need(input.title, 'title'),
             task: need(input.task, 'task'),
+            ...(input.needs ? { informationNeeds: JSON.parse(input.needs) } : {}),
           });
           await store.put(record);
           result = record;
@@ -199,7 +202,7 @@ async function main(): Promise<void> {
           manual = agent.run(need(input.case, 'case'), {
             selector,
             maxCalls: 20,
-            timeoutMs: 300_000,
+            timeoutMs: 600_000,
           });
           try {
             result = await manual;
@@ -254,10 +257,22 @@ async function main(): Promise<void> {
     await resumer.close();
     await manual?.catch(() => undefined);
     await new Promise<void>((resolve) => server.close(() => resolve()));
-    if (selector instanceof LayaSelector) await selector.close();
-    await model.close();
-    await store.close();
-    await unlink(controlPath).catch(() => undefined);
+    const failures: unknown[] = [];
+    for (const cleanup of [
+      async () => {
+        if (selector instanceof LayaSelector) await selector.close();
+      },
+      () => model.close(),
+      () => store.close(),
+      () => unlink(controlPath).catch(() => undefined),
+    ]) {
+      try {
+        await cleanup();
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+    if (failures.length) throw new AggregateError(failures, 'Peer cleanup failed');
   }
 }
 main().catch((error) => {

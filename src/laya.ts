@@ -2,6 +2,7 @@ import { performance } from 'node:perf_hooks';
 import { z } from 'zod';
 import type { DecisionQuestion } from '@qvac/sdk';
 import { DeterministicSelector, type Candidate, type Selection, type Selector } from './context.js';
+import { RelayError } from './policy.js';
 
 export interface LayaInput {
   state: { task: string; candidates: { key: string; title: string; text: string }[] };
@@ -60,9 +61,12 @@ export class LayaSelector implements Selector {
   private readonly shutdown = new AbortController();
   private closed = false;
   private closing?: Promise<void>;
+  private resource?: { runtime: LayaRuntime; modelId: string };
+  private cleanupFailure?: RelayError;
   constructor(private readonly runtimeLoader: () => Promise<LayaRuntime> = nativeRuntime) {}
 
   select(task: string, candidates: Candidate[], signal: AbortSignal): Promise<Selection> {
+    if (this.cleanupFailure) return Promise.reject(this.cleanupFailure);
     if (this.closed) return Promise.reject(new Error('LAYA_CLOSED: selector is closed'));
     if (this.active) return Promise.reject(new Error('LAYA_BUSY: one selection at a time'));
     const operation = this.run(task, candidates, AbortSignal.any([signal, this.shutdown.signal]));
@@ -134,10 +138,18 @@ export class LayaSelector implements Selector {
     };
     const runtime = await this.runtimeLoader();
     signal.throwIfAborted();
-    let modelId: string | undefined;
     const started = performance.now();
     try {
-      modelId = await this.cancellable(runtime, runtime.load(), signal);
+      const loading = runtime.load();
+      const tracked = Object.assign(
+        loading.then((modelId) => {
+          // Remember the acquisition before awaiting cancellation acknowledgement.
+          this.resource = { runtime, modelId };
+          return modelId;
+        }),
+        { requestId: loading.requestId },
+      );
+      const modelId = await this.cancellable(runtime, tracked, signal);
       const loadMs = performance.now() - started;
       signal.throwIfAborted();
       const deciding = performance.now();
@@ -185,7 +197,25 @@ export class LayaSelector implements Selector {
       };
     } finally {
       // Await unload before the caller can load the larger generator model.
-      if (modelId) await runtime.unload(modelId);
+      await this.releaseResource();
+    }
+  }
+
+  private async releaseResource(): Promise<void> {
+    if (!this.resource) return;
+    const { runtime, modelId } = this.resource;
+    try {
+      await runtime.unload(modelId);
+      this.resource = undefined;
+      this.cleanupFailure = undefined;
+    } catch (cause) {
+      this.cleanupFailure = new RelayError(
+        'MODEL_RELEASE_FAILED',
+        'Laya model unload failed. Selection and generator fallback must stop until cleanup succeeds.',
+        'infrastructure',
+        { cause },
+      );
+      throw this.cleanupFailure;
     }
   }
 
@@ -193,9 +223,16 @@ export class LayaSelector implements Selector {
     if (this.closing) return this.closing;
     this.closed = true;
     this.shutdown.abort(new DOMException('Selector closed', 'AbortError'));
-    this.closing = (async () => {
+    const closing = (async () => {
       await this.active?.catch(() => undefined);
+      // A failed run retains its model identity so shutdown can retry native cleanup.
+      await this.releaseResource();
     })();
+    this.closing = closing;
+    // Allow a later close() call to retry if this cleanup attempt also fails.
+    void closing.catch(() => {
+      if (this.closing === closing) this.closing = undefined;
+    });
     // The generator owns global SDK shutdown; the selector unloads only its model.
     return this.closing;
   }

@@ -7,7 +7,16 @@ import { z } from 'zod';
 import { Agent, TOOLS } from './agent.js';
 import { SAMPLING } from './policy.js';
 import { DeterministicSelector, INSTRUCTIONS, validateHistory, type Selector } from './context.js';
-import { parseRecord, revision, stableId, type BriefRecord, type RelayRecord } from './records.js';
+import {
+  parseRecord,
+  revision,
+  stableId,
+  briefSchema,
+  requestSchema,
+  checkpointSchema,
+  type BriefRecord,
+  type RelayRecord,
+} from './records.js';
 import { RelayStore } from './store.js';
 import type { Message, Model, ModelReply, ToolSpec } from './qvac.js';
 
@@ -48,11 +57,11 @@ export type EvalCase = (typeof EVAL_CASES)[number];
 export const EVAL_SUITE_ID = 'relay-engineering-handoff-v1';
 export const EVAL_DATASET_HASH = stableId(JSON.stringify(EVAL_CASES));
 export const EVAL_HARNESS_HASH = stableId(
-  'native-permissions-v1',
+  'native-permissions-v4-information-needs',
   INSTRUCTIONS,
   JSON.stringify(TOOLS),
 );
-const LIMITS = { maxCalls: 12, maxRepairs: 2, contextBudget: 7000, timeoutMs: 240_000 };
+const LIMITS = { maxCalls: 12, maxRepairs: 2, contextBudget: 7000, timeoutMs: 600_000 };
 
 function result<T>(history: Message[], name: string): T {
   const message = history.findLast((item) => item.role === 'tool' && item.toolName === name);
@@ -103,7 +112,10 @@ export class ReplayModel implements Model {
         'Replay must consume the actual evidence text',
       );
       if (this.entry.question)
-        return action('request_information', { question: this.entry.question });
+        return action('request_information', {
+          needId: 'deployed-timeout',
+          question: this.entry.question,
+        });
     }
     if (this.entry.question) {
       const request = result<{ id: string; persisted: boolean }>(history, 'request_information');
@@ -178,7 +190,22 @@ const resultSchema = z.strictObject({
   incorrectRecordIds: z.array(z.string()),
   omittedRecordIds: z.array(z.string()),
   failure: z.string().nullable(),
+  storedOutcome: z
+    .strictObject({
+      briefs: z.array(briefSchema),
+      requests: z.array(requestSchema),
+      checkpoint: checkpointSchema,
+    })
+    .optional(),
   metrics: metricsSchema,
+  contextSelection: z
+    .strictObject({
+      policy: z.string(),
+      initialSelectedIds: z.array(z.string()),
+      irrelevantIds: z.array(z.string()),
+      omittedRelevantIds: z.array(z.string()),
+    })
+    .nullable(),
 });
 export const reportSchema = z.strictObject({
   schemaVersion: z.literal(1),
@@ -326,7 +353,29 @@ export function checkOutcome(
     requiredCoverage: omittedRecordIds.length === 0,
     noUnexpectedCitations: incorrectRecordIds.length === 0,
     missingInformation: entry.question
-      ? Boolean(brief?.missing.length && records.some((record) => record.kind === 'request'))
+      ? Boolean(
+          brief &&
+          records.some(
+            (record) =>
+              record.kind === 'request' &&
+              record.owner === brief.owner &&
+              record.caseId === brief.caseId &&
+              record.needId === 'deployed-timeout' &&
+              record.question === entry.question &&
+              brief.missing.includes(record.question) &&
+              !records.some(
+                (response) => response.kind === 'evidence' && response.requestId === record.id,
+              ) &&
+              records.some(
+                (cp) =>
+                  cp.kind === 'checkpoint' &&
+                  cp.owner === brief.owner &&
+                  cp.briefId === brief.id &&
+                  cp.status === 'pending' &&
+                  cp.requestIds.includes(record.id),
+              ),
+          ),
+        )
       : Boolean(brief && brief.missing.length === 0),
     noDuplicateBriefs: briefs.length === 1,
   };
@@ -366,6 +415,9 @@ async function evaluateOne(
         kind: 'case',
         title: entry.title,
         task: entry.task,
+        ...(entry.question
+          ? { informationNeeds: [{ id: 'deployed-timeout', question: entry.question }] }
+          : {}),
       }),
     );
     const requiredId = `${caseId}-source`;
@@ -403,6 +455,10 @@ async function evaluateOne(
       ...new Map(selectorUsage.map((usage) => [JSON.stringify(usage), usage])).values(),
     ];
     const outcome = checkOutcome(entry, records, checkpoint.status, requiredId);
+    const firstContext = contexts[0];
+    const initialSelectedIds = Array.isArray(firstContext?.ids)
+      ? firstContext.ids.filter((id): id is string => typeof id === 'string')
+      : [];
     const parentRssAfter = process.memoryUsage().rss;
     peak = Math.max(peak, parentRssAfter);
     return {
@@ -411,6 +467,17 @@ async function evaluateOne(
       status: checkpoint.status,
       ...outcome,
       failure: checkpoint.reason ?? null,
+      storedOutcome: {
+        briefs: records.filter((record) => record.kind === 'brief'),
+        requests: records.filter((record) => record.kind === 'request'),
+        checkpoint,
+      },
+      contextSelection: {
+        policy: typeof firstContext?.policy === 'string' ? firstContext.policy : 'unavailable',
+        initialSelectedIds,
+        irrelevantIds: initialSelectedIds.filter((id) => id !== requiredId),
+        omittedRelevantIds: initialSelectedIds.includes(requiredId) ? [] : [requiredId],
+      },
       metrics: {
         calls: checkpoint.calls,
         repairs: checkpoint.repairs,
@@ -456,6 +523,7 @@ async function evaluateOne(
       caseId: entry.id,
       trial,
       status: 'infrastructure_error',
+      contextSelection: null,
       success: false,
       checks,
       requiredEvidenceCoverage: 0,
@@ -493,7 +561,7 @@ export async function runEvaluation(options: EvaluationOptions): Promise<EvalRep
     throw new Error(
       'Replay supports deterministic selection only; Laya requires explicitly selected live mode',
     );
-  const candidate = options.modelCandidate ?? '0.6b';
+  const candidate = options.modelCandidate ?? '1.7b';
   let liveModel: Model | undefined;
   let selector: Selector = new DeterministicSelector();
   if (options.mode === 'live') {

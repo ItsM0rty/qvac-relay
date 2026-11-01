@@ -47,6 +47,11 @@ export const caseSchema = z.strictObject({
   kind: z.literal('case'),
   title: shortText,
   task: z.string().trim().min(1).max(8000),
+  informationNeeds: z
+    .array(z.strictObject({ id: idSchema, question: shortText }))
+    .max(8)
+    .refine((items) => unique(items.map((item) => item.id)), 'Duplicate information need IDs')
+    .optional(),
 });
 export const evidenceSchema = z.strictObject({
   ...base,
@@ -59,6 +64,7 @@ export const requestSchema = z.strictObject({
   ...base,
   kind: z.literal('request'),
   question: z.string().trim().min(1).max(2000),
+  needId: idSchema.optional(),
 });
 export const briefSchema = z.strictObject({
   ...base,
@@ -67,7 +73,10 @@ export const briefSchema = z.strictObject({
     .array(factSchema)
     .min(1)
     .max(32)
-    .refine((facts) => unique(facts.map((fact) => fact.text)), 'Duplicate facts are not allowed'),
+    .refine(
+      (facts) => unique(facts.map((fact) => JSON.stringify(fact))),
+      'Exact duplicate facts are not allowed',
+    ),
   uncertainty: notes,
   missing: notes,
   basedOn: z.string().regex(/^[a-f0-9]{64}$/),

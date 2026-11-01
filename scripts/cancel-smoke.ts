@@ -28,7 +28,7 @@ const timer = setTimeout(() => {
   if (activeRequest) void cancel({ requestId: activeRequest }).catch(() => undefined);
 }, 300_000);
 try {
-  const candidate = process.env.RELAY_MODEL ?? '0.6b';
+  const candidate = process.env.RELAY_MODEL ?? '1.7b';
   assert.ok(candidate === '0.6b' || candidate === '1.7b', 'RELAY_MODEL must be 0.6b or 1.7b');
   const loading = loadModel({
     modelSrc: candidate === '0.6b' ? QWEN3_600M_INST_Q4 : QWEN3_1_7B_INST_Q4,

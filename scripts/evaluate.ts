@@ -35,7 +35,7 @@ async function main(): Promise<void> {
       throw new Error('--mode must be live or replay');
     if (values.selector !== 'deterministic' && values.selector !== 'laya')
       throw new Error('--selector must be deterministic or laya');
-    const modelCandidate = process.env.RELAY_MODEL ?? '0.6b';
+    const modelCandidate = process.env.RELAY_MODEL ?? '1.7b';
     if (modelCandidate !== '0.6b' && modelCandidate !== '1.7b')
       throw new Error('RELAY_MODEL must be 0.6b or 1.7b');
     report = await runEvaluation({

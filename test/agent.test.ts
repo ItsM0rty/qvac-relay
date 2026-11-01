@@ -773,3 +773,377 @@ test('search handles exact IDs and separated query words without matching case-I
     await f.close();
   }
 });
+
+test(
+  'a linked contribution arriving during generation becomes required and is consumed after a fresh brief',
+  { timeout: 15000 },
+  async () => {
+    const f = await fixture();
+    const remoteDirectory = await mkdtemp(join(tmpdir(), 'relay-active-remote-'));
+    const remote = await RelayStore.open(remoteDirectory);
+    try {
+      const requestId = 'active-request';
+      await f.store.put({
+        schemaVersion: 1,
+        kind: 'request',
+        id: requestId,
+        owner: f.store.owner,
+        caseId: 'incident',
+        createdAt: new Date().toISOString(),
+        question: 'What was the deployed setting?',
+      });
+      await f.store.pair(remote.owner);
+      await remote.pair(f.store.owner);
+      await f.store.connect(await remote.listen());
+      let readA: { id: string; revision: string; text: string } | undefined;
+      const model = new ScriptedModel([
+        (_history, _signal, turn) => action('read_record', { id: f.source.id }, turn),
+        async (history, _signal, turn) => {
+          readA = toolResult(history, 'read_record');
+          assert.equal(readA!.text, f.source.text);
+          await remote.put({
+            schemaVersion: 1,
+            kind: 'evidence',
+            id: 'active-contribution',
+            owner: remote.owner,
+            caseId: 'incident',
+            createdAt: new Date().toISOString(),
+            title: 'Configuration',
+            text: 'The deployed timeout was 100 ms.',
+            requestId,
+          });
+          let arrived = false;
+          for (let attempt = 0; attempt < 50; attempt++) {
+            if (await f.store.get('active-contribution')) {
+              arrived = true;
+              break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 20));
+          }
+          assert.equal(arrived, true);
+          return action('save_brief', briefFromRead(history), turn);
+        },
+        (history, _signal, turn) => {
+          assert.equal(toolResult<{ code: string }>(history, 'save_brief').code, 'STALE_CONTEXT');
+          assert.ok(
+            history.some(
+              (message) =>
+                message.role === 'user' &&
+                message.content.includes('requiredEvidenceIds') &&
+                message.content.includes('active-contribution'),
+            ),
+          );
+          return action('read_record', { id: 'active-contribution' }, turn);
+        },
+        (history, _signal, turn) => {
+          const readB = toolResult<{ id: string; revision: string; text: string }>(
+            history,
+            'read_record',
+          );
+          assert.equal(readB.text, 'The deployed timeout was 100 ms.');
+          return action(
+            'save_brief',
+            {
+              facts: [readA!, readB].map((read) => ({
+                text: read.text,
+                sources: [{ id: read.id, quote: read.text }],
+              })),
+              uncertainty: ['Timing alone does not prove causality.'],
+              missing: [],
+            },
+            turn,
+          );
+        },
+      ]);
+      const checkpoint = await new Agent(f.store, model).run('incident');
+      assert.equal(checkpoint.status, 'completed', checkpoint.reason ?? '');
+      assert.equal(checkpoint.repairs, 1);
+      assert.deepEqual(checkpoint.consumed, ['active-contribution']);
+      assert.deepEqual(checkpoint.requiredIds, ['active-contribution']);
+      const saved = await state(f);
+      assert.equal(saved.briefs.length, 1);
+      assert.ok(
+        saved.briefs[0]!.facts.some((fact) =>
+          fact.sources.some((source) => source.id === 'active-contribution'),
+        ),
+      );
+    } finally {
+      await remote.close();
+      await f.close();
+      await rm(remoteDirectory, { recursive: true, force: true });
+    }
+  },
+);
+
+test('independent native read batches retain every call/result pair and can save a combined brief', async () => {
+  const f = await fixture();
+  try {
+    const extra = {
+      ...f.source,
+      id: 'second-source',
+      title: 'Configuration',
+      text: 'The timeout was 100 ms.',
+    };
+    await f.store.put(extra);
+    const model = new ScriptedModel([
+      () => ({
+        content: '',
+        calls: [
+          { id: 'read-a', name: 'read_record', arguments: { id: f.source.id } },
+          { id: 'read-b', name: 'read_record', arguments: { id: extra.id } },
+        ],
+        toolErrors: [],
+        stopReason: 'eos',
+      }),
+      (history, _signal, turn) => {
+        const results = history.filter(
+          (message) => message.role === 'tool' && message.toolName === 'read_record',
+        );
+        assert.deepEqual(
+          results.map((message) => message.toolCallId),
+          ['read-a', 'read-b'],
+        );
+        const reads = results.map(
+          (message) => JSON.parse(message.content) as { id: string; text: string },
+        );
+        assert.deepEqual(
+          reads.map((read) => read.text),
+          [f.source.text, extra.text],
+        );
+        return action(
+          'save_brief',
+          {
+            facts: reads.map((read) => ({
+              text: read.text,
+              sources: [{ id: read.id, quote: read.text }],
+            })),
+            uncertainty: ['The sources do not establish causality.'],
+            missing: [],
+          },
+          turn,
+        );
+      },
+    ]);
+    const checkpoint = await new Agent(f.store, model).run('incident', {
+      requiredIds: [f.source.id, extra.id],
+    });
+    assert.equal(checkpoint.status, 'completed', checkpoint.reason ?? '');
+    assert.equal(checkpoint.calls, 2);
+    assert.equal(checkpoint.repairs, 0);
+    assert.equal((await state(f)).briefs[0]!.facts.length, 2);
+  } finally {
+    await f.close();
+  }
+});
+
+test('persisted unresolved questions are projected into a brief even when the model omits their text', async () => {
+  const f = await fixture();
+  const question = 'Which timeout setting was deployed?';
+  try {
+    const model = new ScriptedModel([
+      (_history, _signal, turn) => action('read_record', { id: f.source.id }, turn),
+      (_history, _signal, turn) => action('request_information', { question }, turn),
+      (history, _signal, turn) => {
+        assert.equal(
+          toolResult<{ persisted: boolean }>(history, 'request_information').persisted,
+          true,
+        );
+        return action('save_brief', briefFromRead(history), turn);
+      },
+    ]);
+    const checkpoint = await new Agent(f.store, model).run('incident');
+    assert.equal(checkpoint.status, 'pending');
+    assert.equal(checkpoint.repairs, 0);
+    const saved = await state(f);
+    assert.deepEqual(saved.briefs[0]!.missing, [question]);
+    assert.equal(saved.events.filter((event) => event.event === 'missing_projected').length, 1);
+  } finally {
+    await f.close();
+  }
+});
+
+test('a rejected multi-write reply spends one repair and supplies a result for every denied call', async () => {
+  const f = await fixture();
+  try {
+    const deniedIds = ['write-one', 'write-two', 'write-three'];
+    const model = new ScriptedModel([
+      () => ({
+        content: '',
+        calls: deniedIds.map((id, index) => ({
+          id,
+          name: 'request_information',
+          arguments: { question: `Missing item ${index}?` },
+        })),
+        toolErrors: [],
+        stopReason: 'eos',
+      }),
+      async (history, _signal, turn) => {
+        const results = history.filter((message) => message.role === 'tool');
+        assert.deepEqual(
+          results.map((message) => message.toolCallId),
+          deniedIds,
+        );
+        assert.ok(
+          results.every((message) => JSON.parse(message.content).code === 'PARALLEL_DENIED'),
+        );
+        assert.equal(
+          (await f.store.list('incident')).filter((record) => record.kind === 'request').length,
+          0,
+        );
+        return action('read_record', { id: f.source.id }, turn);
+      },
+      (history, _signal, turn) => action('save_brief', briefFromRead(history), turn),
+    ]);
+    const checkpoint = await new Agent(f.store, model).run('incident', { maxRepairs: 1 });
+    assert.equal(checkpoint.status, 'completed', checkpoint.reason ?? '');
+    assert.equal(checkpoint.repairs, 1);
+    assert.equal(checkpoint.calls, 3);
+    const saved = await state(f);
+    assert.equal(saved.records.filter((record) => record.kind === 'request').length, 0);
+    assert.equal(saved.briefs.length, 1);
+    assert.equal(saved.events.filter((event) => event.event === 'validation').length, 3);
+  } finally {
+    await f.close();
+  }
+});
+
+test('mixed malformed native output denies every valid-looking action and preserves its protocol results', async () => {
+  const f = await fixture();
+  try {
+    const model = new ScriptedModel([
+      () => ({
+        content: '',
+        calls: [
+          { id: 'mixed-read', name: 'read_record', arguments: { id: f.source.id } },
+          {
+            id: 'mixed-request',
+            name: 'request_information',
+            arguments: { question: 'Configuration?' },
+          },
+        ],
+        toolErrors: [{ code: 'INVALID_JSON', message: 'Malformed additional region' }],
+        stopReason: 'eos',
+      }),
+      async (history, _signal, turn) => {
+        const assistant = history.find((message) =>
+          message.toolCalls?.some((call) => call.id === 'mixed-read'),
+        );
+        assert.deepEqual(
+          assistant?.toolCalls?.map((call) => call.id),
+          ['mixed-read', 'mixed-request'],
+        );
+        const results = history.filter((message) => message.role === 'tool');
+        assert.deepEqual(
+          results.map((message) => message.toolCallId),
+          ['mixed-read', 'mixed-request'],
+        );
+        assert.ok(
+          results.every((message) => JSON.parse(message.content).code === 'MALFORMED_CALL'),
+        );
+        assert.equal(
+          (await f.store.list('incident')).filter((record) => record.kind === 'request').length,
+          0,
+        );
+        return action('read_record', { id: f.source.id }, turn);
+      },
+      (history, _signal, turn) => action('save_brief', briefFromRead(history), turn),
+    ]);
+    const checkpoint = await new Agent(f.store, model).run('incident', { maxRepairs: 1 });
+    assert.equal(checkpoint.status, 'completed', checkpoint.reason ?? '');
+    assert.equal(checkpoint.repairs, 1);
+    assert.equal(
+      model.offerings[1]!.includes('save_brief'),
+      false,
+      'Denied read must not grant save permission',
+    );
+    assert.equal(model.offerings[2]!.includes('save_brief'), true);
+    const saved = await state(f);
+    assert.equal(saved.records.filter((record) => record.kind === 'request').length, 0);
+    assert.equal(saved.briefs.length, 1);
+    assert.equal(
+      saved.events.filter((event) => event.event === 'tool' && event.name === 'read_record').length,
+      1,
+    );
+    assert.equal(saved.events.filter((event) => event.event === 'validation').length, 2);
+  } finally {
+    await f.close();
+  }
+});
+
+test(
+  'a relevant contribution arriving after the brief commit keeps the final checkpoint pending',
+  { timeout: 15000 },
+  async () => {
+    const f = await fixture();
+    const remoteDirectory = await mkdtemp(join(tmpdir(), 'relay-postcommit-'));
+    const remote = await RelayStore.open(remoteDirectory);
+    try {
+      const requestId = 'postcommit-request';
+      const contributionId = 'postcommit-contribution';
+      await f.store.put({
+        schemaVersion: 1,
+        kind: 'request',
+        id: requestId,
+        owner: f.store.owner,
+        caseId: 'incident',
+        createdAt: new Date().toISOString(),
+        question: 'Which configuration was deployed?',
+      });
+      await f.store.pair(remote.owner);
+      await remote.pair(f.store.owner);
+      await f.store.connect(await remote.listen());
+      const put = f.store.put.bind(f.store);
+      let injected = false;
+      f.store.put = async (record, options) => {
+        const result = await put(record, options);
+        if (record.kind === 'brief' && !injected) {
+          injected = true;
+          await remote.put({
+            schemaVersion: 1,
+            kind: 'evidence',
+            id: contributionId,
+            owner: remote.owner,
+            caseId: 'incident',
+            createdAt: new Date().toISOString(),
+            title: 'Late configuration',
+            text: 'The deployed timeout was 100 ms.',
+            requestId,
+          });
+          let arrived = false;
+          for (let attempt = 0; attempt < 60; attempt++) {
+            if (await f.store.get(contributionId)) {
+              arrived = true;
+              break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 20));
+          }
+          assert.equal(arrived, true, 'Contribution must replicate before brief finalisation');
+        }
+        return result;
+      };
+      const model = new ScriptedModel([
+        (_history, _signal, turn) => action('read_record', { id: f.source.id }, turn),
+        (history, _signal, turn) => action('save_brief', briefFromRead(history), turn),
+      ]);
+      const checkpoint = await new Agent(f.store, model).run('incident');
+      assert.equal(injected, true);
+      assert.equal(checkpoint.status, 'pending', checkpoint.reason ?? '');
+      assert.deepEqual(checkpoint.requiredIds, [contributionId]);
+      assert.equal(checkpoint.consumed.includes(contributionId), false);
+      assert.match(checkpoint.reason!, /New relevant evidence arrived after brief commit/);
+      const saved = await state(f);
+      assert.equal(saved.briefs.length, 1);
+      assert.equal(
+        saved.briefs[0]!.facts.some((fact) =>
+          fact.sources.some((source) => source.id === contributionId),
+        ),
+        false,
+      );
+      assert.ok(saved.events.some((event) => event.event === 'late_contribution'));
+    } finally {
+      await remote.close();
+      await f.close();
+      await rm(remoteDirectory, { recursive: true, force: true });
+    }
+  },
+);

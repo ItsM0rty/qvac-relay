@@ -7,9 +7,43 @@ import {
   unloadModel,
   QWEN3_600M_INST_Q4,
   QWEN3_1_7B_INST_Q4,
+  type CompletionRun,
 } from '@qvac/sdk';
 import { performance } from 'node:perf_hooks';
-import { SAMPLING } from './policy.js';
+import { RelayError, SAMPLING } from './policy.js';
+
+type Candidate = '0.6b' | '1.7b';
+/** SDK side effects are injectable for lifecycle checks without native inference. */
+export interface QvacRuntime {
+  load(candidate: Candidate): Promise<string> & { requestId: string };
+  completion(
+    params: Parameters<typeof completion>[0],
+  ): Pick<CompletionRun, 'requestId' | 'events' | 'final'>;
+  cancel(requestId: string): Promise<void>;
+  unload(modelId: string): Promise<void>;
+  close(): Promise<void>;
+}
+const nativeRuntime: QvacRuntime = {
+  load: (candidate) =>
+    loadModel({
+      modelSrc: candidate === '0.6b' ? QWEN3_600M_INST_Q4 : QWEN3_1_7B_INST_Q4,
+      modelType: 'llamacpp-completion',
+      modelConfig: { device: 'cpu', ctx_size: 8192, tools: true, parallel: 1 },
+      modelFitPolicy: 'log',
+    }),
+  completion,
+  cancel: (requestId) => cancel({ requestId }),
+  unload: async (modelId) => {
+    await unloadModel({ modelId, clearStorage: false });
+  },
+  close: closeSdk,
+};
+
+function cleanupError(code: string, message: string, cause: unknown): RelayError {
+  const error = new RelayError(code, message, 'infrastructure');
+  error.cause = cause;
+  return error;
+}
 
 export interface ToolCall {
   id: string;
@@ -75,13 +109,16 @@ export class QvacModel implements Model {
   private readonly candidate: '0.6b' | '1.7b';
   private modelId?: string;
   private active?: Promise<ModelReply>;
+  private releasing?: Promise<void>;
+  private releaseFailure?: RelayError;
   private readonly shutdown = new AbortController();
   private closing?: Promise<void>;
   private closed = false;
 
   constructor(
-    candidate = process.env.RELAY_MODEL ?? '0.6b',
+    candidate = process.env.RELAY_MODEL ?? '1.7b',
     private readonly toolChoice: 'auto' | 'required' = 'required',
+    private readonly runtime: QvacRuntime = nativeRuntime,
   ) {
     if (candidate !== '0.6b' && candidate !== '1.7b') {
       throw new Error('RELAY_MODEL must be 0.6b or 1.7b');
@@ -93,6 +130,18 @@ export class QvacModel implements Model {
   complete(history: Message[], tools: ToolSpec[], signal: AbortSignal): Promise<ModelReply> {
     if (this.closed) return Promise.reject(new Error('MODEL_CLOSED: adapter is closed'));
     if (this.active) return Promise.reject(new Error('MODEL_BUSY: one inference per adapter'));
+    if (this.releasing)
+      return Promise.reject(
+        new RelayError('MODEL_RELEASING', 'Model cleanup is still in progress.', 'infrastructure'),
+      );
+    if (this.releaseFailure)
+      return Promise.reject(
+        cleanupError(
+          'MODEL_CLEANUP_REQUIRED',
+          'Previous model unload failed. Retry release or close the adapter before generating.',
+          this.releaseFailure,
+        ),
+      );
     const combined = AbortSignal.any([signal, this.shutdown.signal]);
     const operation = this.generate(history, tools, combined);
     this.active = operation;
@@ -120,7 +169,7 @@ export class QvacModel implements Model {
       requested = true;
       this.measurements.cancellations++;
       // Keep awaiting native settlement; a Promise.race would abandon native work.
-      cancellation = cancel({ requestId }).catch((error: unknown) => {
+      cancellation = this.runtime.cancel(requestId).catch((error: unknown) => {
         this.measurements.cancellationErrors.push(
           error instanceof Error ? error.message : String(error),
         );
@@ -158,19 +207,14 @@ export class QvacModel implements Model {
     let turnLoadMs = 0;
     if (!this.modelId) {
       const started = performance.now();
-      const loading = loadModel({
-        modelSrc: this.candidate === '0.6b' ? QWEN3_600M_INST_Q4 : QWEN3_1_7B_INST_Q4,
-        modelType: 'llamacpp-completion',
-        modelConfig: { device: 'cpu', ctx_size: 8192, tools: true, parallel: 1 },
-        modelFitPolicy: 'log',
-      });
+      const loading = this.runtime.load(this.candidate);
       this.modelId = await this.cancellable(loading, loading.requestId, signal);
       turnLoadMs = performance.now() - started;
       this.measurements.loadMs += turnLoadMs;
     }
     signal.throwIfAborted();
     const started = performance.now();
-    const run = completion({
+    const run = this.runtime.completion({
       modelId: this.modelId,
       history: messages,
       tools: definitions,
@@ -216,13 +260,38 @@ export class QvacModel implements Model {
     };
   }
 
-  async release(): Promise<void> {
-    if (this.active) throw new Error('MODEL_BUSY: cannot release active generation');
-    if (this.modelId) {
-      const id = this.modelId;
-      this.modelId = undefined;
-      await unloadModel({ modelId: id, clearStorage: false });
-    }
+  release(): Promise<void> {
+    if (this.closed) return Promise.reject(new Error('MODEL_CLOSED: adapter is closed'));
+    if (this.active)
+      return Promise.reject(new Error('MODEL_BUSY: cannot release active generation'));
+    if (this.releasing) return this.releasing;
+    if (!this.modelId) return Promise.resolve();
+    const id = this.modelId;
+    const operation = (async () => {
+      try {
+        await this.runtime.unload(id);
+        // Retain the resource identity until native cleanup actually succeeds.
+        this.modelId = undefined;
+        this.releaseFailure = undefined;
+      } catch (cause) {
+        this.releaseFailure = cleanupError(
+          'MODEL_RELEASE_FAILED',
+          'Native model unload failed; further generation is quarantined.',
+          cause,
+        );
+        throw this.releaseFailure;
+      }
+    })();
+    this.releasing = operation;
+    void operation.then(
+      () => {
+        this.releasing = undefined;
+      },
+      () => {
+        this.releasing = undefined;
+      },
+    );
+    return operation;
   }
 
   close(): Promise<void> {
@@ -231,12 +300,31 @@ export class QvacModel implements Model {
     this.shutdown.abort(new DOMException('Model closed', 'AbortError'));
     this.closing = (async () => {
       await this.active?.catch(() => undefined);
+      await this.releasing?.catch(() => undefined);
+      const failures: unknown[] = [];
       try {
-        if (this.modelId) await unloadModel({ modelId: this.modelId, clearStorage: false });
+        if (this.modelId) {
+          await this.runtime.unload(this.modelId);
+          this.modelId = undefined;
+        }
+      } catch (error) {
+        failures.push(error);
       } finally {
-        this.modelId = undefined;
-        await closeSdk();
+        try {
+          await this.runtime.close();
+          this.modelId = undefined;
+        } catch (error) {
+          failures.push(error);
+        }
       }
+      if (failures.length)
+        throw cleanupError(
+          'MODEL_CLOSE_FAILED',
+          'Native model cleanup failed during adapter shutdown.',
+          failures.length === 1
+            ? failures[0]
+            : new AggregateError(failures, 'Unload and SDK shutdown failed'),
+        );
     })();
     return this.closing;
   }

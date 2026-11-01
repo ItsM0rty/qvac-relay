@@ -116,6 +116,18 @@ test('checkpoint rejects duplicate operation references and invalid counters/sta
   ])
     assert.throws(() => parseRecord({ ...checkpoint, ...fields }));
 });
+
+test('the same observation may retain distinct source excerpts without losing either citation', () => {
+  const accepted = parseRecord({
+    ...brief,
+    facts: [
+      brief.facts[0],
+      { ...brief.facts[0], sources: [{ ...source, quote: 'Version 2 failed' }] },
+    ],
+  });
+  assert.equal(accepted.kind, 'brief');
+  if (accepted.kind === 'brief') assert.equal(accepted.facts.length, 2);
+});
 test('stable identities preserve boundaries, order and empty parts', () => {
   assert.match(stableId('peer', 'operation'), /^[a-f0-9]{64}$/);
   assert.equal(stableId('peer', 'operation'), stableId('peer', 'operation'));

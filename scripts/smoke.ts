@@ -7,7 +7,7 @@ import { QvacModel, type Message, type ToolSpec } from '../src/qvac.js';
 import { errorDetails } from './error-details.js';
 
 // This is a live SDK probe. No scripted model responses or cloud APIs are used.
-const model = new QvacModel(process.env.RELAY_MODEL ?? '0.6b', 'auto');
+const model = new QvacModel(process.env.RELAY_MODEL ?? '1.7b', 'auto');
 const controller = new AbortController();
 const timeout = setTimeout(
   () => controller.abort(new DOMException('Smoke deadline exceeded', 'AbortError')),

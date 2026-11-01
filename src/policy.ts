@@ -1,4 +1,5 @@
 import type { completion } from '@qvac/sdk';
+import { revision, type BriefRecord, type RelayRecord } from './records.js';
 export type FailureKind =
   'validation' | 'model' | 'tool' | 'infrastructure' | 'cancelled' | 'overflow';
 export const SAMPLING = {
@@ -12,10 +13,34 @@ export class RelayError extends Error {
     public code: string,
     message: string,
     public kind: FailureKind = 'validation',
+    options?: ErrorOptions,
   ) {
-    super(message);
+    super(message, options);
     this.name = 'RelayError';
   }
+}
+export function uncitedContributions(
+  records: readonly RelayRecord[],
+  owner: string,
+  requestIds: readonly string[],
+  brief: BriefRecord,
+): string[] {
+  const requested = new Set(requestIds);
+  return records
+    .filter(
+      (record) =>
+        record.kind === 'evidence' &&
+        record.owner !== owner &&
+        record.requestId &&
+        requested.has(record.requestId) &&
+        !brief.facts.some((fact) =>
+          fact.sources.some(
+            (source) => source.id === record.id && source.revision === revision(record),
+          ),
+        ),
+    )
+    .map((record) => record.id)
+    .sort();
 }
 export function classify(error: unknown): FailureKind {
   if (error instanceof RelayError) return error.kind;

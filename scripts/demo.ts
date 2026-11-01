@@ -82,7 +82,7 @@ async function call(peer: Peer, command: string, args: Record<string, unknown> =
     method: 'POST',
     headers: { authorization: `Bearer ${peer.control.token}`, 'content-type': 'application/json' },
     body: JSON.stringify({ command, ...args }),
-    signal: AbortSignal.timeout(360_000),
+    signal: AbortSignal.timeout(720_000),
   });
   const value = await response.json();
   if (!response.ok) throw new Error(JSON.stringify(value));
@@ -100,6 +100,7 @@ try {
   await call(a, 'create', {
     id: caseId,
     title: 'Checkout rollback',
+    needs:JSON.stringify([{id:'deployment-config',question:'What deployment configuration changed in deployment 42?'}]),
     task: 'Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.',
   });
   await call(a, 'evidence', {
@@ -140,7 +141,7 @@ try {
     return cp?.status === 'completed' && cp.consumed.includes('deployment-config')
       ? { records, checkpoint: cp }
       : undefined;
-  }, 360_000);
+  }, 720_000);
   assert.equal(
     final.checkpoint.status,
     'completed',

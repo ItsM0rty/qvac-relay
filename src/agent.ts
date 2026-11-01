@@ -20,12 +20,16 @@ import {
   failureSignature,
   RelayError,
   repairDecision,
+  uncitedContributions,
 } from './policy.js';
 
 const schemas = {
   find_evidence: z.strictObject({ query: z.string().max(200) }),
   read_record: z.strictObject({ id: idSchema }),
-  request_information: z.strictObject({ question: z.string().trim().min(1).max(500) }),
+  request_information: z.strictObject({
+    question: z.string().trim().min(1).max(500),
+    needId: idSchema.optional(),
+  }),
   save_brief: z.strictObject({
     facts: z
       .array(
@@ -74,7 +78,8 @@ export const TOOLS: ToolSpec[] = Object.entries(schemas).map(([name, schema]) =>
     {
       find_evidence: 'Search this case. Read matching records before citing.',
       read_record: 'Read evidence with its ID and revision.',
-      request_information: 'Persist a question for another peer. Reuse existing questions.',
+      request_information:
+        'Persist a question for another peer. For a required informationNeed include its needId. Reuse existing questions.',
       save_brief:
         'Save a short brief. Use one distinct fact per source with exact quotes. Revision is optional; trusted code attaches the version read. Persist missing questions before saving.',
     } as Record<string, string>
@@ -86,9 +91,26 @@ interface SchemaNode {
   items?: SchemaNode;
   enum?: string[];
 }
-function offerTools(readIds: string[], requiredIds: string[]): ToolSpec[] {
+function offerTools(readIds: string[], requiredIds: string[], knownIds: string[]): ToolSpec[] {
   const canSave = readIds.length > 0 && requiredIds.every((id) => readIds.includes(id));
-  return TOOLS.filter((tool) => tool.name !== 'save_brief' || canSave).map((tool) => {
+  const readable = [...new Set([...requiredIds, ...readIds, ...knownIds])].sort();
+  return TOOLS.filter(
+    (tool) =>
+      (tool.name !== 'save_brief' || canSave) &&
+      (tool.name !== 'read_record' || readable.length > 0),
+  ).map((tool) => {
+    if (tool.name === 'read_record') {
+      const parameters = structuredClone(tool.parameters);
+      const id = (parameters as SchemaNode).properties?.id;
+      if (!id)
+        throw new RelayError(
+          'TOOL_SCHEMA',
+          'Trusted read schema is unavailable.',
+          'infrastructure',
+        );
+      id.enum = readable;
+      return { ...tool, parameters };
+    }
     if (tool.name !== 'save_brief') return tool;
     const parameters = structuredClone(tool.parameters);
     const sourceId = (parameters as SchemaNode).properties?.facts?.items?.properties?.sources?.items
@@ -184,6 +206,7 @@ export interface RunOptions {
 }
 export class Agent {
   private active = false;
+  lastCleanupError?: string;
   private controller?: AbortController;
   get isActive(): boolean {
     return this.active;
@@ -238,6 +261,7 @@ export class Agent {
       repairs = options.initialRepairs ?? 0,
       lastFailure = options.initialFailure;
     let briefId: string | undefined;
+    let committedBrief: BriefRecord | undefined;
     let reason: string | undefined;
     let requestIds: string[] = [];
     const consumed = [...new Set(options.consumed ?? [])].sort();
@@ -310,6 +334,12 @@ export class Agent {
         },
       });
       const read = new Map<string, { revision: string; text: string }>();
+      const knownIds = new Set(
+        snapshot.records
+          .filter((record) => record.kind === 'evidence')
+          .slice(0, 12)
+          .map((record) => record.id),
+      );
       const usedCallIds = new Set<string>();
       const actions = new Map<string, number>();
       let history: Message[] = [];
@@ -330,6 +360,7 @@ export class Agent {
               )
                 throw new Error('Invalid selector IDs');
             } catch (error) {
+              if (error instanceof RelayError && error.code === 'MODEL_RELEASE_FAILED') throw error;
               checkCancelled(s);
               cached = {
                 ...(await new DeterministicSelector().select(t, c)),
@@ -352,7 +383,7 @@ export class Agent {
             requestIds.includes(record.requestId)
           )
             requiredIds.add(record.id);
-        const tools = offerTools([...read.keys()], [...requiredIds]);
+        const tools = offerTools([...read.keys()], [...requiredIds], [...knownIds].slice(-24));
         const context = await buildContext({
           task,
           records: snapshot.records,
@@ -377,6 +408,7 @@ export class Agent {
         try {
           reply = await this.model.complete(context.history, tools, signal);
         } catch (error) {
+          if (error instanceof RelayError && error.kind === 'infrastructure') throw error;
           if (classify(error) === 'cancelled' || signal.aborted)
             throw new RelayError('CANCELLED', 'Inference cancelled.', 'cancelled');
           if (classify(error) === 'overflow')
@@ -435,16 +467,24 @@ export class Agent {
           throw new RelayError('CALL_IDS', 'Reused model call ID.', 'model');
         for (const id of ids) usedCallIds.add(id);
         history.push({ role: 'assistant', content: '', toolCalls: reply.calls });
-        let fatal: unknown;
+        let turnError: unknown;
         let saved = false;
+        const unsafeBatch =
+          reply.calls.length > 1 &&
+          reply.calls.some((call) => !['find_evidence', 'read_record'].includes(call.name));
         for (const call of reply.calls) {
           let result: unknown;
           try {
             checkCancelled(signal);
-            if (reply.calls.length !== 1)
+            if (reply.toolErrors.length)
+              throw new RelayError(
+                'MALFORMED_CALL',
+                'Native output contains malformed tool regions. No actions from this reply were executed; emit valid declared calls.',
+              );
+            if (unsafeBatch)
               throw new RelayError(
                 'PARALLEL_DENIED',
-                'Use one tool per turn so dependencies have results.',
+                'Only independent evidence reads may share a turn. Submit writes on a separate turn.',
               );
             const args = validateArguments(call.name, call.arguments);
             if (!tools.some((tool) => tool.name === call.name))
@@ -463,7 +503,9 @@ export class Agent {
                 'This action already returned a result twice against unchanged data. Use the existing result, read a relevant record, or request missing information.',
               );
             if (call.name === 'find_evidence') {
-              result = searchEvidence(current.records, String(args.query)).map((r) => ({
+              const found = searchEvidence(current.records, String(args.query));
+              for (const record of found) knownIds.add(record.id);
+              result = found.map((r) => ({
                 id: r.id,
                 revision: revision(r),
                 title: r.kind === 'evidence' ? r.title : '',
@@ -484,8 +526,21 @@ export class Agent {
                 truncated: text.length !== record.text.length,
               };
             } else if (call.name === 'request_information') {
-              const question = String(args.question);
-              const id = stableId(this.store.owner, caseId, 'request', question.toLowerCase());
+              const needs =
+                current.records.find((record) => record.kind === 'case')?.informationNeeds ?? [];
+              const need =
+                args.needId === undefined
+                  ? undefined
+                  : needs.find((need) => need.id === args.needId);
+              if (args.needId !== undefined && !need)
+                throw new RelayError(
+                  'INFORMATION_NEED',
+                  'needId must identify an informationNeed in this case.',
+                );
+              const question = need?.question ?? String(args.question);
+              const id = need
+                ? stableId(this.store.owner, caseId, 'need', need.id)
+                : stableId(this.store.owner, caseId, 'request', question.toLowerCase());
               const existing = current.records.find((r) => r.id === id);
               const record =
                 existing ??
@@ -497,11 +552,12 @@ export class Agent {
                   caseId,
                   createdAt: stamp(),
                   question,
+                  ...(need ? { needId: need.id } : {}),
                 });
               checkCancelled(signal);
               await this.store.put(record);
               if (!requestIds.includes(id)) requestIds.push(id);
-              result = { id, question, persisted: true };
+              result = { id, question, ...(need ? { needId: need.id } : {}), persisted: true };
             } else if (call.name === 'save_brief') {
               if (current.fingerprint !== snapshot.fingerprint)
                 throw new RelayError(
@@ -517,11 +573,6 @@ export class Agent {
                 await this.trace(runId, 'draft_normalized', {
                   removedExactDuplicateFacts: originalFacts - draft.facts.length,
                 });
-              if (new Set(draft.facts.map((fact) => fact.text)).size !== draft.facts.length)
-                throw new RelayError(
-                  'DUPLICATE_FACT',
-                  'The same fact text has different references. Combine its references explicitly instead of repeating the fact.',
-                );
               const cited = new Set<string>();
               for (const fact of draft.facts)
                 for (const source of fact.sources) {
@@ -549,22 +600,57 @@ export class Agent {
               for (const id of requiredIds)
                 if (!cited.has(id))
                   throw new RelayError('COVERAGE', `Cite required contribution ${id}.`);
+              const needs =
+                current.records.find((record) => record.kind === 'case')?.informationNeeds ?? [];
+              for (const need of needs) {
+                const request = current.records.find(
+                  (record) =>
+                    record.kind === 'request' &&
+                    record.owner === this.store.owner &&
+                    record.needId === need.id,
+                );
+                if (!request)
+                  throw new RelayError(
+                    'REQUIRED_INFORMATION_REQUEST',
+                    `Required question is untracked. Call request_information with needId "${need.id}" and question "${need.question}" before saving. An empty missing list cannot satisfy this requirement.`,
+                  );
+                for (const response of current.records.filter(
+                  (record) => record.kind === 'evidence' && record.requestId === request.id,
+                ))
+                  if (!cited.has(response.id))
+                    throw new RelayError(
+                      'COVERAGE',
+                      `Read and cite required answer ${response.id} for informationNeed ${need.id}.`,
+                    );
+              }
               const open = current.records.filter(
                 (r) =>
                   r.kind === 'request' &&
                   r.owner === this.store.owner &&
                   !current.records.some((e) => e.kind === 'evidence' && e.requestId === r.id),
               );
-              if (open.length && !draft.missing.length)
-                throw new RelayError(
-                  'MISSING_COVERAGE',
-                  'List unresolved requested information in missing.',
-                );
               if (draft.missing.length && !open.length)
                 throw new RelayError(
                   'REQUEST_REQUIRED',
                   'Persist a request_information question for missing evidence before saving.',
                 );
+              const missing = [
+                ...new Set([
+                  ...draft.missing,
+                  ...open.map((record) => (record.kind === 'request' ? record.question : '')),
+                ]),
+              ];
+              if (missing.length > 32)
+                throw new RelayError(
+                  'REQUEST_LIMIT',
+                  'Unresolved questions exceed the bounded brief capacity.',
+                  'overflow',
+                );
+              if (missing.length !== draft.missing.length)
+                await this.trace(runId, 'missing_projected', {
+                  requestIds: open.map((record) => record.id),
+                  added: missing.length - draft.missing.length,
+                });
               const facts = draft.facts.map((fact) => ({
                 ...fact,
                 sources: fact.sources.map((source) => ({
@@ -580,11 +666,13 @@ export class Agent {
                 caseId,
                 createdAt: stamp(),
                 ...draft,
+                missing,
                 facts,
                 basedOn: current.fingerprint,
               }) as BriefRecord;
               checkCancelled(signal);
               await this.store.put(record, { expectedFingerprint: current.fingerprint });
+              committedBrief = record;
               briefId = record.id;
               saved = true;
               result = { id: record.id, persisted: true };
@@ -613,8 +701,6 @@ export class Agent {
                 : {}),
               ...(call.name === 'read_record' ? { requestedId: args.id } : {}),
             });
-            lastFailure = undefined;
-            feedback = undefined;
           } catch (error) {
             const kind = classify(error);
             const signature = failureSignature(error);
@@ -629,16 +715,7 @@ export class Agent {
               kind,
               signature,
             });
-            if (
-              repairDecision(repairs, lastFailure, signature, kind, options.maxRepairs ?? 2) ===
-              'stop'
-            )
-              fatal = error;
-            else {
-              repairs++;
-              lastFailure = signature;
-              feedback = JSON.stringify(result);
-            }
+            if (turnError === undefined || kind !== 'validation') turnError = error;
           }
           history.push({
             role: 'tool',
@@ -647,16 +724,42 @@ export class Agent {
             content: JSON.stringify(result),
           });
         }
-        if (fatal) throw fatal;
+        if (turnError !== undefined) {
+          const kind = classify(turnError),
+            signature = failureSignature(turnError);
+          if (
+            repairDecision(repairs, lastFailure, signature, kind, options.maxRepairs ?? 2) ===
+            'stop'
+          )
+            throw turnError;
+          repairs++;
+          lastFailure = signature;
+          feedback = turnError instanceof Error ? turnError.message : String(turnError);
+        } else {
+          lastFailure = undefined;
+          feedback = undefined;
+        }
         if (saved) {
           const all = await this.store.list(caseId);
+          if (!committedBrief)
+            throw new RelayError(
+              'BRIEF_STATE',
+              'Committed brief state is unavailable.',
+              'infrastructure',
+            );
+          const uncited = uncitedContributions(all, this.store.owner, requestIds, committedBrief);
+          for (const id of uncited) requiredIds.add(id);
+          if (uncited.length) {
+            reason = 'New relevant evidence arrived after brief commit; refresh is pending.';
+            await this.trace(runId, 'late_contribution', { ids: uncited });
+          }
           const pending = all.some(
             (r) =>
               r.kind === 'request' &&
               requestIds.includes(r.id) &&
               !all.some((e) => e.kind === 'evidence' && e.requestId === r.id),
           );
-          return await checkpoint(pending ? 'pending' : 'completed');
+          return await checkpoint(pending || uncited.length ? 'pending' : 'completed');
         }
         await checkpoint('running');
         // Retain complete protocol groups. Older resolved groups can leave context;
@@ -683,6 +786,17 @@ export class Agent {
     } finally {
       try {
         await this.model.release?.();
+        this.lastCleanupError = undefined;
+      } catch (error) {
+        this.lastCleanupError = (error instanceof Error ? error.message : String(error)).slice(
+          0,
+          2000,
+        );
+        await this.trace(runId, 'cleanup_failed', {
+          kind: 'infrastructure',
+          code: error instanceof RelayError ? error.code : 'MODEL_RELEASE_FAILED',
+          message: this.lastCleanupError,
+        }).catch(() => undefined);
       } finally {
         this.active = false;
         this.controller = undefined;

@@ -43,7 +43,7 @@ test(
         return { status: response.status, data: (await response.json()) as any };
       };
       assert.equal(
-        (await call({ command: 'create', id: 'cli-case', title: 'CLI', task: 'Inspect state.' }))
+        (await call({ command: 'create', id: 'cli-case', title: 'CLI', task: 'Inspect state.', needs:JSON.stringify([{id:'timeout',question:'What timeout was deployed?'}]) }))
           .status,
         200,
       );
@@ -58,6 +58,9 @@ test(
       assert.equal((await call(evidence)).data.duplicate, true);
       const records = (await call({ command: 'inspect', case: 'cli-case' })).data;
       assert.equal(records.filter((r: any) => r.kind === 'case').length, 1);
+      assert.deepEqual(records.find((r:any)=>r.kind==='case').informationNeeds,[{id:'timeout',question:'What timeout was deployed?'}]);
+      assert.equal((await call({command:'status'})).data.cleanupError,null);
+      assert.equal((await call({command:'create',id:'invalid-needs',title:'Invalid',task:'Inspect',needs:'null'})).status,400);
       assert.equal(records.filter((r: any) => r.kind === 'evidence').length, 1);
       assert.equal((await call({ command: 'work', case: 'missing' })).status, 400);
       assert.equal((await call({ command: 'cancel' })).status, 200);

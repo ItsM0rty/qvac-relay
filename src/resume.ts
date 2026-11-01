@@ -9,6 +9,7 @@ import {
   type RelayRecord,
 } from './records.js';
 import { RelayStore } from './store.js';
+import { uncitedContributions } from './policy.js';
 
 type ResumableAgent = Pick<Agent, 'run'> & { readonly isActive?: boolean };
 /** Coordinates one peer's automatic work. The caller owns the agent, model and store. */
@@ -133,9 +134,7 @@ export class Resumer {
         const records = all.filter((record) => record.caseId === item.caseId);
         const checkpoint = latestCheckpoint(records, this.store.owner);
         if (!checkpoint || !['pending', 'running'].includes(checkpoint.status)) continue;
-        const incoming = contributions(records, checkpoint);
         const recovering = checkpoint.status === 'running';
-        if (!recovering && incoming.length === 0) continue;
         // A saved brief can outlive the crash before its final checkpoint. Reuse it.
         const committed = records.find(
           (record): record is BriefRecord =>
@@ -143,11 +142,24 @@ export class Resumer {
             record.owner === this.store.owner &&
             record.id === stableId(checkpoint.runId, 'brief'),
         );
+        const previousBrief = records.find(
+          (record): record is BriefRecord =>
+            record.kind === 'brief' &&
+            record.id === checkpoint.briefId &&
+            record.owner === this.store.owner,
+        );
+        const acceptedBrief = recovering && committed ? committed : previousBrief;
+        const uncited = acceptedBrief
+          ? uncitedContributions(records, this.store.owner, checkpoint.requestIds, acceptedBrief)
+          : [];
+        const incoming = [...new Set([...contributions(records, checkpoint), ...uncited])].sort();
+        if (!recovering && incoming.length === 0) continue;
         if (recovering && committed) {
-          const pending = checkpoint.requestIds.some(
+          const unanswered = checkpoint.requestIds.some(
             (id) =>
               !records.some((record) => record.kind === 'evidence' && record.requestId === id),
           );
+          const pending = unanswered || uncited.length > 0;
           outcomes.push(
             await this.settle(
               checkpoint,
@@ -175,12 +187,6 @@ export class Resumer {
         const runId = recovering
           ? stableId('recovery', checkpoint.runId)
           : stableId('resume', checkpoint.runId, ...incoming);
-        const previousBrief = records.find(
-          (record): record is BriefRecord =>
-            record.kind === 'brief' &&
-            record.id === checkpoint.briefId &&
-            record.owner === this.store.owner,
-        );
         const priorSources =
           previousBrief?.facts.flatMap((fact) => fact.sources.map((source) => source.id)) ?? [];
         const existing = records.filter(
