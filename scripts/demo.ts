@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
-import { spawn, type ChildProcess } from 'node:child_process';
+import { spawn, execFileSync, type ChildProcess } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { z } from 'zod';
+import { idSchema } from '../src/records.js';
+import { DemoProgress, waitForPeerReady, stopChild } from '../src/demo-progress.js';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { latestCheckpoint } from '../src/agent.js';
@@ -11,6 +15,65 @@ import { controlPost } from '../src/control-client.js';
 const directory = resolve(process.argv[2] ?? `.relay/demo-${Date.now()}`);
 await mkdir(directory, { recursive: true });
 const events: unknown[] = [];
+const progress = new DemoProgress((line) => console.error(line));
+let sourceCommit = 'unavailable';
+try {
+  sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  }).trim();
+} catch {}
+const evidenceSchema = z.strictObject({
+  id: idSchema,
+  title: z.string().trim().min(1).max(500),
+  text: z.string().trim().min(1).max(16000),
+});
+const scenarioSchema = z
+  .strictObject({
+    caseId: idSchema,
+    title: z.string().trim().min(1).max(500),
+    task: z.string().trim().min(1).max(8000),
+    evidence: z.array(evidenceSchema).min(1).max(32),
+    informationNeeds: z
+      .array(z.strictObject({ id: idSchema, question: z.string().trim().min(1).max(500) }))
+      .length(1),
+    contribution: evidenceSchema.extend({ needId: idSchema.optional() }),
+    requiredQuotes: z
+      .array(z.strictObject({ id: idSchema, quote: z.string().min(1).max(1000) }))
+      .optional(),
+    fixtureId: z.string().min(1).max(160).optional(),
+    longEvidence: z.boolean().optional(),
+  })
+  .superRefine((v, ctx) => {
+    const ids = [...v.evidence.map((e) => e.id), v.contribution.id];
+    if (new Set(ids).size !== ids.length)
+      ctx.addIssue({ code: 'custom', message: 'Evidence IDs must be unique' });
+    if (v.contribution.needId && v.contribution.needId !== v.informationNeeds[0]!.id)
+      ctx.addIssue({ code: 'custom', message: 'Contribution needId must match the declared need' });
+    if (v.requiredQuotes?.some((q) => !ids.includes(q.id)))
+      ctx.addIssue({ code: 'custom', message: 'Required quote source must be scenario evidence' });
+  });
+const scenarioPath = process.env.RELAY_DEMO_SCENARIO_FILE;
+const scenarioRaw = scenarioPath
+  ? JSON.parse(await readFile(resolve(scenarioPath), 'utf8'))
+  : undefined;
+const scenario = scenarioPath ? scenarioSchema.parse(scenarioRaw) : undefined;
+const canonical = (value: unknown): unknown =>
+  Array.isArray(value)
+    ? value.map(canonical)
+    : value !== null && typeof value === 'object'
+      ? Object.fromEntries(
+          Object.entries(value)
+            .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+            .map(([key, item]) => [key, canonical(item)]),
+        )
+      : value;
+const scenarioSHA256 = scenarioPath
+  ? createHash('sha256')
+      .update(JSON.stringify(canonical(scenarioRaw)))
+      .digest('hex')
+  : null;
+
 interface Peer {
   child: ChildProcess;
   owner: string;
@@ -52,42 +115,36 @@ async function start(name: string): Promise<Peer> {
     dir,
     output: '',
   };
-  child.stdout!.on('data', (chunk) => (peer.output += chunk));
-  child.stderr!.on('data', (chunk) => (peer.output += chunk));
-  await until(async () => {
-    if (child.exitCode !== null) throw new Error(peer.output);
-    try {
-      const ready = JSON.parse(peer.output) as { owner: string; p2pPort: number };
-      const control = JSON.parse(await readFile(join(dir, 'control.json'), 'utf8'));
-      peer.owner = ready.owner;
-      peer.port = ready.p2pPort;
-      peer.control = control;
-      return true;
-    } catch {
-      return undefined;
-    }
-  }, 45_000);
+  try {
+    const ready = await waitForPeerReady(child);
+    peer.owner = ready.owner;
+    peer.port = ready.p2pPort;
+    peer.control = JSON.parse(await readFile(join(dir, 'control.json'), 'utf8'));
+    child.stdout?.resume();
+    child.stderr?.resume();
+  } catch (error) {
+    await stopChild(child);
+    throw error;
+  }
+  progress.event(`peer ${name} started: ${peer.owner.slice(0, 12)}`);
   events.push({ event: 'peer-started', name, owner: peer.owner, p2pPort: peer.port });
   return peer;
 }
 async function stop(peer: Peer): Promise<void> {
-  if (peer.child.exitCode !== null) return;
-  const exited = new Promise<void>((resolve) => peer.child.once('exit', () => resolve()));
-  peer.child.kill('SIGTERM');
-  const timer = setTimeout(() => peer.child.kill('SIGKILL'), 15_000);
-  await exited;
-  clearTimeout(timer);
+  await stopChild(peer.child);
 }
 async function call(peer: Peer, command: string, args: Record<string, unknown> = {}): Promise<any> {
   return controlPost(peer.control, { command, ...args });
 }
-const caseId = 'rollback-investigation';
-const longEvidence = process.env.RELAY_DEMO_LONG === '1';
+const caseId = scenario?.caseId ?? 'rollback-investigation';
+const longEvidence = scenario
+  ? (scenario.longEvidence ?? false)
+  : process.env.RELAY_DEMO_LONG === '1';
 const padding =
   'Routine shift archive: inventory counts and operator assignments were reviewed. No incident configuration was recorded in this entry.\n\n'.repeat(
     28,
   );
-const evidenceText = (text: string) => (longEvidence ? padding + text : text);
+const evidenceText = (text: string) => (!scenario && longEvidence ? padding + text : text);
 let a: Peer | undefined, b: Peer | undefined;
 const started = performance.now();
 try {
@@ -96,26 +153,69 @@ try {
   await call(a, 'pair', { key: b.owner });
   await call(b, 'pair', { key: a.owner });
   await call(a, 'connect', { port: b.port });
+  progress.event('peers paired and connected');
   await call(a, 'create', {
     id: caseId,
-    title: 'Checkout rollback',
-    needs: JSON.stringify([
-      {
-        id: 'deployment-config',
-        question: 'What deployment configuration changed in deployment 42?',
-      },
-    ]),
-    task: 'Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.',
-  });
-  await call(a, 'evidence', {
-    case: caseId,
-    id: 'health-log',
-    title: 'Checkout health log',
-    text: evidenceText(
-      'Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration.',
+    title: scenario?.title ?? 'Checkout rollback',
+    needs: JSON.stringify(
+      scenario?.informationNeeds ?? [
+        {
+          id: 'deployment-config',
+          question: 'What deployment configuration changed in deployment 42?',
+        },
+      ],
     ),
+    task:
+      scenario?.task ??
+      'Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.',
   });
-  const initial = await call(a, 'work', { case: caseId });
+  const initialEvidence = scenario?.evidence ?? [
+    {
+      id: 'health-log',
+      title: 'Checkout health log',
+      text: evidenceText(
+        'Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration.',
+      ),
+    },
+  ];
+  for (const evidence of initialEvidence) await call(a, 'evidence', { case: caseId, ...evidence });
+  progress.event(`case ${caseId} created; ${initialEvidence.length} source(s) added`);
+  const poll = (peer: Peer, phase: string) => {
+    let stopped = false;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const tick = async () => {
+      if (stopped) return;
+      try {
+        progress.status(
+          phase,
+          await controlPost(
+            peer.control,
+            { command: 'status' },
+            { timeoutMs: 5000, signal: controller.signal },
+          ),
+          caseId,
+        );
+      } catch {
+        /* Peer may be restarting. */
+      }
+      if (!stopped) timer = setTimeout(tick, 3000);
+    };
+    void tick();
+    return () => {
+      stopped = true;
+      controller.abort();
+      if (timer) clearTimeout(timer);
+    };
+  };
+  progress.event('initial work started; waiting for native inference');
+  const stopInitialPoll = poll(a, 'initial');
+  let initial: any;
+  try {
+    initial = await call(a, 'work', { case: caseId });
+  } finally {
+    stopInitialPoll();
+  }
   assert.equal((await call(a, 'status')).cleanupError, null, 'Initial model cleanup failed');
   events.push({ event: 'initial-work', checkpoint: initial });
   assert.equal(
@@ -123,35 +223,57 @@ try {
     'pending',
     `Live agent did not create pending handoff: ${JSON.stringify(initial)}`,
   );
+  progress.event(`initial checkpoint ${initial.status}; waiting for request replication`);
   const request = await until(async () => {
     const records = (await call(b!, 'inspect', { case: caseId })) as RelayRecord[];
-    return records.find((r) => r.kind === 'request' && initial.requestIds.includes(r.id));
+    return records.find(
+      (r) =>
+        r.kind === 'request' &&
+        initial.requestIds.includes(r.id) &&
+        (!scenario ||
+          r.needId === (scenario.contribution.needId ?? scenario.informationNeeds[0]!.id)),
+    );
   });
+  progress.event(`request ${request.id} replicated; taking peer a offline`);
   await stop(a);
   assert.equal(a.child.exitCode, 0, 'Initial peer did not close cleanly');
   events.push({ event: 'a-offline' });
-  await call(b, 'evidence', {
-    case: caseId,
+  const contribution = scenario?.contribution ?? {
     id: 'deployment-config',
     title: 'Deployment 42 configuration',
-    request: request.id,
     text: evidenceText(
       'Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification.',
     ),
+  };
+  await call(b, 'evidence', {
+    case: caseId,
+    id: contribution.id,
+    title: contribution.title,
+    text: contribution.text,
+    request: request.id,
   });
-  events.push({ event: 'b-contributed-offline', id: 'deployment-config', requestId: request.id });
+  events.push({ event: 'b-contributed-offline', id: contribution.id, requestId: request.id });
+  progress.event(`peer b contributed ${contribution.id} while a was offline`);
   const previousOwner = a.owner;
   a = await start('a');
   assert.equal(a.owner, previousOwner, 'A identity changed after restart');
   await call(a, 'connect', { port: b.port });
-  const final = await until(async () => {
-    const records = (await call(a!, 'inspect', { case: caseId })) as RelayRecord[];
-    const cp = latestCheckpoint(records, a!.owner);
-    if (cp?.status === 'failed' || cp?.status === 'cancelled') return { records, checkpoint: cp };
-    return cp?.status === 'completed' && cp.consumed.includes('deployment-config')
-      ? { records, checkpoint: cp }
-      : undefined;
-  }, 720_000);
+  progress.event('peer a reconnected; waiting for replication and automatic resumption');
+  const stopResumePoll = poll(a, 'resumption');
+  let final;
+  try {
+    final = await until(async () => {
+      const records = (await call(a!, 'inspect', { case: caseId })) as RelayRecord[];
+      const cp = latestCheckpoint(records, a!.owner);
+      if (cp?.status === 'failed' || cp?.status === 'cancelled') return { records, checkpoint: cp };
+      return cp?.status === 'completed' && cp.consumed.includes(contribution.id)
+        ? { records, checkpoint: cp }
+        : undefined;
+    }, 720_000);
+  } finally {
+    stopResumePoll();
+  }
+  progress.event(`resumption checkpoint ${final.checkpoint.status}`);
   const settled = await until(async () => {
     const status = await call(a!, 'status');
     return status.active ? undefined : status;
@@ -172,7 +294,7 @@ try {
   events.push({ event: 'model-cleanup-verified' });
   const brief = final.records.find((r) => r.kind === 'brief' && r.id === final.checkpoint.briefId);
   assert.ok(brief?.kind === 'brief');
-  if (longEvidence) {
+  if (longEvidence && !scenario) {
     assert.ok(
       brief.facts.some((f) =>
         f.sources.some((s) => s.id === 'health-log' && s.quote.includes('0.2% to 8%')),
@@ -189,10 +311,18 @@ try {
     );
   }
   assert.ok(
-    brief.facts.some((f) => f.sources.some((s) => s.id === 'deployment-config')),
+    brief.facts.some((f) => f.sources.some((s) => s.id === contribution.id)),
     'Resumed brief must cite contribution',
   );
+  for (const expected of scenario?.requiredQuotes ?? [])
+    assert.ok(
+      brief.facts.some((f) =>
+        f.sources.some((s) => s.id === expected.id && s.quote.includes(expected.quote)),
+      ),
+      `Missing required observed quote for ${expected.id}`,
+    );
   events.push({ event: 'resumed', checkpoint: final.checkpoint, brief });
+  progress.event('final brief saved; checking restart deduplication and cleanup');
   const runId = final.checkpoint.runId;
   await call(a, 'scan');
   await call(a, 'scan');
@@ -209,8 +339,12 @@ try {
   assert.equal(b.child.exitCode, 0, 'B did not close cleanly');
   b = undefined;
   events.push({ event: 'peers-stopped-cleanly' });
+  progress.event('both peers stopped cleanly');
   const report = {
     mode: 'live-qvac-two-peer',
+    sourceCommit,
+    scenarioSHA256,
+    fixtureId: scenario?.fixtureId ?? null,
     longEvidence,
     selector: process.env.RELAY_SELECTOR ?? 'deterministic',
     passed: true,
@@ -223,6 +357,9 @@ try {
 } catch (error) {
   const report = {
     mode: 'live-qvac-two-peer',
+    sourceCommit,
+    scenarioSHA256,
+    fixtureId: scenario?.fixtureId ?? null,
     passed: false,
     elapsedMs: performance.now() - started,
     error: error instanceof Error ? error.message : String(error),
