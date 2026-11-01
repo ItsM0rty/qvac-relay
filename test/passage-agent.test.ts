@@ -599,14 +599,8 @@ for (const budget of [7000, 8000])
         requiredIds,
         contextBudget: budget,
       });
-      if (budget === 7000) {
-        assert.equal(cp.status, 'failed');
-        assert.match(cp.reason ?? '', /overflow/);
-        assert.ok(!(await store.list('incident')).some((record) => record.kind === 'brief'));
-      } else {
-        assert.equal(cp.status, 'completed', cp.reason ?? '');
-        assert.equal(cp.calls, 3);
-      }
+      assert.equal(cp.status, 'completed', cp.reason ?? '');
+      assert.equal(cp.calls, 3);
     });
   });
 
@@ -692,5 +686,82 @@ test('resumed long-record work can use no-progress feedback without duplicating 
     assert.equal(cp.repairs, 2);
     const brief = (await store.list('resumed')).find((r) => r.kind === 'brief');
     assert.ok(brief?.kind === 'brief' && brief.facts.length === 2);
+  });
+});
+
+test('native source-keyed quote input enforces required coverage and compiles delivered quotations', async () => {
+  await fixture(async (store, base) => {
+    const ids = ['quote-a', 'quote-b'];
+    for (const [i, id] of ids.entries())
+      await store.put({
+        ...base,
+        kind: 'evidence',
+        id,
+        title: 'Zircon',
+        text: `Zircon observation ${i} was confirmed.`,
+      });
+    let phase = 0;
+    const quotes: Record<string, string> = {};
+    const model: Model = {
+      name: 'native-input-protocol-fixture-not-live',
+      close: async () => {},
+      complete: async (history, tools) => {
+        validateHistory(history);
+        const turn = ++phase;
+        if (turn === 1)
+          return {
+            content: '',
+            calls: ids.map((id, i) => ({
+              id: `read-${i}`,
+              name: 'read_record',
+              arguments: { id },
+            })),
+            toolErrors: [],
+            stopReason: 'eos',
+          };
+        if (turn === 2) {
+          for (const message of history.filter(
+            (m) => m.role === 'tool' && m.toolName === 'read_record',
+          )) {
+            const page = JSON.parse(message.content) as { id: string; text: string };
+            quotes[page.id] = page.text;
+          }
+          assert.equal(Object.keys(quotes).length, 2);
+          const schema = tools.find((tool) => tool.name === 'save_brief')!.parameters as {
+            properties: {
+              quotes: {
+                properties: Record<string, unknown>;
+                required: string[];
+                additionalProperties: boolean;
+              };
+            };
+          };
+          assert.deepEqual(schema.properties.quotes.required, [...ids].sort());
+          assert.deepEqual(Object.keys(schema.properties.quotes.properties), [...ids].sort());
+          assert.equal(schema.properties.quotes.additionalProperties, false);
+          return action(
+            'save_brief',
+            { quotes: { [ids[0]!]: quotes[ids[0]!] }, uncertainty: [], missing: [] },
+            turn,
+          );
+        }
+        assert.equal(turn, 3);
+        assert.equal(result<{ code: string }>(history, 'save_brief').code, 'COVERAGE');
+        return action('save_brief', { quotes, uncertainty: [], missing: [] }, turn);
+      },
+    };
+    const cp = await new Agent(store, model).run('incident', { requiredIds: ids });
+    assert.equal(cp.status, 'completed', cp.reason ?? '');
+    assert.equal(cp.repairs, 1);
+    const records = await store.list('incident');
+    const briefs = records.filter((record) => record.kind === 'brief');
+    assert.equal(briefs.length, 1);
+    assert.equal(briefs[0]!.kind, 'brief');
+    if (briefs[0]!.kind === 'brief')
+      for (const fact of briefs[0]!.facts) {
+        const source = records.find((r) => r.id === fact.sources[0]!.id)!;
+        assert.equal(fact.text, quotes[source.id]);
+        assert.equal(fact.sources[0]!.revision, revision(source));
+      }
   });
 });

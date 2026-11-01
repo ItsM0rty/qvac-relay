@@ -88,9 +88,9 @@ test('legacy interpretation is labelled as uncertainty while facts are canonical
       (_h, _tools, t) => action('read_record', { id: f.source.id }, t),
       (_h, tools, t) => {
         const schema = tools.find((tool) => tool.name === 'save_brief')!.parameters as any;
-        const fact = schema.properties.facts.items;
-        assert.equal(Object.hasOwn(fact.properties, 'text'), false);
-        assert.equal((fact.required ?? []).includes('text'), false);
+        assert.equal(Object.hasOwn(schema.properties, 'facts'), false);
+        assert.equal(schema.properties.quotes.properties[f.source.id].type, 'string');
+        assert.equal(schema.properties.quotes.additionalProperties, false);
         return action(
           'save_brief',
           {

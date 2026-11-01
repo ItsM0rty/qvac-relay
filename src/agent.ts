@@ -16,6 +16,7 @@ import { buildContext, DeterministicSelector, type Selector } from './context.js
 import type { Message, Model, ToolSpec } from './qvac.js';
 import { PassageIndex } from './retrieval.js';
 import { fitsToolResult } from './tool-budget.js';
+import { parseQuotedBrief, quotedBriefParameters } from './brief-input.js';
 import {
   checkCancelled,
   classify,
@@ -87,6 +88,11 @@ const schemas = {
       ),
   }),
 };
+// Native source-keyed quotes normalize to independently checked observations.
+// The compact legacy library draft keeps its original three-fact input limit.
+const normalizedQuoteSchema = schemas.save_brief.extend({
+  facts: z.array(schemas.save_brief.shape.facts.element).min(1).max(32),
+});
 export const TOOLS: ToolSpec[] = Object.entries(schemas).map(([name, schema]) => ({
   name,
   description: (
@@ -151,27 +157,39 @@ function offerTools(
       return { ...tool, parameters };
     }
     if (tool.name !== 'save_brief') return tool;
-    const parameters = structuredClone(tool.parameters);
-    const factNode = (parameters as SchemaNode).properties?.facts?.items;
-    if (factNode?.properties) {
-      delete factNode.properties.text;
-      factNode.required = factNode.required?.filter((field) => field !== 'text');
-    }
-    const sourceId = (parameters as SchemaNode).properties?.facts?.items?.properties?.sources?.items
-      ?.properties?.id;
-    if (!sourceId)
-      throw new RelayError(
-        'TOOL_SCHEMA',
-        'Trusted source schema is unavailable.',
-        'infrastructure',
-      );
-    sourceId.enum = [...readIds].sort();
-    return { ...tool, parameters };
+    return {
+      ...tool,
+      description:
+        'Save exact source quotations in quotes, keyed by source ID. Fill every required source key. Put interpretations in uncertainty and other gaps in missing.',
+      parameters: quotedBriefParameters(readIds, requiredIds),
+    };
   });
 }
 export function validateArguments(name: string, args: unknown): Record<string, unknown> {
   if (!Object.hasOwn(schemas, name))
     throw new RelayError('UNKNOWN_TOOL', `Tool ${name} is not permitted.`);
+  if (
+    name === 'save_brief' &&
+    typeof args === 'object' &&
+    args !== null &&
+    Object.hasOwn(args, 'quotes')
+  ) {
+    try {
+      return normalizedQuoteSchema.parse(parseQuotedBrief(args));
+    } catch (error) {
+      if (!(error instanceof z.ZodError)) throw error;
+      throw new RelayError(
+        'ARGUMENTS',
+        JSON.stringify(
+          error.issues.map((issue) => ({
+            field: issue.path.join('.'),
+            code: issue.code,
+            message: issue.message,
+          })),
+        ).slice(0, 1800),
+      );
+    }
+  }
   const parsed = schemas[name as keyof typeof schemas].safeParse(args);
   if (!parsed.success)
     throw new RelayError(
@@ -379,6 +397,7 @@ export class Agent {
         .map((r) => r.id);
       await checkpoint('running');
       await this.trace(runId, 'start', {
+        briefInputPolicy: 'native-source-quotes-v1',
         model: this.model.name,
         configuration: this.model.configuration ?? null,
         requiredIds: options.requiredIds ?? [],
@@ -857,7 +876,7 @@ export class Agent {
                   'STALE_CONTEXT',
                   'Locally available evidence changed. Read the new evidence before saving.',
                 );
-              const draft = schemas.save_brief.parse(args);
+              const draft = normalizedQuoteSchema.parse(args);
               const originalFacts = draft.facts.length;
               draft.facts = [
                 ...new Map(draft.facts.map((fact) => [JSON.stringify(fact), fact])).values(),
