@@ -1,0 +1,39 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 125753,
+  "error": "Live agent did not create pending handoff: {\"id\":\"ea355e5ca7b049dfaa065d42a46c2e75213affb04df9ee97027f959ffeb6e86a\",\"owner\":\"9ed4895f7e3901ef6a060bca4741daab3f924af92b99b3ff10c75a2af3dfc3c3\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T16:55:55.954Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"16127ca3-fe73-46c6-9daf-a0e8de038d7e\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":2,\"repairs\":0,\"consumed\":[],\"requestIds\":[],\"reason\":\"model: Model exhausted output budget without an action.\"}\n+ actual - expected\n\n+ 'failed'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "9ed4895f7e3901ef6a060bca4741daab3f924af92b99b3ff10c75a2af3dfc3c3",
+      "p2pPort": 39675
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "aa2910effaf961cbbedceb36cf44ce94f20ce83ccf1dc4b6cab0f75d8e5d3d34",
+      "p2pPort": 43683
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "ea355e5ca7b049dfaa065d42a46c2e75213affb04df9ee97027f959ffeb6e86a",
+        "owner": "9ed4895f7e3901ef6a060bca4741daab3f924af92b99b3ff10c75a2af3dfc3c3",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T16:55:55.954Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "16127ca3-fe73-46c6-9daf-a0e8de038d7e",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 2,
+        "repairs": 0,
+        "consumed": [],
+        "requestIds": [],
+        "reason": "model: Model exhausted output budget without an action."
+      }
+    }
+  ]
+}

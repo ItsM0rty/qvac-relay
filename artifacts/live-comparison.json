@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 2,
+  "suiteId": "relay-engineering-handoff-v1",
+  "baselineSelector": "deterministic",
+  "currentSelector": "laya",
+  "trials": 2,
+  "regression": false,
+  "baselineSuccessRate": 1,
+  "currentSuccessRate": 1,
+  "cases": [
+    {
+      "caseId": "deployment",
+      "trial": 1,
+      "before": true,
+      "after": true,
+      "regression": false,
+      "latencyDeltaMs": 19289.947491,
+      "inputTokenDelta": 1
+    },
+    {
+      "caseId": "queue",
+      "trial": 1,
+      "before": true,
+      "after": true,
+      "regression": false,
+      "latencyDeltaMs": 19020.688443000006,
+      "inputTokenDelta": 9
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 1,
+      "before": true,
+      "after": true,
+      "regression": false,
+      "latencyDeltaMs": 24240.629920000007,
+      "inputTokenDelta": -1
+    },
+    {
+      "caseId": "deployment",
+      "trial": 2,
+      "before": true,
+      "after": true,
+      "regression": false,
+      "latencyDeltaMs": 14883.63930400007,
+      "inputTokenDelta": -10
+    },
+    {
+      "caseId": "queue",
+      "trial": 2,
+      "before": true,
+      "after": true,
+      "regression": false,
+      "latencyDeltaMs": 20155.952144000097,
+      "inputTokenDelta": 23
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 2,
+      "before": true,
+      "after": true,
+      "regression": false,
+      "latencyDeltaMs": -12406.056822999963,
+      "inputTokenDelta": -1880
+    }
+  ],
+  "limitations": "Small repeated-trial comparisons are descriptive. Replay results measure fixture behavior, not model quality or statistical significance."
+}

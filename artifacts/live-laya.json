@@ -1,0 +1,1276 @@
+{
+  "schemaVersion": 2,
+  "suiteId": "relay-engineering-handoff-v1",
+  "datasetHash": "80a951b25b42c9fd4f1356d6069055428ea73c6e67cb04b6b34e0ee63e288851",
+  "generatedAt": "2026-10-31T16:52:45.676Z",
+  "config": {
+    "harnessHash": "c7877a5dacb8475e1d5e48ce590ed427720478a47732a6cc0d2f760dab8c55a0",
+    "mode": "live",
+    "selector": "laya",
+    "generator": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+    "sdkVersion": "0.22.0",
+    "ctxSize": 8192,
+    "maxCalls": 12,
+    "maxRepairs": 2,
+    "contextBudget": 7000,
+    "timeoutMs": 600000,
+    "trials": 2,
+    "caseIds": [
+      "deployment",
+      "queue",
+      "missing-config"
+    ],
+    "temperature": 0.7,
+    "topP": 0.8,
+    "topK": 20,
+    "minP": null,
+    "reasoningBudget": 0,
+    "lifecycle": "Generator unloaded before each task; subsequent turns warm within task. OS/file caches uncontrolled."
+  },
+  "memoryScope": "25 ms sampled parent Node process RSS and system free memory before/after. Native child worker memory is not attributed. This is not machine-wide peak model memory.",
+  "limitations": [
+    "Success means automated protocol, quotation, required-source, uncertainty-label and pending/completed state checks passed. It does not establish semantic truth or interpretation entailment.",
+    "Three synthetic cases and small repeated trials do not establish statistical significance or general model accuracy.",
+    "Replay is a scripted harness regression, not live inference. Every trial writes only isolated temporary stores that are removed after completion.",
+    "Generator unloads between cases; no separate cross-task warm benchmark is claimed.",
+    "Latency includes fixture-store setup and Agent.run, including end-of-run model release. It excludes subsequent temporary-store removal and final SDK shutdown. Selector fallbacks count context deliveries using fallback, not distinct native attempts."
+  ],
+  "results": [
+    {
+      "caseId": "deployment",
+      "trial": 1,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "case": {
+          "id": "deployment-case",
+          "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+          "caseId": "deployment",
+          "createdAt": "2026-10-31T16:39:48.292Z",
+          "schemaVersion": 1,
+          "kind": "case",
+          "title": "Deployment handoff",
+          "task": "Investigate the deployment failure. Read the deployment evidence and save a brief with its exact quotation. State that the log alone does not establish root cause."
+        },
+        "evidence": [
+          {
+            "id": "deployment-noise-0",
+            "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:39:48.292Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 0",
+            "text": "Office inventory entry 0: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-noise-1",
+            "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:39:48.292Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 1",
+            "text": "Office inventory entry 1: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-noise-2",
+            "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:39:48.292Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 2",
+            "text": "Office inventory entry 2: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-noise-3",
+            "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:39:48.292Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 3",
+            "text": "Office inventory entry 3: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-noise-4",
+            "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:39:48.292Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 4",
+            "text": "Office inventory entry 4: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-source",
+            "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:39:48.292Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Deployment evidence",
+            "text": "Deployment 42 timed out at 09:14. The previous deployment completed at 09:10."
+          }
+        ],
+        "briefs": [
+          {
+            "id": "582072ff758af6a8035a90bb4d1abcfe1d7bb02eefa7ef690bd88827535a9f6c",
+            "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:41:36.668Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "factPolicy": "quoted-observations-v1",
+            "facts": [
+              {
+                "text": "Deployment 42 timed out at 09:14. The previous deployment completed at 09:10.",
+                "sources": [
+                  {
+                    "id": "deployment-source",
+                    "revision": "733a7310102063b1355991c551e197bbb05aadaa72300d505d5dc3e9af03991a",
+                    "quote": "Deployment 42 timed out at 09:14. The previous deployment completed at 09:10."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [
+              "Source quotations alone do not establish root cause."
+            ],
+            "missing": [],
+            "basedOn": "f9fc7bdefacfbea94ac9266887dc27213f6c8b44674c68396b73546a80c8e154"
+          }
+        ],
+        "requests": [],
+        "checkpoint": {
+          "id": "7a24b7b930779803a23ea387be26fa0fb14d38b16799f906923e6382772b06b3",
+          "owner": "9a877d5de325dcb61cdb972dc40622e9ae7e7310416cba25cdc745ef74ad74d0",
+          "caseId": "deployment",
+          "createdAt": "2026-10-31T16:41:36.673Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "a9d1712e-9ff3-409b-91ff-3fa50c274aba",
+          "status": "completed",
+          "task": "Investigate the deployment failure. Read the deployment evidence and save a brief with its exact quotation. State that the log alone does not establish root cause.",
+          "calls": 2,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "582072ff758af6a8035a90bb4d1abcfe1d7bb02eefa7ef690bd88827535a9f6c",
+          "requestIds": []
+        }
+      },
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 108773.275618,
+        "generatorInputTokens": 3229,
+        "generatorOutputTokens": 90,
+        "loadMs": 18082.188986,
+        "selectorDecisionCalls": 1,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [
+          {
+            "inputTokens": 1698,
+            "outputTokens": 0,
+            "stateTokens": 254,
+            "stateTokensDropped": 0,
+            "truncated": false,
+            "truncatedQuestions": [],
+            "model": "laya-rl-agent",
+            "decisionCalls": 1,
+            "loadMs": 9794.204995,
+            "decisionMs": 13955.789012,
+            "candidateIds": [
+              "deployment-source",
+              "deployment-noise-0",
+              "deployment-noise-1",
+              "deployment-noise-2",
+              "deployment-noise-3",
+              "deployment-noise-4"
+            ],
+            "taskProjected": false
+          }
+        ],
+        "estimatedInputTokens": 10327,
+        "parentRssBefore": 170299392,
+        "parentRssAfter": 131833856,
+        "parentRssSampledPeak": 183353344,
+        "systemFreeBefore": 3533250560,
+        "systemFreeAfter": 3306549248
+      },
+      "contextSelection": {
+        "policy": "laya",
+        "initialSelectedIds": [
+          "deployment-source",
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "irrelevantIds": [
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "queue",
+      "trial": 1,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "case": {
+          "id": "queue-case",
+          "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+          "caseId": "queue",
+          "createdAt": "2026-10-31T16:41:37.055Z",
+          "schemaVersion": 1,
+          "kind": "case",
+          "title": "Queue handoff",
+          "task": "Investigate the queue failure. Read the queue evidence and save a brief with its exact quotation. Distinguish observation from possible causes."
+        },
+        "evidence": [
+          {
+            "id": "queue-noise-0",
+            "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:41:37.055Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 0",
+            "text": "Office inventory entry 0: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-noise-1",
+            "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:41:37.055Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 1",
+            "text": "Office inventory entry 1: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-noise-2",
+            "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:41:37.055Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 2",
+            "text": "Office inventory entry 2: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-noise-3",
+            "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:41:37.055Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 3",
+            "text": "Office inventory entry 3: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-noise-4",
+            "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:41:37.055Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 4",
+            "text": "Office inventory entry 4: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-source",
+            "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:41:37.055Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Queue evidence",
+            "text": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+          }
+        ],
+        "briefs": [
+          {
+            "id": "80172524a62b20162a25427625c5e0cf32a0b05a732889fa5f4903c8bf665122",
+            "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:43:24.039Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "factPolicy": "quoted-observations-v1",
+            "facts": [
+              {
+                "text": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19.",
+                "sources": [
+                  {
+                    "id": "queue-source",
+                    "revision": "0ee7c6660869778fa4a4301d729f71f7114667863792308e5bf23d9763ea4ae4",
+                    "quote": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [
+              "Source quotations alone do not establish root cause."
+            ],
+            "missing": [],
+            "basedOn": "17a5bc54f6faed1f640bb9210810f2200730cea455265643571c90e21ab6b59b"
+          }
+        ],
+        "requests": [],
+        "checkpoint": {
+          "id": "71198b97e6aae518152179f1c1c3f50d276416c8621e35a32340252d29c3fcb5",
+          "owner": "a224bcf104a2bb6c6c0b52b0f39fac2da1e12eacb57cc4f18ad02d7504aace03",
+          "caseId": "queue",
+          "createdAt": "2026-10-31T16:43:24.042Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "8573c802-a513-48d7-8a0c-8eec4abe42d0",
+          "status": "completed",
+          "task": "Investigate the queue failure. Read the queue evidence and save a brief with its exact quotation. Distinguish observation from possible causes.",
+          "calls": 2,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "80172524a62b20162a25427625c5e0cf32a0b05a732889fa5f4903c8bf665122",
+          "requestIds": []
+        }
+      },
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 107358.77002499999,
+        "generatorInputTokens": 3216,
+        "generatorOutputTokens": 92,
+        "loadMs": 18164.65581300002,
+        "selectorDecisionCalls": 1,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [
+          {
+            "inputTokens": 1674,
+            "outputTokens": 0,
+            "stateTokens": 250,
+            "stateTokensDropped": 0,
+            "truncated": false,
+            "truncatedQuestions": [],
+            "model": "laya-rl-agent",
+            "decisionCalls": 1,
+            "loadMs": 8800.312753999999,
+            "decisionMs": 14070.147450999997,
+            "candidateIds": [
+              "queue-source",
+              "queue-noise-0",
+              "queue-noise-1",
+              "queue-noise-2",
+              "queue-noise-3",
+              "queue-noise-4"
+            ],
+            "taskProjected": false
+          }
+        ],
+        "estimatedInputTokens": 10148,
+        "parentRssBefore": 132108288,
+        "parentRssAfter": 134860800,
+        "parentRssSampledPeak": 134860800,
+        "systemFreeBefore": 3324063744,
+        "systemFreeAfter": 3265245184
+      },
+      "contextSelection": {
+        "policy": "laya",
+        "initialSelectedIds": [
+          "queue-source",
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "irrelevantIds": [
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 1,
+      "success": true,
+      "status": "pending",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "case": {
+          "id": "missing-config-case",
+          "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+          "caseId": "missing-config",
+          "createdAt": "2026-10-31T16:43:24.426Z",
+          "schemaVersion": 1,
+          "kind": "case",
+          "title": "Configuration handoff",
+          "task": "Investigate the configuration incident. Read the configuration evidence, request the missing deployed timeout setting, and save a pending brief with its exact quotation. The deployed setting is unavailable.",
+          "informationNeeds": [
+            {
+              "id": "deployed-timeout",
+              "question": "What timeout setting was deployed?"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "id": "missing-config-noise-0",
+            "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:43:24.426Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 0",
+            "text": "Office inventory entry 0: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-noise-1",
+            "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:43:24.426Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 1",
+            "text": "Office inventory entry 1: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-noise-2",
+            "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:43:24.426Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 2",
+            "text": "Office inventory entry 2: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-noise-3",
+            "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:43:24.426Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 3",
+            "text": "Office inventory entry 3: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-noise-4",
+            "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:43:24.426Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 4",
+            "text": "Office inventory entry 4: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-source",
+            "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:43:24.426Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Configuration evidence",
+            "text": "Requests timed out after the release. The deployed timeout setting is absent from the incident log."
+          }
+        ],
+        "briefs": [
+          {
+            "id": "0432967ce390e02393c1b68df10c13270179098cddf77b18fe5c6ab073fd202d",
+            "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:46:34.461Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "factPolicy": "quoted-observations-v1",
+            "facts": [
+              {
+                "text": "Requests timed out after the release. The deployed timeout setting is absent from the incident log.",
+                "sources": [
+                  {
+                    "id": "missing-config-source",
+                    "revision": "24c28ab62408fbe21aa386264b75c09a1721874f41faf6db89df84c4d643fed6",
+                    "quote": "Requests timed out after the release. The deployed timeout setting is absent from the incident log."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [
+              "Source quotations alone do not establish root cause."
+            ],
+            "missing": [
+              "What timeout setting was deployed?"
+            ],
+            "basedOn": "a1fe04c1ac83d373fd29c16e58e029223a87c42dc3ae058169654ad58f0e2a54"
+          }
+        ],
+        "requests": [
+          {
+            "id": "044f5eba8182aa5c57e9eb7c2076aa481ab23c6665897d43963c72db43b8b69f",
+            "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:45:51.939Z",
+            "schemaVersion": 1,
+            "kind": "request",
+            "question": "What timeout setting was deployed?",
+            "needId": "deployed-timeout"
+          }
+        ],
+        "checkpoint": {
+          "id": "374c7d3b352c6a43372054d2c86853106a9286ce12cb2b30dd66d4674903f66d",
+          "owner": "ae77ee6abd497a2444e7c5fde50dfc936ae572e7c5de5acc7e54720cef8697d5",
+          "caseId": "missing-config",
+          "createdAt": "2026-10-31T16:46:34.465Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "16694e37-f0c2-4580-9e82-04474cb187d6",
+          "status": "pending",
+          "task": "Investigate the configuration incident. Read the configuration evidence, request the missing deployed timeout setting, and save a pending brief with its exact quotation. The deployed setting is unavailable.",
+          "calls": 4,
+          "repairs": 1,
+          "consumed": [],
+          "briefId": "0432967ce390e02393c1b68df10c13270179098cddf77b18fe5c6ab073fd202d",
+          "requestIds": [
+            "044f5eba8182aa5c57e9eb7c2076aa481ab23c6665897d43963c72db43b8b69f"
+          ]
+        }
+      },
+      "metrics": {
+        "calls": 4,
+        "repairs": 1,
+        "latencyMs": 190408.399554,
+        "generatorInputTokens": 7195,
+        "generatorOutputTokens": 179,
+        "loadMs": 18177.77457900002,
+        "selectorDecisionCalls": 1,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [
+          {
+            "inputTokens": 1692,
+            "outputTokens": 0,
+            "stateTokens": 253,
+            "stateTokensDropped": 0,
+            "truncated": false,
+            "truncatedQuestions": [],
+            "model": "laya-rl-agent",
+            "decisionCalls": 1,
+            "loadMs": 8552.069436999998,
+            "decisionMs": 14283.66735599999,
+            "candidateIds": [
+              "missing-config-source",
+              "missing-config-noise-0",
+              "missing-config-noise-1",
+              "missing-config-noise-2",
+              "missing-config-noise-3",
+              "missing-config-noise-4"
+            ],
+            "taskProjected": false
+          }
+        ],
+        "estimatedInputTokens": 24660,
+        "parentRssBefore": 134860800,
+        "parentRssAfter": 136695808,
+        "parentRssSampledPeak": 136695808,
+        "systemFreeBefore": 3270238208,
+        "systemFreeAfter": 3356139520
+      },
+      "contextSelection": {
+        "policy": "laya",
+        "initialSelectedIds": [
+          "missing-config-source",
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "irrelevantIds": [
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "deployment",
+      "trial": 2,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "case": {
+          "id": "deployment-case",
+          "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+          "caseId": "deployment",
+          "createdAt": "2026-10-31T16:46:34.836Z",
+          "schemaVersion": 1,
+          "kind": "case",
+          "title": "Deployment handoff",
+          "task": "Investigate the deployment failure. Read the deployment evidence and save a brief with its exact quotation. State that the log alone does not establish root cause."
+        },
+        "evidence": [
+          {
+            "id": "deployment-noise-0",
+            "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:46:34.836Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 0",
+            "text": "Office inventory entry 0: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-noise-1",
+            "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:46:34.836Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 1",
+            "text": "Office inventory entry 1: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-noise-2",
+            "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:46:34.836Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 2",
+            "text": "Office inventory entry 2: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-noise-3",
+            "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:46:34.836Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 3",
+            "text": "Office inventory entry 3: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-noise-4",
+            "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:46:34.836Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 4",
+            "text": "Office inventory entry 4: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "deployment-source",
+            "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:46:34.836Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Deployment evidence",
+            "text": "Deployment 42 timed out at 09:14. The previous deployment completed at 09:10."
+          }
+        ],
+        "briefs": [
+          {
+            "id": "b677d9afd51f1aa8d1ce50fac12d7738ff6c562ec60b6b0e432583d43ef5b418",
+            "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+            "caseId": "deployment",
+            "createdAt": "2026-10-31T16:48:20.000Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "factPolicy": "quoted-observations-v1",
+            "facts": [
+              {
+                "text": "Deployment 42 timed out at 09:14. The previous deployment completed at 09:10.",
+                "sources": [
+                  {
+                    "id": "deployment-source",
+                    "revision": "c07d52526a9ae0f2a7eadd44d9ce75c0db00142cbfddd87b31404a79760df400",
+                    "quote": "Deployment 42 timed out at 09:14. The previous deployment completed at 09:10."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [
+              "Source quotations alone do not establish root cause."
+            ],
+            "missing": [],
+            "basedOn": "fd6a6d1f78f81b5e6bdaa44595c8e55f227e6588004b1a035e66f7c73f56eaac"
+          }
+        ],
+        "requests": [],
+        "checkpoint": {
+          "id": "3c785a54b747c067ff48acc349a7b9be951a71dafb3577800bc2e04ef6fa987d",
+          "owner": "e690bd9387b7dab9604db7a9c63f839a4530f994d5cc76659b660f48a93aa562",
+          "caseId": "deployment",
+          "createdAt": "2026-10-31T16:48:20.003Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "26175acd-279f-4096-86a0-14df4711f462",
+          "status": "completed",
+          "task": "Investigate the deployment failure. Read the deployment evidence and save a brief with its exact quotation. State that the log alone does not establish root cause.",
+          "calls": 2,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "b677d9afd51f1aa8d1ce50fac12d7738ff6c562ec60b6b0e432583d43ef5b418",
+          "requestIds": []
+        }
+      },
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 105542.93693300005,
+        "generatorInputTokens": 3212,
+        "generatorOutputTokens": 90,
+        "loadMs": 18912.812575999997,
+        "selectorDecisionCalls": 1,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [
+          {
+            "inputTokens": 1698,
+            "outputTokens": 0,
+            "stateTokens": 254,
+            "stateTokensDropped": 0,
+            "truncated": false,
+            "truncatedQuestions": [],
+            "model": "laya-rl-agent",
+            "decisionCalls": 1,
+            "loadMs": 8439.300965000002,
+            "decisionMs": 13980.39616199996,
+            "candidateIds": [
+              "deployment-source",
+              "deployment-noise-0",
+              "deployment-noise-1",
+              "deployment-noise-2",
+              "deployment-noise-3",
+              "deployment-noise-4"
+            ],
+            "taskProjected": false
+          }
+        ],
+        "estimatedInputTokens": 10327,
+        "parentRssBefore": 136695808,
+        "parentRssAfter": 137220096,
+        "parentRssSampledPeak": 137220096,
+        "systemFreeBefore": 3368595456,
+        "systemFreeAfter": 3272146944
+      },
+      "contextSelection": {
+        "policy": "laya",
+        "initialSelectedIds": [
+          "deployment-source",
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "irrelevantIds": [
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "queue",
+      "trial": 2,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "case": {
+          "id": "queue-case",
+          "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+          "caseId": "queue",
+          "createdAt": "2026-10-31T16:48:20.383Z",
+          "schemaVersion": 1,
+          "kind": "case",
+          "title": "Queue handoff",
+          "task": "Investigate the queue failure. Read the queue evidence and save a brief with its exact quotation. Distinguish observation from possible causes."
+        },
+        "evidence": [
+          {
+            "id": "queue-noise-0",
+            "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:48:20.383Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 0",
+            "text": "Office inventory entry 0: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-noise-1",
+            "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:48:20.383Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 1",
+            "text": "Office inventory entry 1: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-noise-2",
+            "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:48:20.383Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 2",
+            "text": "Office inventory entry 2: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-noise-3",
+            "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:48:20.383Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 3",
+            "text": "Office inventory entry 3: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-noise-4",
+            "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:48:20.383Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 4",
+            "text": "Office inventory entry 4: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "queue-source",
+            "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:48:20.383Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Queue evidence",
+            "text": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+          }
+        ],
+        "briefs": [
+          {
+            "id": "91e7f5c147ad7bbb6f94301d86c3f87cb67991ce5b350919ea28bdd270129054",
+            "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+            "caseId": "queue",
+            "createdAt": "2026-10-31T16:50:07.444Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "factPolicy": "quoted-observations-v1",
+            "facts": [
+              {
+                "text": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19.",
+                "sources": [
+                  {
+                    "id": "queue-source",
+                    "revision": "0009c482193ad7a17e9cda57d3f339fe1e90569638ae3f8a388c30cf2023f7d7",
+                    "quote": "Queue depth reached 500 at 10:20. Worker logs show connection refused at 10:19."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [
+              "Source quotations alone do not establish root cause."
+            ],
+            "missing": [],
+            "basedOn": "0f3c5efcf9973919f51e6000b1240b75849f478d85b390b032eda93257746d72"
+          }
+        ],
+        "requests": [],
+        "checkpoint": {
+          "id": "350cb7ec0ab60d421388834f5f637ab8735c31d6f9f7fe7ed3f04f653e97aacf",
+          "owner": "ffb520897eec676f52c06dfcf4d53ddbabe17f6827b0dd153be3635b14443a85",
+          "caseId": "queue",
+          "createdAt": "2026-10-31T16:50:07.447Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "07c37ebd-6295-4b00-bd95-2ee962307948",
+          "status": "completed",
+          "task": "Investigate the queue failure. Read the queue evidence and save a brief with its exact quotation. Distinguish observation from possible causes.",
+          "calls": 2,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "91e7f5c147ad7bbb6f94301d86c3f87cb67991ce5b350919ea28bdd270129054",
+          "requestIds": []
+        }
+      },
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 107425.18716400006,
+        "generatorInputTokens": 3244,
+        "generatorOutputTokens": 92,
+        "loadMs": 18276.246473000036,
+        "selectorDecisionCalls": 1,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [
+          {
+            "inputTokens": 1674,
+            "outputTokens": 0,
+            "stateTokens": 250,
+            "stateTokensDropped": 0,
+            "truncated": false,
+            "truncatedQuestions": [],
+            "model": "laya-rl-agent",
+            "decisionCalls": 1,
+            "loadMs": 8407.282744999975,
+            "decisionMs": 14273.114115000004,
+            "candidateIds": [
+              "queue-source",
+              "queue-noise-0",
+              "queue-noise-1",
+              "queue-noise-2",
+              "queue-noise-3",
+              "queue-noise-4"
+            ],
+            "taskProjected": false
+          }
+        ],
+        "estimatedInputTokens": 10148,
+        "parentRssBefore": 137220096,
+        "parentRssAfter": 138412032,
+        "parentRssSampledPeak": 138412032,
+        "systemFreeBefore": 3271843840,
+        "systemFreeAfter": 3244457984
+      },
+      "contextSelection": {
+        "policy": "laya",
+        "initialSelectedIds": [
+          "queue-source",
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "irrelevantIds": [
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 2,
+      "success": true,
+      "status": "pending",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true,
+        "quotedObservations": true,
+        "uncertaintyMarked": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "storedOutcome": {
+        "case": {
+          "id": "missing-config-case",
+          "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+          "caseId": "missing-config",
+          "createdAt": "2026-10-31T16:50:07.810Z",
+          "schemaVersion": 1,
+          "kind": "case",
+          "title": "Configuration handoff",
+          "task": "Investigate the configuration incident. Read the configuration evidence, request the missing deployed timeout setting, and save a pending brief with its exact quotation. The deployed setting is unavailable.",
+          "informationNeeds": [
+            {
+              "id": "deployed-timeout",
+              "question": "What timeout setting was deployed?"
+            }
+          ]
+        },
+        "evidence": [
+          {
+            "id": "missing-config-noise-0",
+            "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:50:07.810Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 0",
+            "text": "Office inventory entry 0: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-noise-1",
+            "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:50:07.810Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 1",
+            "text": "Office inventory entry 1: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-noise-2",
+            "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:50:07.810Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 2",
+            "text": "Office inventory entry 2: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-noise-3",
+            "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:50:07.810Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 3",
+            "text": "Office inventory entry 3: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-noise-4",
+            "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:50:07.810Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Archived unrelated note 4",
+            "text": "Office inventory entry 4: spare keyboards are stored on shelf B."
+          },
+          {
+            "id": "missing-config-source",
+            "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:50:07.810Z",
+            "schemaVersion": 1,
+            "kind": "evidence",
+            "title": "Configuration evidence",
+            "text": "Requests timed out after the release. The deployed timeout setting is absent from the incident log."
+          }
+        ],
+        "briefs": [
+          {
+            "id": "a6498ec85d38b1d78fe73e2335f91785bc294492d2d74d81086683d7690a73f9",
+            "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:52:45.326Z",
+            "schemaVersion": 1,
+            "kind": "brief",
+            "factPolicy": "quoted-observations-v1",
+            "facts": [
+              {
+                "text": "Requests timed out after the release. The deployed timeout setting is absent from the incident log.",
+                "sources": [
+                  {
+                    "id": "missing-config-source",
+                    "revision": "dc009b6346ccef16f5ec794f310f09df93b0bd4ecf2ccb8935fedabffc7f1736",
+                    "quote": "Requests timed out after the release. The deployed timeout setting is absent from the incident log."
+                  }
+                ]
+              }
+            ],
+            "uncertainty": [
+              "Source quotations alone do not establish root cause."
+            ],
+            "missing": [
+              "What timeout setting was deployed?"
+            ],
+            "basedOn": "e8dcd4833a2bb6c3f87dae79c1bb121e59a07ae4934d7844a04384b98bc8156c"
+          }
+        ],
+        "requests": [
+          {
+            "id": "70f4b2d244f37a249e402f2ecfcccc6cddd959725e01b30ae1ca8f9f292441b8",
+            "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+            "caseId": "missing-config",
+            "createdAt": "2026-10-31T16:52:02.138Z",
+            "schemaVersion": 1,
+            "kind": "request",
+            "question": "What timeout setting was deployed?",
+            "needId": "deployed-timeout"
+          }
+        ],
+        "checkpoint": {
+          "id": "3c9aa0da67ba17a156197df7098a47310480acf9d0ce111acdeedd3a002f8c61",
+          "owner": "85328d5a4ab2cb55510516336bd017cc841c33412e62a7905b4f04f1a6fb3d91",
+          "caseId": "missing-config",
+          "createdAt": "2026-10-31T16:52:45.329Z",
+          "schemaVersion": 1,
+          "kind": "checkpoint",
+          "runId": "f2607feb-98e5-4c44-874a-0cd7e6ba87b1",
+          "status": "pending",
+          "task": "Investigate the configuration incident. Read the configuration evidence, request the missing deployed timeout setting, and save a pending brief with its exact quotation. The deployed setting is unavailable.",
+          "calls": 3,
+          "repairs": 0,
+          "consumed": [],
+          "briefId": "a6498ec85d38b1d78fe73e2335f91785bc294492d2d74d81086683d7690a73f9",
+          "requestIds": [
+            "70f4b2d244f37a249e402f2ecfcccc6cddd959725e01b30ae1ca8f9f292441b8"
+          ]
+        }
+      },
+      "metrics": {
+        "calls": 3,
+        "repairs": 0,
+        "latencyMs": 157900.946963,
+        "generatorInputTokens": 5290,
+        "generatorOutputTokens": 238,
+        "loadMs": 17917.74186099996,
+        "selectorDecisionCalls": 1,
+        "selectorFallbacks": 0,
+        "selectorFallbackReasons": [],
+        "selectorUsage": [
+          {
+            "inputTokens": 1692,
+            "outputTokens": 0,
+            "stateTokens": 253,
+            "stateTokensDropped": 0,
+            "truncated": false,
+            "truncatedQuestions": [],
+            "model": "laya-rl-agent",
+            "decisionCalls": 1,
+            "loadMs": 8259.071002000012,
+            "decisionMs": 14953.494859000086,
+            "candidateIds": [
+              "missing-config-source",
+              "missing-config-noise-0",
+              "missing-config-noise-1",
+              "missing-config-noise-2",
+              "missing-config-noise-3",
+              "missing-config-noise-4"
+            ],
+            "taskProjected": false
+          }
+        ],
+        "estimatedInputTokens": 17787,
+        "parentRssBefore": 138412032,
+        "parentRssAfter": 139329536,
+        "parentRssSampledPeak": 139329536,
+        "systemFreeBefore": 3252035584,
+        "systemFreeAfter": 3338625024
+      },
+      "contextSelection": {
+        "policy": "laya",
+        "initialSelectedIds": [
+          "missing-config-source",
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "irrelevantIds": [
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    }
+  ]
+}

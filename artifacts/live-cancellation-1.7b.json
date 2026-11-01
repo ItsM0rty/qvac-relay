@@ -1,0 +1,14 @@
+{
+  "mode": "live-qvac-cancellation",
+  "passed": true,
+  "candidate": "1.7b",
+  "observedNativeOutput": true,
+  "cancellationSent": true,
+  "cancelMs": 32.76580499999909,
+  "elapsedMs": 20466.153541,
+  "cancellationError": {
+    "name": "INFERENCE_CANCELLED",
+    "message": "Inference request \"b4f176a4-7c97-4156-aea5-f57b0251c07f\" was cancelled before it could complete",
+    "code": 52419
+  }
+}
