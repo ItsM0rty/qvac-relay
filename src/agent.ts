@@ -500,7 +500,9 @@ export class Agent {
             if (repetitions >= 2)
               throw new RelayError(
                 'NO_PROGRESS',
-                'This action already returned a result twice against unchanged data. Use the existing result, read a relevant record, or request missing information.',
+                call.name === 'request_information'
+                  ? 'This question is already recorded. Do not request it again. Save a pending brief using the evidence already read, or inspect contributed responses.'
+                  : 'This action already returned a result twice against unchanged data. Use the existing result, read a relevant record, or request missing information.',
               );
             if (call.name === 'find_evidence') {
               const found = searchEvidence(current.records, String(args.query));
@@ -555,9 +557,23 @@ export class Agent {
                   ...(need ? { needId: need.id } : {}),
                 });
               checkCancelled(signal);
-              await this.store.put(record);
+              const requestWrite = await this.store.put(record);
               if (!requestIds.includes(id)) requestIds.push(id);
-              result = { id, question, ...(need ? { needId: need.id } : {}), persisted: true };
+              const responseIds = current.records
+                .filter((record) => record.kind === 'evidence' && record.requestId === id)
+                .map((record) => record.id);
+              result = {
+                id,
+                question,
+                ...(need ? { needId: need.id } : {}),
+                persisted: true,
+                duplicate: requestWrite.duplicate,
+                responseIds,
+                status: responseIds.length ? 'answered' : 'awaiting-response',
+                guidance: responseIds.length
+                  ? 'The question has linked evidence. Read and cite those response IDs.'
+                  : 'The question is recorded. Do not request it again. Save a pending brief from available evidence; a peer response can resume it later.',
+              };
             } else if (call.name === 'save_brief') {
               if (current.fingerprint !== snapshot.fingerprint)
                 throw new RelayError(

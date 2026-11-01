@@ -188,3 +188,65 @@ test('cancellation is checked before selector execution and after a normal selec
     (error: unknown) => error instanceof RelayError && error.kind === 'cancelled',
   );
 });
+
+test('information need state follows persisted request and response even when selector omits evidence', async () => {
+  const base = {
+    schemaVersion: 1,
+    owner: 'a'.repeat(64),
+    caseId: 'demo',
+    createdAt: '2026-10-31T00:00:00Z',
+  };
+  const need = { id: 'timeout', question: 'What was the timeout?' };
+  const caseRecord = parseRecord({
+    ...base,
+    kind: 'case',
+    id: 'case',
+    title: 'Incident',
+    task: args.task,
+    informationNeeds: [need],
+  });
+  const request = parseRecord({
+    ...base,
+    kind: 'request',
+    id: 'request',
+    question: need.question,
+    needId: need.id,
+  });
+  const unrelated = parseRecord({
+    ...base,
+    kind: 'evidence',
+    id: 'other',
+    title: 'Other',
+    text: 'Other data',
+    requestId: 'other-request',
+  });
+  const response = parseRecord({
+    ...base,
+    kind: 'evidence',
+    id: 'response',
+    title: 'Setting',
+    text: '100 ms',
+    requestId: request.id,
+  });
+  const selector: Selector = { select: async () => ({ ids: [], policy: 'omit-all' }) };
+  const contextFor = async (additional: (typeof caseRecord)[]) => {
+    const context = await buildContext({ ...args, records: [caseRecord, ...additional], selector });
+    assert.deepEqual(context.selection.ids, []);
+    return JSON.parse(context.history[1]!.content) as {
+      informationNeeds: Array<{ id: string; status: string }>;
+      workState?: string;
+      requests: Array<{ needId: string; responseIds: string[] }>;
+    };
+  };
+  const initial = await contextFor([unrelated]);
+  assert.equal(initial.informationNeeds[0]?.status, 'unrequested');
+  assert.equal(initial.workState, undefined);
+  const pending = await contextFor([request, unrelated]);
+  assert.equal(pending.informationNeeds[0]?.status, 'awaiting-response');
+  assert.match(pending.workState!, /Save a pending brief/);
+  assert.deepEqual(pending.requests[0]?.responseIds, []);
+  const answered = await contextFor([request, unrelated, response]);
+  assert.equal(answered.informationNeeds[0]?.status, 'answered');
+  assert.equal(answered.workState, undefined);
+  assert.deepEqual(answered.requests[0]?.responseIds, ['response']);
+});

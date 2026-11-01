@@ -97,9 +97,30 @@ test('premature completion is repaired by requesting the required information', 
         );
       },
       (h, t) => {
-        const request = result<{ id: string; persisted: boolean }>(h, 'request_information');
+        const request = result<{
+          id: string;
+          persisted: boolean;
+          duplicate: boolean;
+          status: string;
+          responseIds: string[];
+          guidance: string;
+        }>(h, 'request_information');
         assert.equal(request.persisted, true);
+        assert.equal(request.duplicate, false);
+        assert.equal(request.status, 'awaiting-response');
+        assert.deepEqual(request.responseIds, []);
+        assert.match(request.guidance, /Save a pending brief/);
         assert.equal(request.id, stableId(f.store.owner, 'incident', 'need', needId));
+        return action('request_information', { needId, question }, t);
+      },
+      (h, t) => {
+        const reused = result<{ duplicate: boolean; status: string; responseIds: string[] }>(
+          h,
+          'request_information',
+        );
+        assert.equal(reused.duplicate, true);
+        assert.equal(reused.status, 'awaiting-response');
+        assert.deepEqual(reused.responseIds, []);
         return action('save_brief', draft([read]), t);
       },
     ]);
@@ -202,7 +223,20 @@ test(
       let source: { id: string; text: string };
       let response: { id: string; text: string };
       const model = new ScriptedModel([
-        (_h, t) => action('read_record', { id: 'incident-log' }, t),
+        (_h, t) => action('request_information', { needId, question }, t),
+        (h, t) => {
+          const existing = result<{
+            duplicate: boolean;
+            status: string;
+            responseIds: string[];
+            guidance: string;
+          }>(h, 'request_information');
+          assert.equal(existing.duplicate, true);
+          assert.equal(existing.status, 'answered');
+          assert.deepEqual(existing.responseIds, ['timeout-response']);
+          assert.match(existing.guidance, /Read and cite/);
+          return action('read_record', { id: 'incident-log' }, t);
+        },
         (h, t) => {
           source = result(h, 'read_record');
           return action('read_record', { id: 'timeout-response' }, t);
