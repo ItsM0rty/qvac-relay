@@ -1,0 +1,40 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 264703.699397,
+  "error": "Live agent did not create pending handoff: {\"id\":\"80d7d058d59fd9641b2d89b8fb4104c226c58a11625f4126281d0c97ea561019\",\"owner\":\"2dcdaaeb2f47576a24ef15c86bdd616b7b1d48465292cb165d20ca68bb8fbe65\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-11-01T04:23:38.646Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"6141524a-d666-4b05-8ace-fb35cb76d9ec\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":4,\"repairs\":1,\"consumed\":[],\"lastFailure\":\"validation:QUOTE:Quote must be an exact substring of the read result for health-log.\",\"requestIds\":[],\"reason\":\"validation: Quote must be an exact substring of the read result for health-log.\"}\n+ actual - expected\n\n+ 'failed'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "2dcdaaeb2f47576a24ef15c86bdd616b7b1d48465292cb165d20ca68bb8fbe65",
+      "p2pPort": 36615
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "55b7adec5d31fb1b6806ea8c904cb239c084766891829ee24666d45f3803adfd",
+      "p2pPort": 37143
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "80d7d058d59fd9641b2d89b8fb4104c226c58a11625f4126281d0c97ea561019",
+        "owner": "2dcdaaeb2f47576a24ef15c86bdd616b7b1d48465292cb165d20ca68bb8fbe65",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T04:23:38.646Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "6141524a-d666-4b05-8ace-fb35cb76d9ec",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 4,
+        "repairs": 1,
+        "consumed": [],
+        "lastFailure": "validation:QUOTE:Quote must be an exact substring of the read result for health-log.",
+        "requestIds": [],
+        "reason": "validation: Quote must be an exact substring of the read result for health-log."
+      }
+    }
+  ]
+}

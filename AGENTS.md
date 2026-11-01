@@ -22,7 +22,7 @@ The clean Linux verification for source `fd54add` passed fresh `npm ci`, QVAC bu
 
 ## Project map
 
-The current passage retrieval implementation is on `code-fix/passage-retrieval`; source `ae3a53f` passed 164/164 integrated tests, build and formatting. This includes next-context tool-result admission, single-copy required text and feedback, protected read progress and rejected-draft repair. The fresh installation at `57fc4d6` passed 129/129 tests and zero audit findings with the same dependency lock. Keep those source scopes separate. Work resumed after the requested pause. Current native long-record verification is running; read `docs/STATE.md` before starting any model work.
+The current passage retrieval implementation is on `code-fix/passage-retrieval`; source `89f9f10` passed 164/164 integrated tests, build and formatting. This includes next-context tool-result admission, single-copy required text and feedback, trusted native page sizing and rejected-draft repair. The fresh installation at `57fc4d6` passed 129/129 tests and zero audit findings with the same dependency lock. Keep those source scopes separate. Current native long-record verification is running; read `docs/STATE.md` before starting any model work.
 
 The new selection matrix has 54 rows over nine frozen cases. Each selector recovered 7/9 held-out spans per trial with seven distractor passages; no measured ranker benefit supports changing the lexical default. All six native held-out agent runs at the earlier `57fc4d6` harness failed. Preserve them. Later generic harness repairs do not turn those failures into passes. See `docs/RETRIEVAL_EVALUATION.md`.
 
@@ -53,7 +53,7 @@ The new selection matrix has 54 rows over nine frozen cases. Each selector recov
 
 - npm run build
 - npm test (110 tests passed from a clean Linux install at source fd54add)
-- npm test (164 tests passed for the passage implementation at source ae3a53f, existing verified dependencies)
+- npm test (164 tests passed for the passage implementation at source 89f9f10, existing verified dependencies)
 - npm run ranker:prepare (explicit network download; pinned SHA-256 files)
 - npm run ranker:probe (real CPU logits, paired tokenization and cleanup; retained artifact)
 - npm run evaluate:retrieval -- --mode retrieval --trials 2 (native 54-row captured matrix at 57fc4d6)

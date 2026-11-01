@@ -88,11 +88,25 @@
     },
     {
       "artifacts": [
-        "passage-code-verification.json",
-        "passage-ranking-budget-replay.json"
+        "passage-code-verification-ae3a53f.json"
       ],
       "sourceCommit": "ae3a53f7f8c975cd1af6e9f584bf56d04a8eb4f9",
       "note": "164 tests, build, format. Captured ranking budget replay is inference-free with explicit57fc attribution."
+    },
+    {
+      "artifacts": [
+        "passage-demo-ae3a53f-failed.json"
+      ],
+      "sourceCommit": "ae3a53f",
+      "note": "Initial-phase native attempt stopped after repeated exact-quotation validation. One159-character read; attempted quotations not recorded, so exact mismatch cause unknown. No request or replication phase reached."
+    },
+    {
+      "artifacts": [
+        "passage-code-verification.json",
+        "passage-ranking-budget-replay.json"
+      ],
+      "sourceCommit": "89f9f107d7dfe18a435938a988ee70d1f7d7e648",
+      "note": "164tests/build/format with trusted native read sizing; replay reuses57fc captured predictions, not fresh inference."
     }
   ],
   "limits": "The manifest is a development record, not a cryptographic attestation. Native predictions, cached rankings, replay and controlled tests remain distinct."
