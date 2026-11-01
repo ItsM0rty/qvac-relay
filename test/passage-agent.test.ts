@@ -582,7 +582,7 @@ for (const budget of [7000, 8000])
           const state = h
             .filter((m) => m.role === 'user')
             .map((m) => JSON.parse(m.content))
-            .find((v) => v.readState);
+            .find((v) => v.readProgressGuidance?.includes('Required excerpts are available'));
           assert.ok(state);
           return action(
             'save_brief',
@@ -609,3 +609,88 @@ for (const budget of [7000, 8000])
       }
     });
   });
+
+test('resumed long-record work can use no-progress feedback without duplicating it into overflow', async () => {
+  await fixture(async (store, base) => {
+    const task =
+      'Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.';
+    const own = { ...base, caseId: 'resumed' };
+    const padding =
+      'Routine shift archive: inventory counts and operator assignments were reviewed. No incident configuration was recorded in this entry.\n\n'.repeat(
+        28,
+      );
+    const quotes = {
+      'health-log':
+        'Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration.',
+      'deployment-config':
+        'Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification.',
+    };
+    const question = 'What deployment configuration changed in deployment 42?';
+    await store.put({
+      ...own,
+      kind: 'case',
+      id: 'resumed-case',
+      title: 'Checkout rollback',
+      task,
+      informationNeeds: [{ id: 'deployment-config', question }],
+    });
+    await store.put({
+      ...own,
+      kind: 'request',
+      id: 'config-request',
+      needId: 'deployment-config',
+      question,
+    });
+    for (const [id, text] of Object.entries(quotes))
+      await store.put({
+        ...own,
+        kind: 'evidence',
+        id,
+        title: id === 'health-log' ? 'Checkout health log' : 'Deployment 42 configuration',
+        text: padding + text,
+        ...(id === 'deployment-config' ? { requestId: 'config-request' } : {}),
+      });
+    const reads = [
+      'deployment-config',
+      'health-log',
+      'deployment-config',
+      'health-log',
+      'deployment-config',
+    ];
+    const model = new ControlledModel([
+      ...reads.map(
+        (id) => (_h: Message[], t: number) =>
+          action('read_record', { id, offset: padding.length - 2, length: 1000 }, t),
+      ),
+      (h, t) => {
+        assert.equal(result<{ code: string }>(h, 'read_record').code, 'NO_PROGRESS');
+        const state = h
+          .filter((m) => m.role === 'user')
+          .map((m) => JSON.parse(m.content))
+          .find((v) => v.feedbackInToolResult);
+        assert.ok(state);
+        assert.ok(!Object.hasOwn(state, 'feedback'));
+        return action(
+          'save_brief',
+          {
+            facts: Object.entries(quotes).map(([id, quote]) => ({ sources: [{ id, quote }] })),
+            uncertainty: [],
+            missing: [],
+          },
+          t,
+        );
+      },
+    ]);
+    const cp = await new Agent(store, model).run('resumed', {
+      requiredIds: Object.keys(quotes),
+      initialCalls: 10,
+      initialRepairs: 1,
+      maxCalls: 20,
+    });
+    assert.equal(cp.status, 'completed', cp.reason ?? '');
+    assert.equal(cp.calls, 16);
+    assert.equal(cp.repairs, 2);
+    const brief = (await store.list('resumed')).find((r) => r.kind === 'brief');
+    assert.ok(brief?.kind === 'brief' && brief.facts.length === 2);
+  });
+});

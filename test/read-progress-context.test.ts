@@ -76,7 +76,7 @@ test('protected read IDs and source survive discarding only a rejected draft und
   assert.deepEqual(history, before);
   const task = JSON.parse(compact.history[1]!.content);
   assert.deepEqual(task.readIds, ['required']);
-  assert.match(task.readProgressGuidance, /not mean the whole source/i);
+  assert.match(task.readProgressGuidance, /does not prove the whole source/i);
   assert.equal(task.feedback, feedback);
   assert.deepEqual(task.requiredEvidenceIds, ['required']);
   const index = JSON.parse(compact.history[2]!.content);
