@@ -1,0 +1,55 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 531880.6435,
+  "error": "Automatic resumption failed: {\"id\":\"13afee7320c635f99c1d6afd703e986eaef51f450ee3a995a71e530c9eaa4b44\",\"owner\":\"b220aaf8b147c68a03e12feb071771a3fac7acfca91c395b42f5cfd03589d3a6\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-11-01T03:36:30.618Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"129722ac5aefaa2a74b2b5f5e979d1daa8794b92832085c6bf9a18fe0ddc432f\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":9,\"repairs\":1,\"consumed\":[\"deployment-config\"],\"requiredIds\":[\"deployment-config\",\"health-log\"],\"requestIds\":[\"f9dd8a05ae957f844ca7db9ada0f6de46a59ba0b349193e8d0882a480d214e60\"],\"reason\":\"overflow: Required instructions, tools and protocol exceed the conservative input budget.\"}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "b220aaf8b147c68a03e12feb071771a3fac7acfca91c395b42f5cfd03589d3a6",
+      "p2pPort": 36555
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "13341492e5ed25c961636efd8f325b85a68d5c5311d38efbea0f69a4dca1381d",
+      "p2pPort": 41527
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "2d8715c30b6312445a5e5bf74a52d32061dee8410fca45123adca8c445b33847",
+        "owner": "b220aaf8b147c68a03e12feb071771a3fac7acfca91c395b42f5cfd03589d3a6",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T03:33:11.552Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "a3cecbad-14f8-47cf-9f8e-1404747890d0",
+        "status": "pending",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 6,
+        "repairs": 1,
+        "consumed": [],
+        "briefId": "6edba9845021e0de25286afe9a2aeacdadbbcc5b8731e998b1a9ba908f32ae1d",
+        "requestIds": [
+          "f9dd8a05ae957f844ca7db9ada0f6de46a59ba0b349193e8d0882a480d214e60"
+        ]
+      }
+    },
+    {
+      "event": "a-offline"
+    },
+    {
+      "event": "b-contributed-offline",
+      "id": "deployment-config",
+      "requestId": "f9dd8a05ae957f844ca7db9ada0f6de46a59ba0b349193e8d0882a480d214e60"
+    },
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "b220aaf8b147c68a03e12feb071771a3fac7acfca91c395b42f5cfd03589d3a6",
+      "p2pPort": 34641
+    }
+  ]
+}

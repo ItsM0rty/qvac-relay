@@ -1,18 +1,18 @@
 {
   "mode": "working-checkout-verification",
   "passed": true,
-  "sourceCommit": "538481a2f79cb1e716abc6d56c0547e6ee76fd32",
-  "platform": "Ubuntu 24.04 WSL2 CPU, project-local Node 22.21.1",
+  "sourceCommit": "cf3b330ef89a149f80f8a10d9809fa69d8eb6bda",
+  "platform": "Ubuntu24.04 WSL2 CPU, localNode22.21.1",
   "commands": [
     "npm run build",
     "npm run format:check",
     "npm test"
   ],
   "tests": {
-    "durationMs": 147544.456749,
+    "durationMs": 152555.846458,
     "failed": 0,
-    "passed": 153
+    "passed": 160
   },
-  "dependencyScope": "Existing dependencies; unchanged package-lock. Fresh installation separately verified at57fc4d6.",
-  "scope": "Controlled harness suite includes real replication and HTTP. This is not native model quality or a fresh final-source npm ci. Current native handoff intentionally paused before its first reply."
+  "dependencyScope": "Existing verified dependencies, unchanged lockfile; fresh npm ci separately verified at57fc4d6.",
+  "scope": "Controlled harness suite includes real process replication. Native handoff and ranker quality are separate evidence."
 }

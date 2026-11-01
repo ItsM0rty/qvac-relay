@@ -31,7 +31,7 @@
     },
     {
       "artifacts": [
-        "passage-ranking-budget-replay.json"
+        "passage-ranking-budget-replay-b735b53.json"
       ],
       "note": "Inference-free replay, historical score attribution explicit in report.",
       "sourceCommit": "b735b535ba1a7a583ccbbdb582890d0f244355fb"
@@ -59,11 +59,26 @@
     },
     {
       "artifacts": [
-        "passage-code-verification.json",
+        "passage-code-verification-538481a.json",
         "passage-demo-user-paused-538481a.json"
       ],
       "sourceCommit": "538481a2f79cb1e716abc6d56c0547e6ee76fd32",
       "note": "153 tests plus build and formatting passed. Native demonstration was cancelled on user request before its first reply and is not quality evidence."
+    },
+    {
+      "artifacts": [
+        "passage-demo-cc543bd-failed.json"
+      ],
+      "sourceCommit": "cc543bda826d3c605ced3904de50d89a3fc90246",
+      "note": "Fresh real development attempt after pause; pending work, offline contribution and replication succeeded; resumed repeated read overflowed. Native unload failure retained."
+    },
+    {
+      "artifacts": [
+        "passage-code-verification.json",
+        "passage-ranking-budget-replay.json"
+      ],
+      "sourceCommit": "cf3b330ef89a149f80f8a10d9809fa69d8eb6bda",
+      "note": "160 tests, build and formatting with verified unchanged dependencies. Budget replay uses captured historical scores with no inference."
     }
   ],
   "limits": "The manifest is a development record, not a cryptographic attestation. Native predictions, cached rankings, replay and controlled tests remain distinct."

@@ -5,7 +5,7 @@
   "rawReportSourceCommit": "unavailable",
   "scoreSourceBasis": "Caller asserts clean-archive manifest attribution; raw report lacked Git metadata. Configuration hash does not authenticate recorded scores.",
   "assertedScoreSourceCommit": "57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4",
-  "currentSourceCommit": "b735b535ba1a7a583ccbbdb582890d0f244355fb",
+  "currentSourceCommit": "cf3b330ef89a149f80f8a10d9809fa69d8eb6bda",
   "currentContextBudget": 7000,
   "fixtureVersion": "retrieval-cases-v2",
   "datasetHash": "306b32f7ae3f22823f76e34d03cb07858ce1befd2e709949ade16784a56d2bf4",
