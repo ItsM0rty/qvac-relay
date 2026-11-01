@@ -1,0 +1,29 @@
+[relay] peer a started: cdd15d58feed
+[relay] peer b started: c6ba508ec651
+[relay] peers paired and connected
+[relay] case rollback-investigation created; 1 source(s) added
+[relay] initial work started; waiting for native inference
+[relay] initial: idle, waiting for checkpoint
+[relay] initial: working, checkpoint=running, calls=1, repairs=0, requests=0
+[relay] initial: working, checkpoint=running, calls=1, repairs=0, requests=0; waiting 30s
+[relay] initial: working, checkpoint=running, calls=2, repairs=0, requests=0
+[relay] initial: working, checkpoint=running, calls=2, repairs=0, requests=0; waiting 30s
+[relay] initial: working, checkpoint=running, calls=3, repairs=1, requests=0
+[relay] initial: working, checkpoint=running, calls=3, repairs=1, requests=0; waiting 30s
+[relay] initial: working, checkpoint=running, calls=4, repairs=1, requests=1
+[relay] initial: working, checkpoint=running, calls=4, repairs=1, requests=1; waiting 30s
+[relay] initial: working, checkpoint=pending, calls=4, repairs=1, requests=1
+[relay] initial checkpoint pending; waiting for request replication
+[relay] request b50043ded120e1da483582eb6cabb47255b49d2a654a5ddd92ef1feebddebce6 replicated; taking peer a offline
+[relay] peer b contributed deployment-config while a was offline
+[relay] peer a started: cdd15d58feed
+[relay] peer a reconnected; waiting for replication and automatic resumption
+[relay] resumption: idle, checkpoint=pending, calls=4, repairs=1, requests=1
+[relay] resumption: working, checkpoint=running, calls=5, repairs=1, requests=1
+[relay] resumption: working, checkpoint=running, calls=5, repairs=1, requests=1; waiting 30s
+[relay] resumption: working, checkpoint=running, calls=6, repairs=1, requests=1
+[relay] resumption: working, checkpoint=running, calls=6, repairs=1, requests=1; waiting 30s
+[relay] resumption checkpoint completed
+[relay] final brief saved; checking restart deduplication and cleanup
+[relay] peer a started: cdd15d58feed
+[relay] both peers stopped cleanly

@@ -1,0 +1,1 @@
+{"at":"2026-11-01T09:18:18.781Z","peer":"cdd15d58feed42c4fcca40c8ed7916859b9d68ae8fbaf4de88e143c402bf97bc","event":"resume_started","caseId":"rollback-investigation","previousRunId":"e599bbad-732d-4501-acdc-fabd2709310e","runId":"32517c52a46f56b8259281b5479b61e72ab7a76a88d02429dd98d011f7561f02","recovery":false,"contributions":["deployment-config"],"calls":4,"repairs":1}

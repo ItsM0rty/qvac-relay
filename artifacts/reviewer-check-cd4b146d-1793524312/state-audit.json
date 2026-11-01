@@ -1,0 +1,76 @@
+{
+  "mode": "recorded-native-state-audit",
+  "nativeInferenceExecutedByAudit": false,
+  "sourceCommit": "cd4b146d29981574c70897e5ff479e1658f7ca3e",
+  "scope": "Read-only inspection of saved native run state. This adds no native trial and does not prove source truth.",
+  "rows": [
+    {
+      "attempt": "repeat-1",
+      "checks": {
+        "sourceMatches": true,
+        "requiredSourcesPresent": true,
+        "noMissing": true,
+        "quotedObservations": true,
+        "uncertaintyNotice": true,
+        "consumedContribution": true,
+        "restartDeduplicated": true,
+        "cleanExits": true
+      },
+      "sources": [
+        "deployment-config",
+        "health-log"
+      ]
+    },
+    {
+      "attempt": "repeat-2",
+      "checks": {
+        "sourceMatches": true,
+        "requiredSourcesPresent": true,
+        "noMissing": true,
+        "quotedObservations": true,
+        "uncertaintyNotice": true,
+        "consumedContribution": true,
+        "restartDeduplicated": true,
+        "cleanExits": true
+      },
+      "sources": [
+        "deployment-config",
+        "health-log"
+      ]
+    },
+    {
+      "attempt": "repeat-3",
+      "checks": {
+        "sourceMatches": true,
+        "requiredSourcesPresent": true,
+        "noMissing": true,
+        "quotedObservations": true,
+        "uncertaintyNotice": true,
+        "consumedContribution": true,
+        "restartDeduplicated": true,
+        "cleanExits": true
+      },
+      "sources": [
+        "deployment-config",
+        "health-log"
+      ]
+    },
+    {
+      "attempt": "variation-atlas",
+      "checks": {
+        "sourceMatches": true,
+        "requiredSourcesPresent": true,
+        "noMissing": true,
+        "quotedObservations": true,
+        "uncertaintyNotice": true,
+        "consumedContribution": true,
+        "restartDeduplicated": true,
+        "cleanExits": true
+      },
+      "sources": [
+        "chunk-configuration",
+        "export-journal"
+      ]
+    }
+  ]
+}

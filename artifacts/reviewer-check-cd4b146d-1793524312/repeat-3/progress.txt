@@ -1,0 +1,33 @@
+[relay] peer a started: e28122ef0671
+[relay] peer b started: 63fa681559cd
+[relay] peers paired and connected
+[relay] case rollback-investigation created; 1 source(s) added
+[relay] initial work started; waiting for native inference
+[relay] initial: idle, waiting for checkpoint
+[relay] initial: working, checkpoint=running, calls=1, repairs=0, requests=0
+[relay] initial: working, checkpoint=running, calls=1, repairs=0, requests=0; waiting 30s
+[relay] initial: working, checkpoint=running, calls=2, repairs=0, requests=0
+[relay] initial: working, checkpoint=running, calls=2, repairs=0, requests=0; waiting 30s
+[relay] initial: working, checkpoint=running, calls=3, repairs=1, requests=0
+[relay] initial: working, checkpoint=running, calls=3, repairs=1, requests=0; waiting 30s
+[relay] initial: working, checkpoint=running, calls=4, repairs=1, requests=1
+[relay] initial: working, checkpoint=running, calls=4, repairs=1, requests=1; waiting 30s
+[relay] initial checkpoint pending; waiting for request replication
+[relay] request c640001d1fc3c073c3ce14541ba3ec2dfad6b369644fe55d68e356875a8f7af4 replicated; taking peer a offline
+[relay] peer b contributed deployment-config while a was offline
+[relay] peer a started: e28122ef0671
+[relay] peer a reconnected; waiting for replication and automatic resumption
+[relay] resumption: idle, checkpoint=pending, calls=4, repairs=1, requests=1
+[relay] resumption: working, checkpoint=running, calls=5, repairs=1, requests=1
+[relay] resumption: working, checkpoint=running, calls=5, repairs=1, requests=1; waiting 30s
+[relay] resumption: working, checkpoint=running, calls=6, repairs=1, requests=1
+[relay] resumption: working, checkpoint=running, calls=7, repairs=1, requests=1
+[relay] resumption: working, checkpoint=running, calls=7, repairs=1, requests=1; waiting 30s
+[relay] resumption: working, checkpoint=running, calls=8, repairs=2, requests=1
+[relay] resumption: working, checkpoint=running, calls=8, repairs=2, requests=1; waiting 30s
+[relay] resumption: working, checkpoint=running, calls=9, repairs=2, requests=1
+[relay] resumption: working, checkpoint=running, calls=9, repairs=2, requests=1; waiting 30s
+[relay] resumption checkpoint completed
+[relay] final brief saved; checking restart deduplication and cleanup
+[relay] peer a started: e28122ef0671
+[relay] both peers stopped cleanly

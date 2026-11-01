@@ -1,0 +1,177 @@
+{
+  "mode": "live-qvac-two-peer",
+  "sourceCommit": "cd4b146d29981574c70897e5ff479e1658f7ca3e",
+  "sourceCommitBasis": "caller archive manifest",
+  "scenarioSHA256": null,
+  "fixtureId": null,
+  "longEvidence": false,
+  "selector": "deterministic",
+  "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+  "passed": true,
+  "elapsedMs": 367406.64060499996,
+  "directory": "/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/.relay/review-native-cd4b146d-reviewer-check-cd4b146d-1793524312-repeat-3",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "e28122ef06712f47313bd46246fae9413ee6d1c49bb68f7198ea3a888b260f1d",
+      "p2pPort": 43319
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "63fa681559cd00e1c2fedda23a190b3be9488a5fffbec8dcdb5740810cbf0f92",
+      "p2pPort": 34795
+    },
+    {
+      "event": "initial-run-settled",
+      "cleanupError": null,
+      "active": false
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "f27ec3573730a6ec0800d98eacadcb51795c0360e69f17ce2a2c2789dc694efd",
+        "owner": "e28122ef06712f47313bd46246fae9413ee6d1c49bb68f7198ea3a888b260f1d",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T09:26:59.910Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "d4869481-f556-4389-ba41-cdb06347095e",
+        "status": "pending",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 4,
+        "repairs": 1,
+        "consumed": [],
+        "briefId": "f6810214803c14473125468842d28ba3bc3228992cbf9afd12e2de1454c508bf",
+        "requestIds": [
+          "c640001d1fc3c073c3ce14541ba3ec2dfad6b369644fe55d68e356875a8f7af4"
+        ]
+      }
+    },
+    {
+      "event": "a-offline"
+    },
+    {
+      "event": "b-contributed-offline",
+      "id": "deployment-config",
+      "requestId": "c640001d1fc3c073c3ce14541ba3ec2dfad6b369644fe55d68e356875a8f7af4"
+    },
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "e28122ef06712f47313bd46246fae9413ee6d1c49bb68f7198ea3a888b260f1d",
+      "p2pPort": 39491
+    },
+    {
+      "event": "terminal-run-settled",
+      "checkpoint": {
+        "id": "268815af9668c243cf88b9adc182d3077f40b856698aa8595c7f8cf2d99dd36b",
+        "owner": "e28122ef06712f47313bd46246fae9413ee6d1c49bb68f7198ea3a888b260f1d",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T09:30:22.181Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "0f8c408898ba3118fd639b5839a1ffd8b8c8484c2a7589e9036fbc43341b7ff5",
+        "status": "completed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 9,
+        "repairs": 2,
+        "consumed": [
+          "deployment-config"
+        ],
+        "requiredIds": [
+          "deployment-config",
+          "health-log"
+        ],
+        "briefId": "b4a6b180b156d98dd82967a10141988084cd8c116acef80a4533d7181e27bdfd",
+        "requestIds": [
+          "c640001d1fc3c073c3ce14541ba3ec2dfad6b369644fe55d68e356875a8f7af4"
+        ]
+      },
+      "cleanupError": null,
+      "resumptionError": null
+    },
+    {
+      "event": "model-cleanup-verified"
+    },
+    {
+      "event": "resumed",
+      "checkpoint": {
+        "id": "268815af9668c243cf88b9adc182d3077f40b856698aa8595c7f8cf2d99dd36b",
+        "owner": "e28122ef06712f47313bd46246fae9413ee6d1c49bb68f7198ea3a888b260f1d",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T09:30:22.181Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "0f8c408898ba3118fd639b5839a1ffd8b8c8484c2a7589e9036fbc43341b7ff5",
+        "status": "completed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 9,
+        "repairs": 2,
+        "consumed": [
+          "deployment-config"
+        ],
+        "requiredIds": [
+          "deployment-config",
+          "health-log"
+        ],
+        "briefId": "b4a6b180b156d98dd82967a10141988084cd8c116acef80a4533d7181e27bdfd",
+        "requestIds": [
+          "c640001d1fc3c073c3ce14541ba3ec2dfad6b369644fe55d68e356875a8f7af4"
+        ]
+      },
+      "brief": {
+        "id": "b4a6b180b156d98dd82967a10141988084cd8c116acef80a4533d7181e27bdfd",
+        "owner": "e28122ef06712f47313bd46246fae9413ee6d1c49bb68f7198ea3a888b260f1d",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T09:30:22.168Z",
+        "schemaVersion": 1,
+        "kind": "brief",
+        "factPolicy": "quoted-observations-v1",
+        "facts": [
+          {
+            "text": "Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification.",
+            "sources": [
+              {
+                "id": "deployment-config",
+                "revision": "f8f024f7d707f1de75398dd8f3af990d698361bf14a17fe066b735155ac2b1ea",
+                "quote": "Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification."
+              }
+            ]
+          },
+          {
+            "text": "Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration.",
+            "sources": [
+              {
+                "id": "health-log",
+                "revision": "c44031d1b705979b784378b62b421f51a8317bd365fe4cb53dfefe0c1a809a61",
+                "quote": "Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%. The health log does not include deployment configuration."
+              }
+            ]
+          }
+        ],
+        "uncertainty": [
+          "Source quotations alone do not establish root cause."
+        ],
+        "missing": [],
+        "basedOn": "3015b6a456852f201700bf0c26e40bd99e08665d4e3739de2f60747195cd3449"
+      }
+    },
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "e28122ef06712f47313bd46246fae9413ee6d1c49bb68f7198ea3a888b260f1d",
+      "p2pPort": 42249
+    },
+    {
+      "event": "restart-deduplication-verified",
+      "runId": "0f8c408898ba3118fd639b5839a1ffd8b8c8484c2a7589e9036fbc43341b7ff5"
+    },
+    {
+      "event": "peers-stopped-cleanly"
+    }
+  ],
+  "finalCleanup": [],
+  "cleanupPassed": true
+}

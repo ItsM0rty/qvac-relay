@@ -25,7 +25,7 @@ If memory is constrained, `NODE_OPTIONS=--max-old-space-size=384 npm ci --maxsoc
 ```sh
 demo_dir=".relay/reviewer-$(date +%s)"
 printf 'Peer directories: %s/a and %s/b\n' "$demo_dir" "$demo_dir"
-RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic RELAY_DEMO_SCENARIO_FILE=data/review-handoff-v1.json npm run demo -- "$demo_dir"
+RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic npm run demo -- "$demo_dir"
 ```
 
 The demo runs the model and two real peer processes, with no scripted substitute. Concise progress goes to stderr: peer startup and connection, initial work, checkpoint and request replication, offline contribution, resumption, and cleanup. Status changes include call and repair counts, with periodic waiting messages during long operations. The final JSON report goes to stdout and to `report.json` in the chosen demo directory (or an automatic `.relay/demo-*` directory when none is supplied). On completion it includes the final brief; source stores and traces remain there for inspection. A failed run is reported as a failure, with its available events retained.
@@ -34,8 +34,8 @@ During a run, use another terminal and substitute the printed directory below:
 
 ```sh
 npm run relay -- status --dir .relay/demo-EXAMPLE/a
-npm run relay -- inspect --dir .relay/demo-EXAMPLE/a --case atlas-export-investigation
-npm run relay -- inspect --dir .relay/demo-EXAMPLE/b --case atlas-export-investigation
+npm run relay -- inspect --dir .relay/demo-EXAMPLE/a --case rollback-investigation
+npm run relay -- inspect --dir .relay/demo-EXAMPLE/b --case rollback-investigation
 ```
 
 A `pending` checkpoint means a required question is recorded but still awaits a contribution; it is not a completed handoff. `status` shows whether work is active, checkpoints, and cleanup or resumption errors. The `work` command waits for its checkpoint; a separate terminal can request cancellation:
@@ -46,6 +46,16 @@ npm run relay -- status --dir .relay/demo-EXAMPLE/a
 ```
 
 The cancel command acknowledges the request promptly. Continue checking until `active` is false and examine `cleanupError`; the acknowledgment alone does not mean native work or cleanup has settled. Avoid running inference on both peers at once on a constrained machine.
+
+## New incident variation
+
+For the separately recorded new Atlas incident, use a fresh directory and the frozen scenario file:
+
+```sh
+RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic RELAY_DEMO_SCENARIO_FILE=data/review-handoff-v1.json npm run demo -- ".relay/atlas-review-$(date +%s)"
+```
+
+Its case ID is `atlas-export-investigation`. Read the [individual results](REVIEW_RESULTS.md); a default-workflow pass does not establish a pass for this variation.
 
 ## Fresh reviewer verification
 
@@ -66,7 +76,7 @@ The older `scripts/clean-verify.sh` may overwrite historical artifact filenames.
 | Unsupported Node or platform error | Run `node --version` and `node -p process.platform` in the WSL terminal. The latter must print `linux`. Windows Node is a different runtime. |
 | Missing native worker or `libatomic.so.1` | Run the Linux bundle command after installing dependencies. Install Ubuntu `libatomic1` if its library is missing. Do not copy a Windows bundle into Linux. |
 | Slow first load or download | Keep the model cache and check network access. Native startup and CPU inference can take minutes. The waiting heartbeat reports liveness, not a throughput guarantee. |
-| Connection refused from status | Status needs a running peer. The demo stops both peers at the end; read its retained report and trace files then, or restart only that peer with its original directory. |
+| Connection refused or missing control.json | Status needs a running peer. The demo stops both peers at the end; read its retained report and trace files then, or restart only that peer with its original directory. |
 | Store locked or port already used | One process owns each data directory. Stop that process cleanly or use a fresh directory and free ports. Do not delete existing stores to clear a lock. |
 | Failed checkpoint or cleanup error | Inspect the reason and trace before retrying. A manual `work` explicitly starts a new bounded run; automatic resumption and recovery carry prior call and repair counts. Preserve failed reports and choose a new demo directory for a new diagnostic attempt. |
 

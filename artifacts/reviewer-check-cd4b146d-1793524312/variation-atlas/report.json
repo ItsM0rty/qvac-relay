@@ -1,0 +1,177 @@
+{
+  "mode": "live-qvac-two-peer",
+  "sourceCommit": "cd4b146d29981574c70897e5ff479e1658f7ca3e",
+  "sourceCommitBasis": "caller archive manifest",
+  "scenarioSHA256": "b5bd9fb2f063da1318f41b5c6dc03f12209687621b2a008d9a0ba61f742024c2",
+  "fixtureId": "review-export-handoff-v1",
+  "longEvidence": false,
+  "selector": "deterministic",
+  "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+  "passed": true,
+  "elapsedMs": 260900.266725,
+  "directory": "/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/.relay/review-native-cd4b146d-reviewer-check-cd4b146d-1793524312-variation-atlas",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "6701580e82e70a12e8c04a6100a5e8296be0bd54c9b510507ff1ebb80f0f4bf8",
+      "p2pPort": 40977
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "2f6a6fc3b36e0f553d03b26f28aac5c736b531ea09498a67e440f6d5fe722fa0",
+      "p2pPort": 33659
+    },
+    {
+      "event": "initial-run-settled",
+      "cleanupError": null,
+      "active": false
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "af741bc28b5c174e210b31b3c10ffc5e11fb1ee647d3ccb5d3d22bc7bcb4e41b",
+        "owner": "6701580e82e70a12e8c04a6100a5e8296be0bd54c9b510507ff1ebb80f0f4bf8",
+        "caseId": "atlas-export-investigation",
+        "createdAt": "2026-11-01T09:33:06.834Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "c8d4b419-e7a4-471e-8640-425f966d572c",
+        "status": "pending",
+        "task": "Prepare a handoff for the Atlas asset export stall. Read the export journal and the chunk configuration. If the configuration is missing, request it and save pending work. When it arrives, cite both sources and complete the handoff. Distinguish recorded observations from an unverified explanation.",
+        "calls": 4,
+        "repairs": 1,
+        "consumed": [],
+        "briefId": "a9ce6fd31511a8c2c213b32598f67bb78eca183c37dd8a258a031f2b3af211e6",
+        "requestIds": [
+          "f008edc8d37a02509b03e44660a6ec0fac5d77eb6d7bb0c247190aeb545758bf"
+        ]
+      }
+    },
+    {
+      "event": "a-offline"
+    },
+    {
+      "event": "b-contributed-offline",
+      "id": "chunk-configuration",
+      "requestId": "f008edc8d37a02509b03e44660a6ec0fac5d77eb6d7bb0c247190aeb545758bf"
+    },
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "6701580e82e70a12e8c04a6100a5e8296be0bd54c9b510507ff1ebb80f0f4bf8",
+      "p2pPort": 36693
+    },
+    {
+      "event": "terminal-run-settled",
+      "checkpoint": {
+        "id": "30b7db03dab1efd7352c9e2d4425003845e44467dadff458cc7274f712342c52",
+        "owner": "6701580e82e70a12e8c04a6100a5e8296be0bd54c9b510507ff1ebb80f0f4bf8",
+        "caseId": "atlas-export-investigation",
+        "createdAt": "2026-11-01T09:34:43.379Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "c414ce38babc7cfb2e6880b0e4e173315bfa989ea2acbdb8a1259f22e785d93b",
+        "status": "completed",
+        "task": "Prepare a handoff for the Atlas asset export stall. Read the export journal and the chunk configuration. If the configuration is missing, request it and save pending work. When it arrives, cite both sources and complete the handoff. Distinguish recorded observations from an unverified explanation.",
+        "calls": 6,
+        "repairs": 1,
+        "consumed": [
+          "chunk-configuration"
+        ],
+        "requiredIds": [
+          "chunk-configuration",
+          "export-journal"
+        ],
+        "briefId": "e58016fc3acb35b91b3ea8ef81c759579d55eceb337eb59a93277d24844e3fda",
+        "requestIds": [
+          "f008edc8d37a02509b03e44660a6ec0fac5d77eb6d7bb0c247190aeb545758bf"
+        ]
+      },
+      "cleanupError": null,
+      "resumptionError": null
+    },
+    {
+      "event": "model-cleanup-verified"
+    },
+    {
+      "event": "resumed",
+      "checkpoint": {
+        "id": "30b7db03dab1efd7352c9e2d4425003845e44467dadff458cc7274f712342c52",
+        "owner": "6701580e82e70a12e8c04a6100a5e8296be0bd54c9b510507ff1ebb80f0f4bf8",
+        "caseId": "atlas-export-investigation",
+        "createdAt": "2026-11-01T09:34:43.379Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "c414ce38babc7cfb2e6880b0e4e173315bfa989ea2acbdb8a1259f22e785d93b",
+        "status": "completed",
+        "task": "Prepare a handoff for the Atlas asset export stall. Read the export journal and the chunk configuration. If the configuration is missing, request it and save pending work. When it arrives, cite both sources and complete the handoff. Distinguish recorded observations from an unverified explanation.",
+        "calls": 6,
+        "repairs": 1,
+        "consumed": [
+          "chunk-configuration"
+        ],
+        "requiredIds": [
+          "chunk-configuration",
+          "export-journal"
+        ],
+        "briefId": "e58016fc3acb35b91b3ea8ef81c759579d55eceb337eb59a93277d24844e3fda",
+        "requestIds": [
+          "f008edc8d37a02509b03e44660a6ec0fac5d77eb6d7bb0c247190aeb545758bf"
+        ]
+      },
+      "brief": {
+        "id": "e58016fc3acb35b91b3ea8ef81c759579d55eceb337eb59a93277d24844e3fda",
+        "owner": "6701580e82e70a12e8c04a6100a5e8296be0bd54c9b510507ff1ebb80f0f4bf8",
+        "caseId": "atlas-export-investigation",
+        "createdAt": "2026-11-01T09:34:43.367Z",
+        "schemaVersion": 1,
+        "kind": "brief",
+        "factPolicy": "quoted-observations-v1",
+        "facts": [
+          {
+            "text": "The Atlas exporter chunk ceiling was reduced from 512 items to 64 items at 14:00. The change record establishes the applied value, not the reason for the later stall.",
+            "sources": [
+              {
+                "id": "chunk-configuration",
+                "revision": "5ce6dc50f87a7bc46d23fe671b1bd082496599e0f490352312a4d696eed1626d",
+                "quote": "The Atlas exporter chunk ceiling was reduced from 512 items to 64 items at 14:00. The change record establishes the applied value, not the reason for the later stall."
+              }
+            ]
+          },
+          {
+            "text": "The Atlas asset export stopped at item 640 at 14:07. A manual retry reached item 768 before stopping. The journal does not record the configured chunk ceiling or establish a cause.",
+            "sources": [
+              {
+                "id": "export-journal",
+                "revision": "6a9d2adbb80d646fa2e363fffda650141641ef17e57f61d6589311348265db33",
+                "quote": "The Atlas asset export stopped at item 640 at 14:07. A manual retry reached item 768 before stopping. The journal does not record the configured chunk ceiling or establish a cause."
+              }
+            ]
+          }
+        ],
+        "uncertainty": [
+          "Source quotations alone do not establish root cause."
+        ],
+        "missing": [],
+        "basedOn": "654279839a33dceb55754276e9fc62e11fea8582e982ae25581881c65afd2c8e"
+      }
+    },
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "6701580e82e70a12e8c04a6100a5e8296be0bd54c9b510507ff1ebb80f0f4bf8",
+      "p2pPort": 34805
+    },
+    {
+      "event": "restart-deduplication-verified",
+      "runId": "c414ce38babc7cfb2e6880b0e4e173315bfa989ea2acbdb8a1259f22e785d93b"
+    },
+    {
+      "event": "peers-stopped-cleanly"
+    }
+  ],
+  "finalCleanup": [],
+  "cleanupPassed": true
+}
