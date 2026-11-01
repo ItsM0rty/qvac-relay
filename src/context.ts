@@ -26,6 +26,7 @@ export interface Selection {
   usage?: unknown;
   recordIds?: string[];
   locations?: Array<{ id: string; sourceId: string; start: number; end: number; revision: string }>;
+  historyGroupsDropped?: number;
 }
 export interface Selector {
   select(task: string, candidates: Candidate[], signal: AbortSignal): Promise<Selection>;
@@ -176,6 +177,8 @@ export async function buildContext(args: {
     return ranked[0]?.passage ?? own[0]!;
   });
   const budget = args.budget ?? 7000;
+  const retainedHistory = [...args.history];
+  let historyGroupsDropped = 0;
   const compose = () => [
     ...base,
     {
@@ -192,9 +195,21 @@ export async function buildContext(args: {
         evidenceIndex: selected,
       }),
     },
-    ...args.history,
+    ...retainedHistory,
   ];
   const cost = () => estimateTokens(compose()) + estimateTokens(args.tools) + 256;
+  // Drop only oldest resolved groups, with calls and results together. The
+  // latest group and all application-owned context remain mandatory.
+  if (retainedHistory.every((message) => message.role === 'assistant' || message.role === 'tool')) {
+    while (cost() > budget) {
+      const next = retainedHistory.findIndex(
+        (message, index) => index > 0 && message.role === 'assistant',
+      );
+      if (next < 0) break;
+      retainedHistory.splice(0, next);
+      historyGroupsDropped++;
+    }
+  }
   if (cost() > budget)
     throw new RelayError(
       'CONTEXT_OVERFLOW',
@@ -211,6 +226,7 @@ export async function buildContext(args: {
     history: compose(),
     selection: {
       ...selection,
+      historyGroupsDropped,
       ids: selected.map((c) => c.id),
       recordIds: [...new Set(selected.map((c) => c.sourceId ?? c.id))],
       locations: selected.map((c) => ({

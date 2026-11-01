@@ -818,7 +818,13 @@ export class Agent {
               ...(Array.isArray(result)
                 ? { resultIds: result.map((r) => r.id), resultCount: result.length }
                 : {}),
-              ...(call.name === 'read_record' ? { requestedId: args.id } : {}),
+              ...(call.name === 'read_record'
+                ? {
+                    requestedId: args.id,
+                    offset: args.offset ?? 0,
+                    requestedLength: args.length ?? 1000,
+                  }
+                : {}),
             });
           } catch (error) {
             const kind = classify(error);
