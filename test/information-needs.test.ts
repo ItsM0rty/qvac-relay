@@ -74,7 +74,7 @@ for (const followup of ['resolve', 'new-gap'] as const)
       assert.equal(
         checkpoint.status,
         followup === 'resolve' ? 'completed' : 'pending',
-        checkpoint.reason,
+        checkpoint.reason ?? 'Unexpected checkpoint status',
       );
       assert.equal(checkpoint.repairs, 1);
       const records = await f.store.list('incident');
