@@ -1,0 +1,66 @@
+{
+  "mode": "real-cpu-reranker-probe",
+  "modelId": "Xenova/ms-marco-MiniLM-L-6-v2",
+  "revision": "a09144355adeed5f58c8ed011d209bf8ee5a1fec",
+  "dtype": "int8",
+  "runtime": "@huggingface/transformers@3.8.1",
+  "offline": true,
+  "query": "Which database timeout setting did deployment 42 change?",
+  "passages": [
+    "Deployment 42 changed the database request timeout from 3000 ms to 100 ms. Rollback restored 3000 ms.",
+    "The office contains spare keyboards and chairs. Inventory was updated on Tuesday.",
+    "Deployment 17 in the unrelated billing incident used a timeout of 100 ms. It did not affect deployment 42.",
+    "Deployment 42 did not change the database timeout. Only when the retry flag is enabled does the 100 ms backoff apply."
+  ],
+  "loadMs": 423.9126309999999,
+  "cold": {
+    "scores": [
+      8.165661811828613,
+      -11.050930976867676,
+      4.194195747375488,
+      7.565497398376465
+    ],
+    "dims": [
+      4,
+      1
+    ],
+    "pairTokens": 39,
+    "ms": 29.271613999999772
+  },
+  "warm": {
+    "scores": [
+      8.165661811828613,
+      -11.050930976867676,
+      4.194195747375488,
+      7.565497398376465
+    ],
+    "dims": [
+      4,
+      1
+    ],
+    "pairTokens": 39,
+    "ms": 18.945444999999836
+  },
+  "reordered": {
+    "scores": [
+      7.565497398376465,
+      4.194195747375488,
+      -11.050930976867676,
+      8.165661811828613
+    ],
+    "dims": [
+      4,
+      1
+    ],
+    "pairTokens": 39,
+    "ms": 15.961076999999932
+  },
+  "passed": true,
+  "cleanup": "disposed",
+  "totalMs": 498.62628199999995,
+  "memory": {
+    "scope": "Node process RSS includes local ONNX runtime, single before/after samples, not peak or model-only attribution",
+    "rssBefore": 84774912,
+    "rssAfter": 143368192
+  }
+}
