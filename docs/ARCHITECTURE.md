@@ -36,7 +36,7 @@ Accepted briefs use factPolicy quoted-observations-v1. Trusted code turns each v
 
 ## Request flow
 
-1. A owns a case and evidence. Its model reads the evidence and writes a question and pending brief.
+1. A owns a case and evidence. Its model reads the evidence and writes a question and pending brief. When no source has been read, ordinary completion after a persisted unanswered request may instead checkpoint pending work without a brief. This accepts no observations. Malformed or length-limited output still fails through bounded corrective feedback, and cancellation is checked after the awaited request scan.
 2. B replicates the question, then can remain connected or continue while A is offline.
 3. B writes evidence in B's tree with the request ID.
 4. A reconnects and replicates B's blocks. The resumer recognizes an unconsumed contribution.

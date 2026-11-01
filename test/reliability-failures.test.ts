@@ -390,3 +390,70 @@ for (const [name, reply] of [
     },
   );
 }
+
+test(
+  'cancellation while checking unanswered requests does not persist request-only pending',
+  { timeout: 20000 },
+  async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'relay-pending-cancel-'));
+    const store = await RelayStore.open(directory);
+    try {
+      await store.put({
+        ...base(store),
+        id: 'case',
+        kind: 'case',
+        title: 'Broker',
+        task: 'Find the broker setting.',
+      });
+      const abort = new AbortController();
+      let entered!: () => void;
+      let release!: () => void;
+      const started = new Promise<void>((resolve) => {
+        entered = resolve;
+      });
+      const proceed = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const originalList = store.list.bind(store);
+      const controlled = model([
+        () => action('ask', 'request_information', { question: 'What broker setting changed?' }),
+        () => {
+          store.list = async (caseId) => {
+            entered();
+            await proceed;
+            return originalList(caseId);
+          };
+          return {
+            content: 'Waiting for the requested evidence.',
+            calls: [],
+            toolErrors: [],
+            stopReason: 'eos',
+          };
+        },
+      ]);
+      const running = new Agent(store, controlled).run('incident', {
+        runId: 'pending-cancel',
+        signal: abort.signal,
+      });
+      await started;
+      abort.abort();
+      release();
+      const checkpoint = await running;
+      assert.equal(checkpoint.status, 'cancelled');
+      assert.equal(checkpoint.briefId, undefined);
+      const records = await originalList('incident');
+      assert.equal(records.filter((record) => record.kind === 'request').length, 1);
+      assert.equal(
+        records.some((record) => record.kind === 'brief'),
+        false,
+      );
+      assert.equal(
+        records.some((record) => record.kind === 'checkpoint' && record.status === 'pending'),
+        false,
+      );
+    } finally {
+      await store.close();
+      await rm(directory, { recursive: true, force: true });
+    }
+  },
+);

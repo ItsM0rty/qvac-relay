@@ -6,6 +6,12 @@ Relay is a local engineering handoff agent. Each peer owns its writable tree. Co
 
 The user later revoked the request to invite reviewers. The repository must remain owner-only unless he explicitly asks to add someone. After the interrupted invitation attempt, GitHub reported no pending invitations and only da-goat37 as a collaborator. Privacy remains verified as PRIVATE.
 
+## Reviewer reliability pass
+
+The new no-evidence diagnostic exposed a workflow gap: the request committed, but an ordinary waiting response was rejected because no brief existed. A brief requires a source quotation and should not be fabricated to satisfy the interface. Pending work without a brief is now allowed only after an owned unanswered request, no source reads, nonempty ordinary output, no malformed calls and no output-length failure. It accepts no observations. Cancellation is rechecked after the awaited store scan and before checkpointing. Linked contributions still drive protected context and bounded resumption. Controlled tests verify the stored outcome and subsequent replicated answer, not native reasoning on this case.
+
+The native consistency check uses three default short-record handoffs on one frozen source, model and selector. Each has fresh peer stores. A new Atlas incident is a separate variation, not a fourth repeat. All attempts and cleanup are retained. No automatic retries or success-rate claim is justified. Fresh source installation can reuse npm downloads and model weights; those scopes are recorded separately from inference and cold model loading.
+
 ## Structured information needs
 
 Cases can declare up to eight required information needs as stable IDs paired with canonical questions. The CLI accepts these at creation through `--needs '<JSON array>'`. This gives the trusted harness a deterministic semantic checklist for information that must be requested and received. A request uses `needId`; runtime attaches the declared question and stable ID, and rejects undeclared needs. The save path rejects an unanswered declared need even if the model reports no missing items. Requests remain pending until the linked response has been read and cited. Free-text task wording remains useful guidance, but cannot reliably encode a structured, deterministically checked requirement for a missing answer.

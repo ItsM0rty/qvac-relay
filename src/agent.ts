@@ -558,6 +558,7 @@ export class Agent {
             reply.content.trim()
           ) {
             const waiting = await this.store.list(caseId);
+            checkCancelled(signal);
             const unanswered = waiting.filter(
               (record) =>
                 record.kind === 'request' &&
@@ -573,6 +574,7 @@ export class Agent {
                 requestIds: unanswered.map((record) => record.id),
                 reason,
               });
+              checkCancelled(signal);
               return await checkpoint('pending');
             }
           }

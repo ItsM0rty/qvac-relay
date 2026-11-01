@@ -23,6 +23,12 @@ git -c safe.directory="$project_dir" archive "$source_commit" | tar -xf - -C "$v
 cd "$verify_dir"
 export RELAY_SOURCE_COMMIT="$source_commit"
 export RELAY_REVIEW_REPORT_DIR="$report_dir"
+export RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic
+repeat="${RELAY_REVIEW_REPEAT:-0}"
+if [ "$repeat" != 0 ] && [ "$repeat" != 3 ]; then
+  printf 'RELAY_REVIEW_REPEAT must be 0 or 3.\n' >&2
+  exit 1
+fi
 printf 'Fresh source %s. Existing Node runtime; fresh node_modules; npm and model caches may be reused.\n' "$source_commit"
 printf 'Installing pinned dependencies. No inference runs during installation.\n'
 NODE_OPTIONS=--max-old-space-size=384 npm ci --maxsockets=2 2>&1 | tee "$report_dir/install.log"
@@ -46,14 +52,49 @@ node --import tsx scripts/review-diagnostics.ts "$report_dir/controlled.json" 2>
 mkdir -p .qvac "$project_dir/.qvac/models"
 ln -s "$project_dir/.qvac/models" .qvac/models
 printf 'Running README native smoke test with persistent cached weights.\n'
-npm run smoke 2>&1 | tee "$report_dir/smoke.log"
-cp -- artifacts/live-smoke.json "$report_dir/smoke.json"
-printf 'Running frozen new native handoff. Peer stores remain in the original checkout.\n'
-demo_dir="$project_dir/.relay/review-native-$source_short-$(date +%s)"
 set +e
-RELAY_SELECTOR=deterministic RELAY_DEMO_SCENARIO_FILE=data/review-handoff-v1.json npm run demo -- "$demo_dir" 2>&1 | tee "$report_dir/demo.log"
-demo_exit=${PIPESTATUS[0]}
+npm run smoke 2>&1 | tee "$report_dir/smoke.log"
+smoke_exit=${PIPESTATUS[0]}
 set -e
-if [ -f "$demo_dir/report.json" ]; then cp -- "$demo_dir/report.json" "$report_dir/native-handoff.json"; fi
-if [ -d "$demo_dir/a/traces" ]; then mkdir -p "$report_dir/traces"; cp -- "$demo_dir/a/traces/"*.jsonl "$report_dir/traces/"; fi
-exit "$demo_exit"
+if [ -f artifacts/live-smoke.json ]; then cp -- artifacts/live-smoke.json "$report_dir/smoke.json"; fi
+if [ "$smoke_exit" != 0 ]; then exit "$smoke_exit"; fi
+printf 'Native attempts are serial. Every attempt is retained, without automatic retries.\n'
+node --input-type=module <<'JS'
+import {writeFile} from 'node:fs/promises';
+await writeFile(process.env.RELAY_REVIEW_REPORT_DIR+'/native-plan.json',JSON.stringify({sourceCommit:process.env.RELAY_SOURCE_COMMIT,model:'qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required',selector:'deterministic',repeatedAttempts:process.env.RELAY_REVIEW_REPEAT==='3'?3:0,repeatedScenario:'default checkout handoff, short records',variation:'data/review-handoff-v1.json',variationAttempts:1,freshStoresPerAttempt:true,scope:'Serial native inference. Existing model weights and uncontrolled OS caches. No success-rate or speedup claim.'},null,2)+'\n');
+JS
+outcome=0
+run_demo() {
+  local label="$1" scenario="$2"
+  local attempt_dir="$report_dir/$label"
+  local demo_dir="$project_dir/.relay/review-native-$source_short-$(basename "$report_dir")-$label"
+  mkdir -p "$attempt_dir"
+  if [ -e "$demo_dir" ]; then printf 'Refusing existing peer directory: %s\n' "$demo_dir" >&2; return 1; fi
+  printf 'Native attempt %s; fresh stores %s\n' "$label" "$demo_dir"
+  local demo_exit
+  set +e
+  if [ -n "$scenario" ]; then
+    RELAY_DEMO_SCENARIO_FILE="$scenario" npm run demo -- "$demo_dir" 2>&1 | tee "$attempt_dir/demo.log"
+    demo_exit=${PIPESTATUS[0]}
+  else
+    env -u RELAY_DEMO_SCENARIO_FILE -u RELAY_DEMO_LONG npm run demo -- "$demo_dir" 2>&1 | tee "$attempt_dir/demo.log"
+    demo_exit=${PIPESTATUS[0]}
+  fi
+  set -e
+  printf '%s\n' "$demo_exit" > "$attempt_dir/exit-code.txt"
+  if [ -f "$demo_dir/report.json" ]; then cp -- "$demo_dir/report.json" "$attempt_dir/report.json"; fi
+  if [ -d "$demo_dir/a/traces" ]; then
+    mkdir -p "$attempt_dir/traces"
+    local trace_file
+    for trace_file in "$demo_dir/a/traces/"*.jsonl; do
+      if [ -f "$trace_file" ]; then cp -- "$trace_file" "$attempt_dir/traces/"; fi
+    done
+  fi
+  if [ "$demo_exit" != 0 ]; then outcome=1; fi
+}
+if [ "$repeat" = 3 ]; then
+  for attempt in 1 2 3; do run_demo "repeat-$attempt" ''; done
+fi
+run_demo variation-atlas data/review-handoff-v1.json
+node --import tsx scripts/review-native-summary.ts "$report_dir"
+exit "$outcome"

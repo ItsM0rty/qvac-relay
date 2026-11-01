@@ -1,5 +1,13 @@
 # Verification record
 
+## Reviewer pass, frozen new incidents
+
+Cases were committed at `3f05f44` before execution. `data/review-freeze-v1.json` records raw file hashes; do not edit those fixtures after seeing outcomes. Controlled reports at `ff8de7b` and `f08aecb` preserve the no-evidence failure and its safe pending outcome separately. Controlled runs use actual stores, tool results and protocol, but scripted model responses. Paraphrase initial lexical span coverage is zero; empty-query metadata navigation recovers it in the controlled sequence. This does not establish native semantic retrieval.
+
+The fresh source setup at `66437b3` passed npm ci, bundle, build, formatting and 176 tests. The two-call native smoke passed with exact token reproduction in 33421.60 ms. The new Atlas two-peer incident passed in 244387.15 ms with six calls and one repair, required exact observations, offline contribution, restart resumption, deduplication and clean exits. Evidence is retained under `artifacts/reviewer-check-66437b3e-1793515021`. It uses fresh source and node_modules on Linux, existing Node 22.21.1, available npm cache and cached QVAC weights. It is not an uncached model download test. The later cancellation guard and reporting changes require current verification separately.
+
+`npm run verify:review` retains a unique directory per committed source, including failed native reports. `RELAY_REVIEW_REPEAT=3 npm run verify:review` additionally runs three serial default handoffs from fresh stores and a separately labelled Atlas variation. The model and selector are pinned; `native-plan.json` fixes attempt counts before execution and `native-summary.json` records actual configurations, usage, repairs, calls, failures and cleanup. No automatic retries occur. New current results must be reported independently of `66437b3`.
+
 Verification uses Ubuntu 24.04 WSL2 on CPU with project-local Linux Node 22.21.1. The canonical checkout is `C:\Users\m0rty\Desktop\Programming\Research\New folder\byteask\relay-agent`. Installation and native inference are sequential to avoid competing for the WSL memory allocation.
 
 ## Clean source and tests

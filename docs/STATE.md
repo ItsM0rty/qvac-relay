@@ -1,5 +1,13 @@
 # Current state
 
+The reviewer reliability pass is on `code-fix/reviewer-reliability`. Source `66437b3` passed a fresh Linux git-archive install, bundle, build, formatting and 176 tests. The new frozen Atlas native handoff passed in 244387.15 ms with six calls and one repair. Reports, traces and setup scope are retained in `artifacts/reviewer-check-66437b3e-1793515021`. Existing supported Node, npm cache and model weights were reused; source and node_modules were fresh. This does not verify an uncached model download.
+
+The three controlled new cases passed their scoped checks: paraphrase recovery through empty-query navigation, late exact source detail, and an unanswered request remaining pending without an invented brief. The baseline no-evidence case failed after committing the request; `f08aecb` added safe request-only pending work. A later cancellation race found in this guard is fixed with checks after its awaited read and before checkpointing. New focused tests also cover post-request-commit interruption and unavailable remote blocks. Demo readiness, child shutdown and concise progress are improved.
+
+Next: freeze the cancellation and reporting changes, then run the full current checks and three serial native default handoffs in fresh stores on that one source. Run the Atlas variation separately. Keep every result, including failures, and never pool snapshots. The verifier supports `RELAY_REVIEW_REPEAT=3 npm run verify:review`. Final evidence and publication will follow those results. Personal design prose remains deferred and untouched; repository access remains owner-only.
+
+## Prior passage milestone
+
 Updated 2026-11-01. The passage retrieval implementation passed its real long-record handoff at functional source `2f23582bc24fc344e53e752f5077d9f05a477140`. The current build, formatting and all 168 controlled tests passed at that source. No peer, demo or model process should be left running after the final cleanup check. The canonical checkout is `C:\Users\m0rty\Desktop\Programming\Research\New folder\byteask\relay-agent`, on `code-fix/passage-retrieval`.
 
 ## Verified outcome

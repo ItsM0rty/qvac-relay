@@ -6,11 +6,13 @@ The repository is an assessment implementation. See [testing evidence](docs/TEST
 
 ## Requirements and setup
 
-The verified execution path is Ubuntu 24.04 in WSL2, using CPU inference. Use Linux Node 22.21 or newer on the 22 line, or Node 24.9 or newer. The Windows host used during development has Vulkan 1.3.260. QVAC documents Vulkan 1.4 as necessary on Windows, including CPU mode, so these instructions use Linux. No cloud API key is required.
+The verified execution path is Ubuntu 24.04 in WSL2, using CPU inference. Use Linux Node `^22.21.0 || >=24.9.0` and install the Ubuntu `libatomic1` package; see the [QVAC system requirements](https://docs.qvac.tether.io/sdk/system-requirements/). The Windows host used during development has Vulkan 1.3.260. QVAC documents Vulkan 1.4 as necessary on Windows, including CPU mode, so these instructions use Linux. No cloud API key is required.
 
-The repository is private. If you have access, clone it from a Linux terminal:
+The repository is private. If you have access, clone it from a Linux terminal, preferably into your Linux home directory:
 
 ```sh
+sudo apt-get update && sudo apt-get install -y libatomic1
+cd ~
 git clone https://github.com/da-goat37/prac-sdk.git
 cd prac-sdk
 ```
@@ -19,14 +21,13 @@ From a Linux terminal inside this checkout:
 
 ```sh
 node --version
-npm ci
+npm ci --maxsockets=2
 npm run bundle:qvac
 npm run build
 npm test
-npm run smoke
 ```
 
-The bundle command targets linux-x64 and includes only text generation and decisions. `qvac.config.mjs` computes an absolute model cache path in `.qvac/models`. The initial model load downloads a GGUF through QVAC's registry. A later cached load does not establish that a fresh install can work without network access. The development machine needed a 120 second worker startup allowance on WSL's Windows filesystem mount. Prefer a Linux filesystem checkout if startup I/O is slow.
+On a memory-constrained system, use `NODE_OPTIONS=--max-old-space-size=384 npm ci --maxsockets=2` for the install. Install dependencies and run inference sequentially. The bundle command targets linux-x64 and includes only text generation and decisions. `qvac.config.mjs` computes an absolute model cache path in `.qvac/models`. The initial model load downloads a GGUF through QVAC's registry. A later cached load does not establish that a fresh install can work without network access. The initial dependency installation and uncached model download need network access; subsequent model loads can use the local cache. The development machine needed a 120 second worker startup allowance on WSL's Windows filesystem mount. Prefer a Linux filesystem checkout if startup I/O is slow.
 
 On this development checkout, an ignored Linux Node 22.21.1 runtime is available through `scripts/linux.sh`. It is a convenience for this machine, not a downloaded binary committed to Git. In PowerShell:
 
@@ -80,27 +81,27 @@ npm run relay -- disconnect --dir .relay/a
 npm run relay -- scan --dir .relay/a
 ```
 
-`cancel` requests cancellation of the active decode and waits for native settlement through the running operation. Ctrl+C cleans up the peer. To add a UTF-8 evidence file, use `--file path` instead of `--text`. A stable `--id` makes equal evidence retries safe; conflicting content under the same ID is rejected.
+`cancel` acknowledges the cancellation request promptly; it does not mean the native operation or cleanup has settled. Check `status` until `active` is false and inspect `cleanupError` before assuming cleanup is complete. Ctrl+C requests peer shutdown and cleanup. To add a UTF-8 evidence file, use `--file path` instead of `--text`. A stable `--id` makes equal evidence retries safe; conflicting content under the same ID is rejected.
 
-CPU work can take several minutes. The `work` command waits for its checkpoint; use another terminal for `status` or `cancel`. CLI runs allow at most 20 model calls, two corrective attempts and ten minutes per run. Automatic resumption carries call and repair counts from prior work. These are cooperative execution limits, and cancellation waits for native settlement.
+CPU work can take several minutes. The `work` command waits for its checkpoint; use another terminal for `status` or `cancel`. CLI runs allow at most 20 model calls, two corrective attempts and ten minutes per run. Automatic resumption carries call and repair counts from prior work. These are cooperative execution limits; the running operation waits for native settlement after cancellation is requested.
 
 The retained [v6 live demonstration](artifacts/live-demo.json) at source `fd54add` passed with Qwen3 1.7B Q4 in 343463 ms (about 5.7 minutes), using seven cumulative model calls and two repairs. Peer B wrote its contribution into B's own store while A was offline; after reconnecting, A completed the brief citing the health log and deployment configuration. A further restart confirmed deduplication. This historical run predates passage retrieval and is separate from current long-record verification. It is one successful demonstration, not a measured success rate.
 
 The [long-record native handoff](artifacts/passage-demo-2f23582.json) passed at source `2f23582` with deterministic lexical selection in 711784.744 ms, about 11.9 minutes. A saved pending work, B contributed from its own store while A was offline, and A restarted, replicated the contribution and completed a brief with exact late quotations from both records. The run used 11 cumulative calls and two repairs, verified cleanup and restart deduplication, and stopped both peers cleanly. This is one development demonstration, not an accuracy estimate; earlier failed runs remain recorded.
 
-`npm run demo` runs a live-only handoff in two child processes, retains separate stores under `.relay/demo-*`, and writes a report. For the long-record variant use:
+For a guided live handoff, run the frozen reviewer scenario:
 
 ```sh
-RELAY_DEMO_LONG=1 RELAY_SELECTOR=deterministic npm run demo
+RELAY_SELECTOR=deterministic RELAY_DEMO_SCENARIO_FILE=data/review-handoff-v1.json npm run demo
 ```
 
-It fails visibly if the local model cannot create pending work or use the contribution. It never substitutes scripted output.
+The live-only demo starts two separate child processes, writes concise progress and waiting updates to stderr, and prints the final JSON report to stdout. It retains each peer's store and a `report.json` under the unique `.relay/demo-*` directory named in the report. The report contains the final brief when the handoff completes. It fails visibly if the model cannot create pending work or use the contribution; no scripted output replaces inference. For the historical checkout long-record scenario, use `RELAY_DEMO_LONG=1 RELAY_SELECTOR=deterministic npm run demo`. See [reviewer instructions](docs/REVIEWING.md) for status, inspection, and clean verification.
 
-Cases may declare up to eight structured information needs at creation with `--needs '<JSON array>'`. Each item has a stable `id` and canonical `question`. When the model requests one, it supplies its `needId`; Relay attaches the declared question and stable ID to the request. Undeclared need IDs are rejected. A required need without a matching request prevents acceptance even when the model submits an empty missing list. A brief with unanswered requests is pending. Contributed answers must be read and cited before completion. Context and tool results distinguish unrequested, awaiting-response and answered questions. Free-text tasks do not provide deterministic semantic coverage checks for required missing information. Declare required gaps with `--needs` when that coverage matters, as the checkout example does for deployment configuration.
+Cases may declare up to eight structured information needs at creation with `--needs '<JSON array>'`. Each item has a stable `id` and canonical `question`. When the model requests one, it supplies its `needId`; Relay attaches the declared question and stable ID to the request. Undeclared need IDs are rejected. A required need without a matching request prevents acceptance even when the model submits an empty missing list. A brief with unanswered requests is pending. If no evidence has been read, an ordinary waiting response after a persisted unanswered request can leave pending work without a brief; it accepts no observations. Malformed tool output still receives bounded failure feedback. Contributed answers must be read and cited before completion. Context and tool results distinguish unrequested, awaiting-response and answered questions. Free-text tasks do not provide deterministic semantic coverage checks for required missing information. Declare required gaps with `--needs` when that coverage matters, as the checkout example does for deployment configuration.
 
 ## Retrieval and context
 
-Relay derives rebuildable passages from accepted original evidence. Passage text is an exact UTF-16 slice with source ID, revision and offsets. The original records remain intact and their tails are searchable, although retrieval and model recovery are not guaranteed. A deterministic BM25-like lexical search supplies up to twelve candidates to the optional reranker. Required contributions and protocol are protected in the default 7000 estimated-token context budget before QVAC uses the evidence tools. The estimate is conservative and is not an exact tokenizer. Read progress records that excerpts were delivered, not that a whole source was read. Ranking is not proof of relevance or source truth.
+Relay derives rebuildable passages from accepted original evidence. Passage text is an exact UTF-16 slice with source ID, revision and offsets. The original records remain intact and their tails are searchable, although retrieval and model recovery are not guaranteed. A deterministic BM25-like lexical search supplies up to twelve candidates to the optional reranker. Required contributions and protocol are protected in the default 7000 estimated-token context budget before QVAC uses the evidence tools. The estimate is conservative and is not an exact tokenizer. Read progress records that excerpts were delivered, not that a whole source was read. Ranking is not proof of relevance or source truth. If lexical retrieval has zero overlap with a needed passage, a reranker cannot recover it. An empty query can navigate available passage metadata, and broader search terms may help, but neither guarantees recovery.
 
 ## Model and selector controls
 
@@ -134,21 +135,21 @@ One peer permits one inference at a time. This is a per-process limit. Running w
 ## Evaluations and replay
 
 ```sh
-npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json
-npm run evaluate -- --mode live --selector deterministic --trials 3 --output artifacts/baseline.json
-npm run evaluate -- --mode live --selector laya --trials 3 --output artifacts/laya.json
-npm run evaluate -- --compare artifacts/baseline.json artifacts/laya.json --output artifacts/comparison.json
+review_stamp="$(date +%Y%m%d-%H%M%S)"
+npm run evaluate -- --mode replay --trials 3 --output "artifacts/replay-$review_stamp.json"
+npm run evaluate -- --mode live --selector deterministic --trials 3 --output "artifacts/baseline-$review_stamp.json"
+npm run evaluate -- --mode live --selector laya --trials 3 --output "artifacts/laya-$review_stamp.json"
+npm run evaluate -- --compare "artifacts/baseline-$review_stamp.json" "artifacts/laya-$review_stamp.json" --output "artifacts/comparison-$review_stamp.json"
 npm run regrade -- artifacts/live-deterministic.json
-npm run evaluate:retrieval -- --mode retrieval --trials 2
-npm run evaluate:retrieval -- --mode agent --split heldout --cases held-cold-1,held-charge-1 --trials 1
-bash scripts/clean-verify.sh --retrieval
+npm run evaluate:retrieval -- --mode retrieval --trials 2 --output "artifacts/retrieval-$review_stamp.json"
+npm run evaluate:retrieval -- --mode agent --split heldout --cases held-cold-1,held-charge-1 --trials 1 --output "artifacts/agent-$review_stamp.json"
 ```
 
 Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. `regrade` reads captured version 2 case state and recomputes checks without inference or store writes. It refuses missing state and mismatched identities, and labels its output as recorded-state-regrade. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Each task includes five irrelevant evidence records. Expected source IDs belong to the grader and are not supplied as mandatory selector context. Version 2 reports check the quoted-observation policy and uncertainty notice; historical version 1 reports are not comparable. Measurements and limitations are included in each report. See [the recorded selector evaluation](docs/EVALUATION.md). The small synthetic suite does not establish general accuracy or statistical significance.
 
 The passage evaluation uses nine frozen version 2 synthetic fixtures, approximately 19,000 characters per case, with disjoint development and held-out families. Expected spans are grader-only and are not forced into context. The 54-row selection comparison and six failed native agent runs are documented in [passage retrieval evaluation](docs/RETRIEVAL_EVALUATION.md); the later long-record native handoff is a separate measurement. The later [cc543bd](artifacts/passage-demo-cc543bd-failed.json) and [cf3b330](artifacts/passage-demo-cf3b330-failed.json) long-record runs failed after pending work and replication; neither is a successful handoff. The [ae3a53f run](artifacts/passage-demo-ae3a53f-failed.json) failed during initial work after quotation validation errors, before a request or replication. The [89f9f10 run](artifacts/passage-demo-89f9f10-failed.json) stopped without the required health-log citation after 12 calls and two repairs; cleanup and resumption reported no error. Current source `2f23582` passed build, formatting and 168 controlled tests. Its native long-record handoff passed once with the new save format, as described above. These synthetic checks do not establish semantic truth or general quality.
 
-Before running `clean-verify.sh --retrieval`, run `npm run ranker:prepare` with the default cache path. The script sets `RELAY_RANKER_CACHE` to this checkout's `.relay/reranker-cache` and does not prepare the model itself; a model prepared only in a custom cache is insufficient.
+For a fresh reviewer verification, use `npm run verify:review`: it archives the committed Git source, installs fresh dependencies, runs checks and the native reviewer handoff serially, and retains uniquely named reports and peer stores. It reuses the installed Node runtime and may reuse npm and model caches; see [reviewer instructions](docs/REVIEWING.md). The older `scripts/clean-verify.sh` can overwrite historical artifacts, so preserve them before using it. Its `--retrieval` mode requires `npm run ranker:prepare` in the default `.relay/reranker-cache` first.
 
 ## Boundaries and limitations
 

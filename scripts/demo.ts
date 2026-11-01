@@ -15,6 +15,12 @@ import { controlPost } from '../src/control-client.js';
 const directory = resolve(process.argv[2] ?? `.relay/demo-${Date.now()}`);
 await mkdir(directory, { recursive: true });
 const events: unknown[] = [];
+const cleanup: Array<{
+  peer: string;
+  exitCode: number | null;
+  signal: string | null;
+  error: string | null;
+}> = [];
 const progress = new DemoProgress((line) => console.error(line));
 let sourceCommit = process.env.RELAY_SOURCE_COMMIT ?? 'unavailable';
 if (sourceCommit !== 'unavailable' && !/^[a-f0-9]{40}$/.test(sourceCommit))
@@ -150,10 +156,12 @@ const padding =
   );
 const evidenceText = (text: string) => (!scenario && longEvidence ? padding + text : text);
 let a: Peer | undefined, b: Peer | undefined;
+let observedModel: string | undefined;
 const started = performance.now();
 try {
   a = await start('a');
   b = await start('b');
+  observedModel = (await call(a, 'status')).model;
   await call(a, 'pair', { key: b.owner });
   await call(b, 'pair', { key: a.owner });
   await call(a, 'connect', { port: b.port });
@@ -220,7 +228,13 @@ try {
   } finally {
     stopInitialPoll();
   }
-  assert.equal((await call(a, 'status')).cleanupError, null, 'Initial model cleanup failed');
+  const initialStatus = await call(a, 'status');
+  events.push({
+    event: 'initial-run-settled',
+    cleanupError: initialStatus.cleanupError,
+    active: initialStatus.active,
+  });
+  assert.equal(initialStatus.cleanupError, null, 'Initial model cleanup failed');
   events.push({ event: 'initial-work', checkpoint: initial });
   assert.equal(
     initial.status,
@@ -352,6 +366,7 @@ try {
     fixtureId: scenario?.fixtureId ?? null,
     longEvidence,
     selector: process.env.RELAY_SELECTOR ?? 'deterministic',
+    model: observedModel,
     passed: true,
     elapsedMs: performance.now() - started,
     directory,
@@ -379,6 +394,8 @@ try {
     sourceCommitBasis,
     scenarioSHA256,
     fixtureId: scenario?.fixtureId ?? null,
+    selector: process.env.RELAY_SELECTOR ?? 'deterministic',
+    model: observedModel,
     passed: false,
     elapsedMs: performance.now() - started,
     error: error instanceof Error ? error.message : String(error),
@@ -398,6 +415,31 @@ try {
   );
   process.exitCode = 1;
 } finally {
-  if (a) await stop(a);
-  if (b) await stop(b);
+  for (const [name, peer] of [
+    ['a', a],
+    ['b', b],
+  ] as const) {
+    if (!peer) continue;
+    let error: string | null = null;
+    try {
+      await stop(peer);
+    } catch (failure) {
+      error = failure instanceof Error ? failure.message : String(failure);
+      progress.event(`peer ${name} cleanup failed: ${error}`);
+      process.exitCode = 1;
+    }
+    cleanup.push({
+      peer: name,
+      exitCode: peer.child.exitCode,
+      signal: peer.child.signalCode,
+      error,
+    });
+    if (peer.child.exitCode !== 0) process.exitCode = 1;
+  }
+  // Include cleanup even when an assertion failed before normal shutdown.
+  const path = join(directory, 'report.json');
+  const retained = JSON.parse(await readFile(path, 'utf8'));
+  retained.finalCleanup = cleanup;
+  retained.cleanupPassed = cleanup.every((row) => row.exitCode === 0 && row.error === null);
+  await writeFile(path, JSON.stringify(retained, null, 2));
 }
