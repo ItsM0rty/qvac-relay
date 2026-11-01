@@ -37,6 +37,8 @@ export class RelayStore extends EventEmitter {
   private writes: Promise<unknown> = Promise.resolve();
   private pairing: Promise<unknown> = Promise.resolve();
   private closed = false;
+  private closing?: Promise<void>;
+  private cleanupTasks?: Map<string, () => unknown | Promise<unknown>>;
 
   private constructor(
     directory: string,
@@ -326,15 +328,64 @@ export class RelayStore extends EventEmitter {
     for (const socket of this.sockets.keys()) socket.destroy();
   }
 
-  async close(): Promise<void> {
-    if (this.closed) return;
+  /** Reject new work immediately. Concurrent callers share one attempt; later
+   * calls retry only rejected cleanup steps, never reopening this store. */
+  close(): Promise<void> {
     this.closed = true;
+    if (this.closing) return this.closing;
+    const operation = this.closeResources();
+    this.closing = operation;
+    void operation.then(
+      () => {
+        this.closing = undefined;
+      },
+      () => {
+        this.closing = undefined;
+      },
+    );
+    return operation;
+  }
+
+  private async closeResources(): Promise<void> {
     await Promise.allSettled([this.writes, this.pairing]);
-    this.disconnect();
-    if (this.server) await new Promise<void>((resolve) => this.server!.close(() => resolve()));
-    await Promise.all([...this.remotes.values()].map((tree) => tree.close()));
-    await this.local.close();
-    await this.cores.close();
-    this.removeAllListeners();
+    if (!this.cleanupTasks) {
+      // Capture resources after queued pairing settles, before close events can
+      // remove socket entries. A failure in one step must not skip another.
+      const tasks = new Map<string, () => unknown | Promise<unknown>>();
+      let index = 0;
+      for (const [socket, protocol] of this.sockets) {
+        tasks.set(`socket:${index}`, () => socket.destroy());
+        tasks.set(`protocol:${index++}`, () => protocol.destroy());
+      }
+      const server = this.server;
+      if (server)
+        tasks.set(
+          'server',
+          () =>
+            new Promise<void>((resolve, reject) => {
+              server.close((error) => {
+                if (error && (error as NodeJS.ErrnoException).code !== 'ERR_SERVER_NOT_RUNNING')
+                  reject(error);
+                else resolve();
+              });
+            }),
+        );
+      for (const [owner, tree] of this.remotes) tasks.set(`remote:${owner}`, () => tree.close());
+      tasks.set('local', () => this.local.close());
+      tasks.set('corestore', () => this.cores.close());
+      tasks.set('listeners', () => this.removeAllListeners());
+      this.cleanupTasks = tasks;
+    }
+    const errors: Error[] = [];
+    for (const [name, close] of this.cleanupTasks) {
+      try {
+        await close();
+        this.cleanupTasks.delete(name);
+      } catch (cause) {
+        errors.push(new Error(`Store cleanup failed: ${name}`, { cause }));
+      }
+    }
+    if (errors.length)
+      throw new AggregateError(errors, 'Store cleanup incomplete; close() may retry failed steps.');
   }
 }

@@ -280,3 +280,6 @@ console.log(
     2,
   ),
 );
+
+// Retain every row before failing the shell verification pipeline.
+if (rows.some((row) => !row.passed)) process.exitCode = 1;

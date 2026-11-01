@@ -216,47 +216,48 @@ test('crash after brief commit settles persisted outcome without executing tools
   });
 });
 
-test('recovery resumes a committed brief when a request answer arrived after its citations', async () => {
-  await fixture(async (a, b) => {
-    const previous = await seed(a, 'running');
-    const local = record(a, 'source-before-crash', 'evidence', {
-      title: 'Initial log',
-      text: 'The deployment failed.',
+for (const writer of ['remote', 'owner'] as const)
+  test(`recovery resumes a committed brief when a request answer arrived after its citations (${writer})`, async () => {
+    await fixture(async (a, b) => {
+      const previous = await seed(a, 'running');
+      const local = record(a, 'source-before-crash', 'evidence', {
+        title: 'Initial log',
+        text: 'The deployment failed.',
+      });
+      await a.put(local);
+      const brief = record(a, stableId(previous.runId, 'brief'), 'brief', {
+        facts: [
+          {
+            text: 'Observed failure',
+            sources: [{ id: local.id, revision: revision(local), quote: 'The deployment failed.' }],
+          },
+        ],
+        uncertainty: [],
+        missing: ['Need the missing failure log'],
+        basedOn: stableId('old-snapshot'),
+      });
+      await a.put(brief);
+      await contribute(a, writer === 'owner' ? a : b);
+      const worker = agent(a);
+      const coordinator = new Resumer(a, worker, { maxCalls: 12 });
+      const outcomes = await coordinator.scan();
+      assert.deepEqual(
+        outcomes.map((outcome) => outcome.status),
+        ['pending', 'completed'],
+      );
+      assert.equal(outcomes[0]?.briefId, brief.id);
+      assert.equal(worker.invocations.length, 1);
+      const carried = worker.invocations[0]!.options;
+      assert.equal(carried.runId, stableId('resume', previous.runId, 'evidence-remote'));
+      assert.equal(carried.initialCalls, previous.calls);
+      assert.equal(carried.initialRepairs, previous.repairs);
+      assert.deepEqual(carried.requiredIds, ['evidence-remote', local.id].sort());
+      assert.equal((await a.list('demo')).filter((item) => item.kind === 'brief').length, 1);
+      await coordinator.scan();
+      assert.equal(worker.invocations.length, 1);
+      await coordinator.close();
     });
-    await a.put(local);
-    const brief = record(a, stableId(previous.runId, 'brief'), 'brief', {
-      facts: [
-        {
-          text: 'Observed failure',
-          sources: [{ id: local.id, revision: revision(local), quote: 'The deployment failed.' }],
-        },
-      ],
-      uncertainty: [],
-      missing: ['Need the missing failure log'],
-      basedOn: stableId('old-snapshot'),
-    });
-    await a.put(brief);
-    await contribute(a, b);
-    const worker = agent(a);
-    const coordinator = new Resumer(a, worker, { maxCalls: 12 });
-    const outcomes = await coordinator.scan();
-    assert.deepEqual(
-      outcomes.map((outcome) => outcome.status),
-      ['pending', 'completed'],
-    );
-    assert.equal(outcomes[0]?.briefId, brief.id);
-    assert.equal(worker.invocations.length, 1);
-    const carried = worker.invocations[0]!.options;
-    assert.equal(carried.runId, stableId('resume', previous.runId, 'evidence-remote'));
-    assert.equal(carried.initialCalls, previous.calls);
-    assert.equal(carried.initialRepairs, previous.repairs);
-    assert.deepEqual(carried.requiredIds, ['evidence-remote', local.id].sort());
-    assert.equal((await a.list('demo')).filter((item) => item.kind === 'brief').length, 1);
-    await coordinator.scan();
-    assert.equal(worker.invocations.length, 1);
-    await coordinator.close();
   });
-});
 
 test('pending brief with a stale citation resumes even if its evidence ID was already consumed', async () => {
   await fixture(async (a, b) => {
@@ -302,41 +303,42 @@ test('pending brief with a stale citation resumes even if its evidence ID was al
   });
 });
 
-test('recovery completes without inference when the committed brief already cites the answer revision', async () => {
-  await fixture(async (a, b) => {
-    const previous = await seed(a, 'running');
-    await contribute(a, b);
-    const remote = (await a.get('evidence-remote'))!;
-    const brief = record(a, stableId(previous.runId, 'brief'), 'brief', {
-      facts: [
-        {
-          text: 'Observed failure',
-          sources: [
-            {
-              id: remote.id,
-              revision: revision(remote),
-              quote: 'The deployment failed because the disk was full.',
-            },
-          ],
-        },
-      ],
-      uncertainty: [],
-      missing: [],
-      basedOn: stableId('current-snapshot'),
+for (const writer of ['remote', 'owner'] as const)
+  test(`recovery completes without inference when the committed brief already cites the answer revision (${writer})`, async () => {
+    await fixture(async (a, b) => {
+      const previous = await seed(a, 'running');
+      await contribute(a, writer === 'owner' ? a : b);
+      const remote = (await a.get('evidence-remote'))!;
+      const brief = record(a, stableId(previous.runId, 'brief'), 'brief', {
+        facts: [
+          {
+            text: 'Observed failure',
+            sources: [
+              {
+                id: remote.id,
+                revision: revision(remote),
+                quote: 'The deployment failed because the disk was full.',
+              },
+            ],
+          },
+        ],
+        uncertainty: [],
+        missing: [],
+        basedOn: stableId('current-snapshot'),
+      });
+      await a.put(brief);
+      const worker = agent(a);
+      const coordinator = new Resumer(a, worker);
+      const outcomes = await coordinator.scan();
+      assert.deepEqual(
+        outcomes.map((outcome) => outcome.status),
+        ['completed'],
+      );
+      assert.equal(outcomes[0]?.briefId, brief.id);
+      assert.equal(worker.invocations.length, 0);
+      await coordinator.close();
     });
-    await a.put(brief);
-    const worker = agent(a);
-    const coordinator = new Resumer(a, worker);
-    const outcomes = await coordinator.scan();
-    assert.deepEqual(
-      outcomes.map((outcome) => outcome.status),
-      ['completed'],
-    );
-    assert.equal(outcomes[0]?.briefId, brief.id);
-    assert.equal(worker.invocations.length, 0);
-    await coordinator.close();
   });
-});
 test('cumulative exhausted calls and repeated crash recovery stop without new inference', async () => {
   await fixture(async (a) => {
     await seed(a, 'running', { calls: 10 });

@@ -1127,7 +1127,7 @@ export class Agent {
               'Committed brief state is unavailable.',
               'infrastructure',
             );
-          const uncited = uncitedContributions(all, this.store.owner, requestIds, committedBrief);
+          const uncited = uncitedContributions(all, requestIds, committedBrief);
           for (const id of uncited) requiredIds.add(id);
           if (uncited.length) {
             reason = 'New relevant evidence arrived after brief commit; refresh is pending.';

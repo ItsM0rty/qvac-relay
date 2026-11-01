@@ -1159,80 +1159,81 @@ test('mixed malformed native output denies every valid-looking action and preser
   }
 });
 
-test(
-  'a relevant contribution arriving after the brief commit keeps the final checkpoint pending',
-  { timeout: 15000 },
-  async () => {
-    const f = await fixture();
-    const remoteDirectory = await mkdtemp(join(tmpdir(), 'relay-postcommit-'));
-    const remote = await RelayStore.open(remoteDirectory);
-    try {
-      const requestId = 'postcommit-request';
-      const contributionId = 'postcommit-contribution';
-      await f.store.put({
-        schemaVersion: 1,
-        kind: 'request',
-        id: requestId,
-        owner: f.store.owner,
-        caseId: 'incident',
-        createdAt: new Date().toISOString(),
-        question: 'Which configuration was deployed?',
-      });
-      await f.store.pair(remote.owner);
-      await remote.pair(f.store.owner);
-      await f.store.connect(await remote.listen());
-      const put = f.store.put.bind(f.store);
-      let injected = false;
-      f.store.put = async (record, options) => {
-        const result = await put(record, options);
-        if (record.kind === 'brief' && !injected) {
-          injected = true;
-          await remote.put({
-            schemaVersion: 1,
-            kind: 'evidence',
-            id: contributionId,
-            owner: remote.owner,
-            caseId: 'incident',
-            createdAt: new Date().toISOString(),
-            title: 'Late configuration',
-            text: 'The deployed timeout was 100 ms.',
-            requestId,
-          });
-          let arrived = false;
-          for (let attempt = 0; attempt < 60; attempt++) {
-            if (await f.store.get(contributionId)) {
-              arrived = true;
-              break;
+for (const writer of ['remote', 'owner'] as const)
+  test(
+    `a ${writer} contribution arriving after the brief commit keeps the final checkpoint pending`,
+    { timeout: 15000 },
+    async () => {
+      const f = await fixture();
+      const remoteDirectory = await mkdtemp(join(tmpdir(), 'relay-postcommit-'));
+      const remote = await RelayStore.open(remoteDirectory);
+      try {
+        const requestId = 'postcommit-request';
+        const contributionId = 'postcommit-contribution';
+        await f.store.put({
+          schemaVersion: 1,
+          kind: 'request',
+          id: requestId,
+          owner: f.store.owner,
+          caseId: 'incident',
+          createdAt: new Date().toISOString(),
+          question: 'Which configuration was deployed?',
+        });
+        await f.store.pair(remote.owner);
+        await remote.pair(f.store.owner);
+        await f.store.connect(await remote.listen());
+        const put = f.store.put.bind(f.store);
+        let injected = false;
+        f.store.put = async (record, options) => {
+          const result = await put(record, options);
+          if (record.kind === 'brief' && !injected) {
+            injected = true;
+            await (writer === 'owner' ? put : remote.put.bind(remote))({
+              schemaVersion: 1,
+              kind: 'evidence',
+              id: contributionId,
+              owner: writer === 'owner' ? f.store.owner : remote.owner,
+              caseId: 'incident',
+              createdAt: new Date().toISOString(),
+              title: 'Late configuration',
+              text: 'The deployed timeout was 100 ms.',
+              requestId,
+            });
+            let arrived = false;
+            for (let attempt = 0; attempt < 60; attempt++) {
+              if (await f.store.get(contributionId)) {
+                arrived = true;
+                break;
+              }
+              await new Promise((resolve) => setTimeout(resolve, 20));
             }
-            await new Promise((resolve) => setTimeout(resolve, 20));
+            assert.equal(arrived, true, 'Contribution must replicate before brief finalisation');
           }
-          assert.equal(arrived, true, 'Contribution must replicate before brief finalisation');
-        }
-        return result;
-      };
-      const model = new ScriptedModel([
-        (_history, _signal, turn) => action('read_record', { id: f.source.id }, turn),
-        (history, _signal, turn) => action('save_brief', briefFromRead(history), turn),
-      ]);
-      const checkpoint = await new Agent(f.store, model).run('incident');
-      assert.equal(injected, true);
-      assert.equal(checkpoint.status, 'pending', checkpoint.reason ?? '');
-      assert.deepEqual(checkpoint.requiredIds, [contributionId]);
-      assert.equal(checkpoint.consumed.includes(contributionId), false);
-      assert.match(checkpoint.reason!, /New relevant evidence arrived after brief commit/);
-      const saved = await state(f);
-      assert.equal(saved.briefs.length, 1);
-      assert.equal(
-        saved.briefs[0]!.facts.some((fact) =>
-          fact.sources.some((source) => source.id === contributionId),
-        ),
-        false,
-      );
-      assert.ok(saved.events.some((event) => event.event === 'late_contribution'));
-    } finally {
-      await remote.close();
-      await f.close();
-      await rm(remoteDirectory, { recursive: true, force: true });
-    }
-  },
-);
+          return result;
+        };
+        const model = new ScriptedModel([
+          (_history, _signal, turn) => action('read_record', { id: f.source.id }, turn),
+          (history, _signal, turn) => action('save_brief', briefFromRead(history), turn),
+        ]);
+        const checkpoint = await new Agent(f.store, model).run('incident');
+        assert.equal(injected, true);
+        assert.equal(checkpoint.status, 'pending', checkpoint.reason ?? '');
+        assert.deepEqual(checkpoint.requiredIds, [contributionId]);
+        assert.equal(checkpoint.consumed.includes(contributionId), false);
+        assert.match(checkpoint.reason!, /New relevant evidence arrived after brief commit/);
+        const saved = await state(f);
+        assert.equal(saved.briefs.length, 1);
+        assert.equal(
+          saved.briefs[0]!.facts.some((fact) =>
+            fact.sources.some((source) => source.id === contributionId),
+          ),
+          false,
+        );
+        assert.ok(saved.events.some((event) => event.event === 'late_contribution'));
+      } finally {
+        await remote.close();
+        await f.close();
+        await rm(remoteDirectory, { recursive: true, force: true });
+      }
+    },
+  );

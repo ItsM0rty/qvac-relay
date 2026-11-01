@@ -49,3 +49,9 @@ Accepted briefs use factPolicy quoted-observations-v1. Trusted code turns each v
 The [2f23582 long-record development run](../artifacts/passage-demo-2f23582.json) completed this flow once with the deterministic selector, including late exact quotations, cleanup and restart deduplication. It does not establish a success rate or a current two-peer pass for either optional selector.
 
 This flow depends on locally received blocks. It cannot prove all peers have supplied their latest data. Source quotations support inspection; semantic truth remains a limitation of the model and the evidence.
+
+## Linked-answer coverage and store shutdown
+
+Final checkpointing and committed-brief recovery both check linked answers against accepted source IDs and revisions, independent of the answer's owner. An uncited locally known answer keeps the old brief pending and becomes required context for refresh. This is separate from the remote contribution scheduler and does not claim global freshness.
+
+RelayStore.close stops accepting work immediately. Concurrent callers share an attempt. Cleanup visits every captured resource and aggregates failures; a later explicit close retries only rejected steps. It never repeats accepted record writes or reopens the store. The dependency close operations are assumed idempotent after a partial failure; fault-injection tests check the installed tree/core implementations and reopening the directory. No automatic unbounded retry or deadline is added.

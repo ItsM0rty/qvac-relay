@@ -150,7 +150,7 @@ export class Resumer {
         );
         const acceptedBrief = recovering && committed ? committed : previousBrief;
         const uncited = acceptedBrief
-          ? uncitedContributions(records, this.store.owner, checkpoint.requestIds, acceptedBrief)
+          ? uncitedContributions(records, checkpoint.requestIds, acceptedBrief)
           : [];
         const incoming = [...new Set([...contributions(records, checkpoint), ...uncited])].sort();
         if (!recovering && incoming.length === 0) continue;

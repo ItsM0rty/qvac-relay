@@ -6,6 +6,16 @@ Relay is a local engineering handoff agent. Each peer owns its writable tree. Co
 
 The user later revoked the request to invite reviewers. The repository must remain owner-only unless he explicitly asks to add someone. After the interrupted invitation attempt, GitHub reported no pending invitations and only da-goat37 as a collaborator. Privacy remains verified as PRIVATE.
 
+## Independent review fixes
+
+The user requested fixes for three reproduced findings at `e9731d0`. Linked-answer citation coverage now includes evidence written by the case owner as well as other peers. The same pure policy controls final checkpointing and recovery of an already committed brief. A new uncited answer keeps that brief pending and is required for its refresh. A committed brief that already cites the answer revision can settle without inference. This does not undo or repeat committed writes. The separate policy for detecting new remote contributions without an accepted brief remains unchanged.
+
+The controlled diagnostic runner writes all case outcomes before returning exit status 1 if any case failed. Its shell verifier already uses pipefail, so a failed diagnostic now stops verification while retaining its report. Subprocess tests inject an agent failure and also check the successful path.
+
+Store shutdown rejects new work immediately and shares one close attempt among concurrent callers. It captures socket, protocol, listener, remote-tree, local-tree and Corestore cleanup steps after queued work settles. Each step is attempted even if another rejects. Errors are aggregated with their resource names and original causes. A later close retries only rejected steps; successful steps are removed and the store never reopens. This relies on the underlying close/destroy operations being safe to repeat after a partial failure. Actual Hyperbee2/Corestore retries and directory reopening are covered with injected remote and local close failures. This is bounded by explicit close calls, not an automatic retry loop or a guarantee against a dependency hanging indefinitely.
+
+Evaluation harness identity changes to v15 and passage evaluation configuration to 11 because completion policy changed. Historical native reports keep their original identity. These fixes require their own controlled verification; earlier native passes are not evidence of native execution on the changed source.
+
 ## Reviewer reliability pass
 
 Final application source `cd4b146` passed a fresh Linux install, bundle, build, formatting, 181 tests, three native default handoffs and a separate Atlas variation. Earlier results remain attributed to their own snapshots in docs/REVIEW_RESULTS.md. The three final defaults used 6/1, 6/1 and 9/2 cumulative model calls/repairs; Atlas used 6/1. This supports the demonstration, not broad reliability or a long-record speed claim.

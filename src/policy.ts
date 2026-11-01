@@ -19,9 +19,10 @@ export class RelayError extends Error {
     this.name = 'RelayError';
   }
 }
+// Citation coverage applies to linked answers from any owner. Scheduling new
+// remote work is separate from deciding whether an accepted brief is current.
 export function uncitedContributions(
   records: readonly RelayRecord[],
-  owner: string,
   requestIds: readonly string[],
   brief: BriefRecord,
 ): string[] {
@@ -30,7 +31,6 @@ export function uncitedContributions(
     .filter(
       (record) =>
         record.kind === 'evidence' &&
-        record.owner !== owner &&
         record.requestId &&
         requested.has(record.requestId) &&
         !brief.facts.some((fact) =>
