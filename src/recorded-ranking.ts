@@ -17,6 +17,8 @@ import {
 const sha = (v: unknown) => createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 const SCORE_SOURCE = '57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4';
+const HISTORICAL_CONFIGURATION_HASH =
+  '9d4148548b6e4fe09c2c4fe4af9c6512449574b32a25906d30ac69d06b60a4e8';
 type Usage = {
   scores?: Array<{ id: string; score: number }>;
   model?: unknown;
@@ -29,8 +31,15 @@ type Usage = {
 export async function replayRecordedRankings(
   input: RetrievalEvalReport,
   currentSourceCommit: string,
+  assertedScoreSourceCommit?: string,
 ) {
   validateRetrievalReport(input, { historicalConfiguration: true });
+  if (input.configurationHash !== HISTORICAL_CONFIGURATION_HASH)
+    throw new Error('Incompatible historical configuration hash');
+  if (input.sourceCommit === 'unavailable' && assertedScoreSourceCommit !== SCORE_SOURCE)
+    throw new Error('Unavailable report source requires explicit 57fc score source assertion');
+  if (assertedScoreSourceCommit !== undefined && assertedScoreSourceCommit !== SCORE_SOURCE)
+    throw new Error('Invalid asserted score source');
   if (input.options.mode !== 'retrieval' || !currentSourceCommit.trim())
     throw new Error('Retrieval-only input and current source identity required');
   if (
@@ -166,7 +175,11 @@ export async function replayRecordedRankings(
     nativeInference: false,
     scoreSourceCommit: SCORE_SOURCE,
     rawReportSourceCommit: input.sourceCommit,
-    scoreSourceBasis: 'Clean archive manifest; raw report lacked Git metadata.',
+    scoreSourceBasis:
+      input.sourceCommit === 'unavailable'
+        ? 'Caller asserts clean-archive manifest attribution; raw report lacked Git metadata. Configuration hash does not authenticate recorded scores.'
+        : 'Source commit recorded in report; configuration hash does not authenticate recorded scores.',
+    assertedScoreSourceCommit: assertedScoreSourceCommit ?? null,
     currentSourceCommit,
     currentContextBudget: 7000,
     fixtureVersion: RETRIEVAL_FIXTURE_VERSION,

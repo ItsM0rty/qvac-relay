@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { replayRecordedRankings } from '../src/recorded-ranking.js';
 import { fixtureRecords, runRetrievalEvaluation } from '../src/retrieval-eval.js';
 import { RETRIEVAL_CASES } from '../src/retrieval-cases.js';
 import { lexicalRetrieve, projectPassages } from '../src/retrieval.js';
 import { MINILM } from '../src/minilm.js';
 
+const sourceAssertion = '57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4';
 async function captured() {
   const report = await runRetrievalEvaluation({
     mode: 'retrieval',
@@ -60,6 +62,12 @@ async function captured() {
       },
     },
   ]);
+  // Synthetic rows exercise behavior; only historical configuration comes from the raw artifact.
+  const historical = JSON.parse(
+    await readFile('artifacts/passage-retrieval-raw-57fc4d6.json', 'utf8'),
+  );
+  report.configuration = historical.configuration;
+  report.configurationHash = historical.configurationHash;
   report.sourceCommit = 'unavailable';
   return { report, pool };
 }
@@ -67,12 +75,15 @@ async function captured() {
 test('replays frozen logits/classes and cached trial with current context, no native inference or input mutation', async () => {
   const { report, pool } = await captured(),
     before = structuredClone(report);
-  const result = await replayRecordedRankings(report, 'current-test-source');
+  const result = await replayRecordedRankings(report, 'current-test-source', sourceAssertion);
   assert.deepEqual(report, before);
   assert.equal(result.mode, 'recorded-ranking-budget-replay');
   assert.equal(result.nativeInference, false);
   assert.equal(result.currentSourceCommit, 'current-test-source');
   assert.equal(result.currentContextBudget, 7000);
+  assert.equal(result.rawReportSourceCommit, 'unavailable');
+  assert.equal(result.assertedScoreSourceCommit, sourceAssertion);
+  assert.match(result.scoreSourceBasis, /Caller asserts/);
   assert.match(result.queryIdentityBasis, /did not capture/);
   const mini = result.rows.find((r) => r.selector === 'minilm' && r.trial === 1)!;
   assert.deepEqual(mini.selection.ids, [...pool].reverse().slice(0, mini.selection.ids.length));
@@ -99,23 +110,47 @@ test('rejects malformed or incompatible recorded model, candidate pool, scores a
       usage: { scores: Array<{ id: string; score: number }>; model: unknown };
     };
   mini().usage.scores[0]!.score = NaN;
-  await assert.rejects(replayRecordedRankings(broken, 'current'), /scores|candidate/i);
+  await assert.rejects(
+    replayRecordedRankings(broken, 'current', sourceAssertion),
+    /scores|candidate/i,
+  );
   broken = structuredClone(report);
   mini().usage.scores[0]!.id = 'unknown';
-  await assert.rejects(replayRecordedRankings(broken, 'current'), /scores|candidate/i);
+  await assert.rejects(
+    replayRecordedRankings(broken, 'current', sourceAssertion),
+    /scores|candidate/i,
+  );
   broken = structuredClone(report);
   mini().usage.model = {};
-  await assert.rejects(replayRecordedRankings(broken, 'current'), /model/i);
+  await assert.rejects(replayRecordedRankings(broken, 'current', sourceAssertion), /model/i);
   broken = structuredClone(report);
   const laya = broken.rows.find((r) => r.selector === 'laya')!.selection as {
     usage: { classes: Record<string, string> };
   };
   laya.usage.classes[Object.keys(laya.usage.classes)[0]!] = 'unknown';
-  await assert.rejects(replayRecordedRankings(broken, 'current'), /classes/i);
+  await assert.rejects(replayRecordedRankings(broken, 'current', sourceAssertion), /classes/i);
   broken = structuredClone(report);
   broken.configuration.fixtureVersion = 'unknown';
   broken.configurationHash = createHash('sha256')
     .update(JSON.stringify(broken.configuration))
     .digest('hex');
-  await assert.rejects(replayRecordedRankings(broken, 'current'), /fixture/i);
+  await assert.rejects(
+    replayRecordedRankings(broken, 'current', sourceAssertion),
+    /configuration|fixture/i,
+  );
+});
+
+test('requires explicit provenance for missing source and rejects other historical configurations', async () => {
+  const { report } = await captured();
+  await assert.rejects(replayRecordedRankings(report, 'current'), /assertion/i);
+  await assert.rejects(replayRecordedRankings(report, 'current', 'wrong'), /assertion|source/i);
+  const changed = structuredClone(report);
+  changed.configuration.contextBudget++;
+  changed.configurationHash = createHash('sha256')
+    .update(JSON.stringify(changed.configuration))
+    .digest('hex');
+  await assert.rejects(
+    replayRecordedRankings(changed, 'current', sourceAssertion),
+    /historical configuration/i,
+  );
 });
