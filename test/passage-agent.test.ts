@@ -116,16 +116,15 @@ test('omitted late source is found through the actual search result, read at its
             end: number;
             revision: string;
             title: string;
-            text: string;
           }>
         >(history, 'find_evidence');
-        const found = matches.find((m) => m.text.includes(quote));
+        const found = matches.find((m) => m.id === source.id);
         assert.ok(found);
         assert.equal(found.id, source.id);
         assert.notEqual(found.passageId, source.id);
         assert.equal(found.revision, revision(source));
         assert.equal(found.title, source.title);
-        assert.equal(found.text, source.text.slice(found.offset, found.end));
+        assert.equal(Object.hasOwn(found, 'text'), false);
         assert.ok(found.offset > 2000);
         foundOffset = found.offset;
         return action('read_record', { id: found.id, offset: found.offset }, t);
@@ -259,17 +258,15 @@ test('replicated evidence becomes searchable by an existing agent and by a resta
         return action('find_evidence', { query: 'cobalt marker' }, t);
       },
       (h, t) => {
-        const matches = result<Array<{ id: string; text: string; offset: number }>>(
-          h,
-          'find_evidence',
-        );
+        const matches = result<Array<{ id: string; offset: number }>>(h, 'find_evidence');
         const found = matches.find((m) => m.id === remote.id);
         assert.ok(found);
-        assert.equal(found.text, remote.text);
+        assert.equal(Object.hasOwn(found, 'text'), false);
         return action('read_record', { id: found.id, offset: found.offset }, t);
       },
       (h, t) => {
         const read = result<{ id: string; text: string }>(h, 'read_record');
+        assert.equal(read.text, remote.text);
         return action('save_brief', draft(read.id, [read.text]), t);
       },
     ]);
@@ -299,4 +296,109 @@ test('replicated evidence becomes searchable by an existing agent and by a resta
     await Promise.allSettled([a?.close(), b?.close()]);
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+test('bounded search navigates paginated matches and recovers a late source via read', async () => {
+  await fixture(async (store, base) => {
+    const late = `${'Routine observations were logged. '.repeat(80)}Zircon amber late fact was confirmed.`;
+    await store.put({
+      ...base,
+      kind: 'evidence',
+      id: 'late-navigation',
+      title: 'Zircon amber',
+      text: late,
+    });
+    for (let i = 0; i < 9; i++)
+      await store.put({
+        ...base,
+        kind: 'evidence',
+        id: `other-${i}`,
+        title: 'Zircon',
+        text: `Zircon inspection ${i} was routine.`,
+      });
+    let chosen = -1;
+    const model = new ControlledModel([
+      (_h, t) => action('find_evidence', { query: 'zircon amber', limit: 8 }, t),
+      (h, t) => {
+        const msg = h.findLast((m) => m.role === 'tool' && m.toolName === 'find_evidence')!;
+        assert.ok(Buffer.byteLength(msg.content, 'utf8') <= 1000);
+        const matches = result<
+          Array<{ id: string; offset: number; nextSkip?: number | null; text?: string }>
+        >(h, 'find_evidence');
+        assert.ok(matches.length > 0 && matches.length < 8);
+        assert.equal(matches.at(-1)!.nextSkip, matches.length);
+        assert.ok(matches.every((m) => !Object.hasOwn(m, 'text')));
+        const found = matches.find((m) => m.id === 'late-navigation');
+        assert.ok(found);
+        assert.ok(found.offset > 2000);
+        chosen = found.offset;
+        return action('read_record', { id: found.id, offset: found.offset }, t);
+      },
+      (h, t) => {
+        const read = result<{ id: string; offset: number; end: number; text: string }>(
+          h,
+          'read_record',
+        );
+        assert.equal(read.offset, chosen);
+        assert.equal(read.text, late.slice(read.offset, read.end));
+        assert.ok(read.text.includes('Zircon amber late fact was confirmed.'));
+        return action('save_brief', draft(read.id, ['Zircon amber late fact was confirmed.']), t);
+      },
+    ]);
+    const cp = await new Agent(store, model).run('incident');
+    assert.equal(cp.status, 'completed', cp.reason ?? '');
+  });
+});
+
+test('parallel read payloads are bounded and undelivered text cannot be cited before a later read', async () => {
+  await fixture(async (store, base) => {
+    const hidden = 'The tail was not delivered in the first batch.';
+    const text = `${'x'.repeat(550)}${hidden}${'y'.repeat(300)}`;
+    for (const id of ['batch-a', 'batch-b'])
+      await store.put({ ...base, kind: 'evidence', id, title: 'Batch', text });
+    const model = new ControlledModel([
+      (_h, t) => ({
+        content: '',
+        calls: ['batch-a', 'batch-b'].map((id, i) => ({
+          id: `batch-${t}-${i}`,
+          name: 'read_record',
+          arguments: { id, offset: 0, length: 1000 },
+        })),
+        toolErrors: [],
+        stopReason: 'eos',
+      }),
+      (h, t) => {
+        const messages = h.filter((m) => m.role === 'tool' && m.toolName === 'read_record');
+        assert.equal(messages.length, 2);
+        for (const m of messages) {
+          assert.ok(Buffer.byteLength(m.content, 'utf8') <= 500);
+          const read = JSON.parse(m.content) as {
+            text: string;
+            offset: number;
+            end: number;
+            nextOffset: number | null;
+            truncated: boolean;
+          };
+          assert.equal(read.text, text.slice(read.offset, read.end));
+          assert.ok(read.end < 550);
+          assert.equal(read.nextOffset, read.end);
+          assert.equal(read.truncated, true);
+          assert.ok(!read.text.includes(hidden));
+        }
+        return action('save_brief', draft('batch-a', [hidden]), t);
+      },
+      (h, t) => {
+        assert.equal(result<{ code: string }>(h, 'save_brief').code, 'QUOTE');
+        return action('read_record', { id: 'batch-a', offset: 550, length: hidden.length }, t);
+      },
+      (h, t) => {
+        const read = result<{ id: string; text: string }>(h, 'read_record');
+        assert.equal(read.text, hidden);
+        return action('save_brief', draft(read.id, [read.text]), t);
+      },
+    ]);
+    const cp = await new Agent(store, model).run('incident');
+    assert.equal(cp.status, 'completed', cp.reason ?? '');
+    assert.equal(cp.repairs, 1);
+  });
 });

@@ -86,9 +86,9 @@ export const TOOLS: ToolSpec[] = Object.entries(schemas).map(([name, schema]) =>
   description: (
     {
       find_evidence:
-        'Search all passages in this case. Returns source IDs, exact excerpts and character offsets. Read matching locations before citing.',
+        'Search all passages. Returns a bounded page of source IDs and exact locations, not source text. Read matching offsets before citing. Use nextSkip for the next page.',
       read_record:
-        'Read original evidence with its source ID and revision. Use offset from search/context to recover later details; length defaults to1000. Offsets are UTF-16 character positions, not passage IDs.',
+        'Read exact original text using source ID and offset from search/context. Maximum requested length1000; the returned page may be shorter to fit context. Follow nextOffset for more. Offsets are UTF-16 characters, not passage IDs.',
       request_information:
         'Persist a question for another peer. For a required informationNeed include its needId. Reuse existing questions.',
       save_brief:
@@ -522,6 +522,10 @@ export class Agent {
           reply.calls.some((call) => !['find_evidence', 'read_record'].includes(call.name));
         for (const call of reply.calls) {
           let result: unknown;
+          let readLocation: Record<string, unknown> | undefined;
+          const resultBudget = Math.floor(
+            Math.max(256, (options.contextBudget ?? 7000) - 6000) / reply.calls.length,
+          );
           try {
             checkCancelled(signal);
             if (reply.toolErrors.length)
@@ -556,21 +560,43 @@ export class Agent {
               this.index.sync(current.records);
               const skip = Number(args.skip ?? 0),
                 limit = Number(args.limit ?? 3);
-              const found = this.index.search(String(args.query), skip + limit).slice(skip);
-              for (const { passage } of found) {
-                knownIds.delete(passage.sourceId);
-                knownIds.add(passage.sourceId);
+              const matches = this.index.search(String(args.query), skip + limit + 1).slice(skip);
+              const found: Array<{
+                id: string;
+                passageId: string;
+                offset: number;
+                end: number;
+                revision: string;
+                title: string;
+                lexicalScore: number;
+                nextSkip?: number | null;
+              }> = [];
+              for (const { passage, score } of matches.slice(0, limit)) {
+                const next = {
+                  id: passage.sourceId,
+                  passageId: passage.id,
+                  offset: passage.start,
+                  end: passage.end,
+                  revision: passage.revision,
+                  title: passage.title.slice(0, 120),
+                  lexicalScore: score,
+                };
+                if (Buffer.byteLength(JSON.stringify([...found, next]), 'utf8') > resultBudget - 40)
+                  break;
+                found.push(next);
               }
-              result = found.map(({ passage, score }) => ({
-                id: passage.sourceId,
-                passageId: passage.id,
-                offset: passage.start,
-                end: passage.end,
-                revision: passage.revision,
-                title: passage.title,
-                text: passage.text,
-                lexicalScore: score,
-              }));
+              if (matches.length && !found.length)
+                throw new RelayError(
+                  'SEARCH_RESULT_BUDGET',
+                  'Search results do not fit this batch. Submit one search per turn with a smaller limit.',
+                );
+              if (found.length)
+                found.at(-1)!.nextSkip = matches.length > found.length ? skip + found.length : null;
+              for (const passage of found) {
+                knownIds.delete(passage.id);
+                knownIds.add(passage.id);
+              }
+              result = found;
             } else if (call.name === 'read_record') {
               const record = current.records.find((r) => r.id === args.id && r.kind === 'evidence');
               if (!record || record.kind !== 'evidence')
@@ -585,7 +611,30 @@ export class Agent {
                   'READ_LOCATION',
                   'offset must point inside the original record.',
                 );
-              const text = record.text.slice(offset, offset + length);
+              let text = record.text.slice(offset, offset + length);
+              const page = (text: string) => ({
+                id: record.id,
+                revision: revision(record),
+                text,
+                offset,
+                end: offset + text.length,
+                totalLength: record.text.length,
+                nextOffset: offset + text.length < record.text.length ? offset + text.length : null,
+                truncated: offset > 0 || offset + text.length < record.text.length,
+              });
+              let bytes = Buffer.byteLength(JSON.stringify(page(text)), 'utf8');
+              while (text.length && bytes > resultBudget) {
+                text = text.slice(
+                  0,
+                  Math.max(0, text.length - Math.max(1, Math.ceil((bytes - resultBudget) / 2))),
+                );
+                bytes = Buffer.byteLength(JSON.stringify(page(text)), 'utf8');
+              }
+              if (!text.length)
+                throw new RelayError(
+                  'READ_RESULT_BUDGET',
+                  'This batch leaves no room for source text. Read one record per turn.',
+                );
               const rev = revision(record),
                 previous = read.get(record.id);
               const excerpts =
@@ -597,15 +646,13 @@ export class Agent {
                   'overflow',
                 );
               read.set(record.id, { revision: rev, text, excerpts });
-              result = {
-                id: record.id,
-                revision: revision(record),
-                text,
+              result = page(text);
+              readLocation = {
                 offset,
                 end: offset + text.length,
-                totalLength: record.text.length,
-                nextOffset: offset + text.length < record.text.length ? offset + text.length : null,
-                truncated: offset > 0 || offset + text.length < record.text.length,
+                requestedLength: length,
+                returnedLength: text.length,
+                resultBytes: bytes,
               };
             } else if (call.name === 'request_information') {
               const needs =
@@ -821,8 +868,7 @@ export class Agent {
               ...(call.name === 'read_record'
                 ? {
                     requestedId: args.id,
-                    offset: args.offset ?? 0,
-                    requestedLength: args.length ?? 1000,
+                    ...readLocation,
                   }
                 : {}),
             });
