@@ -188,3 +188,90 @@ test('state grader catches valid-shaped citations to unexpected or omitted evide
     false,
   );
 });
+
+test('missing-information grader requires the matching open request and pending checkpoint linkage', () => {
+  const entry = EVAL_CASES[2];
+  const base = {
+    schemaVersion: 1,
+    owner: 'a'.repeat(64),
+    caseId: entry.id,
+    createdAt: '2026-10-31T00:00:00Z',
+  };
+  const evidence = parseRecord({
+    ...base,
+    id: 'source',
+    kind: 'evidence',
+    title: 'Configuration',
+    text: entry.sourceText,
+  });
+  const brief = parseRecord({
+    ...base,
+    id: 'brief',
+    kind: 'brief',
+    facts: [
+      {
+        text: entry.sourceText,
+        sources: [{ id: evidence.id, revision: revision(evidence), quote: entry.sourceText }],
+      },
+    ],
+    uncertainty: [],
+    missing: [entry.question],
+    basedOn: stableId('snapshot'),
+  });
+  const request = parseRecord({
+    ...base,
+    id: 'request',
+    kind: 'request',
+    question: entry.question,
+    needId: 'deployed-timeout',
+  });
+  const checkpoint = parseRecord({
+    ...base,
+    id: 'checkpoint',
+    kind: 'checkpoint',
+    runId: 'run',
+    status: 'pending',
+    task: entry.task,
+    calls: 3,
+    repairs: 0,
+    consumed: [],
+    requestIds: [request.id],
+    briefId: brief.id,
+  });
+  const records: RelayRecord[] = [evidence, brief, request, checkpoint];
+  assert.equal(checkOutcome(entry, records, 'pending', evidence.id).success, true);
+  const unrelated = parseRecord({
+    ...base,
+    id: 'unrelated',
+    kind: 'request',
+    question: 'Who was on call?',
+  });
+  assert.equal(
+    checkOutcome(entry, [evidence, brief, unrelated, checkpoint], 'pending', evidence.id).checks
+      .missingInformation,
+    false,
+  );
+  const wrongQuestion = parseRecord({
+    ...base,
+    id: 'request',
+    kind: 'request',
+    question: 'Who was on call?',
+    needId: 'deployed-timeout',
+  });
+  assert.equal(
+    checkOutcome(entry, [evidence, brief, wrongQuestion, checkpoint], 'pending', evidence.id).checks
+      .missingInformation,
+    false,
+  );
+  assert.equal(
+    checkOutcome(entry, [evidence, brief, request], 'pending', evidence.id).checks
+      .missingInformation,
+    false,
+  );
+  const unlinked = parseRecord({ ...checkpoint, requestIds: [] });
+  assert.equal(
+    checkOutcome(entry, [evidence, brief, request, unlinked], 'pending', evidence.id).checks
+      .missingInformation,
+    false,
+  );
+});

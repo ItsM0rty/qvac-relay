@@ -1,34 +1,34 @@
 # Current implementation state
 
-Updated 2026-10-31. Canonical source is this isolated relay-agent checkout. Branch: code-fix/relay-handoff. Repository-local author and committer are Suyash Bhattarai. Source reference projects were preserved unchanged.
+Updated 2026-10-31. Canonical source is the isolated relay-agent checkout on code-fix/relay-handoff. The repository-local author and committer are Suyash Bhattarai. The source reference projects remain unchanged.
 
-## Working code and controlled verification
+## Implemented and exercised
 
-Implemented strict record schemas, owned Hyperbee2 trees, actual Corestore replication over loopback TCP, the QVAC adapter, bounded native tools, context policies, optional Laya adapter, CLI, checkpoints, remote-change resumption and evaluation tooling.
+Relay has strict record schemas, independently owned Hyperbee2 trees, real Corestore replication over loopback TCP, a native QVAC adapter, bounded tool execution, deterministic context selection, an optional Laya selector, a CLI, immutable checkpoints, crash recovery, contribution-triggered resumption and evaluation tooling.
 
-A clean archive of commit 461bf93 passed fresh npm installation, worker bundling, strict build and 70 tests. The temporary Linux directory was removed by WSL on restart. Later affected harness and state suites also passed. Final verification of the current working tree remains pending. Replay passed three trials over three synthetic tasks; replay is not model-quality evidence.
+The complete native handoff passed with Qwen3 1.7B Q4. Peer A wrote a request and pending brief, stopped, and later received evidence written by B into B's own tree. A restarted, reconnected and completed a new brief citing the original health log and B's configuration evidence. A second restart did not duplicate completed work. The retained report is artifacts/live-demo.json. It records 358177 ms end to end, five cumulative model calls and zero repairs. This is one successful demonstration, not a success-rate estimate.
 
-## Native evidence
+Qwen3 1.7B Q4 is now the default because it completed this task on the measured CPU path. Qwen3 0.6B Q4 remains available for experiments. Its probe consumed a real tool result, but its full handoff attempts exposed repeated searches, source-ID confusion and output-budget failures. Those failures are retained. Parameter count alone was not used to select the default.
 
-- Qwen3 0.6B passed a real dynamic tool-result round trip. It reproduced the token but ignored exact formatting. See artifacts/live-smoke.json.
-- Targeted cancellation after native decode began passed and settled as INFERENCE_CANCELLED. See artifacts/live-cancellation.json.
-- Full application attempts exposed ordinary prose, repeated searches, duplicate draft facts, output-budget exhaustion and premature save attempts. They stopped visibly. Failed reports are retained in artifacts.
-- One native 0.6B run saved a pending brief, A stopped, B contributed to B's own tree, and A reconnected and automatically resumed. That resumed run failed the unread-source rule after spending its repair budget. This is partial live handoff evidence, not a completed demonstration.
-- A larger-model download checksum failed with ENOMEM while a clean npm install was competing for RAM. This was a confounded resource failure. A later solo 1.7B run loaded and read evidence, then failed repeated-draft validation.
-- The current solo 1.7B handoff attempt uses compact draft fields, native read permissions, allowed source-ID enums, non-greedy sampling and reasoning_budget 0. Its result is pending. Optional Laya has controlled tests but no live verification yet.
+## Verification boundaries
+
+A clean archive of commit 461bf93 passed fresh npm installation, worker bundling, strict compilation and 70 tests. See artifacts/clean-install.json. That check predates later harness changes. Later affected suites passed, but final current-source build, test matrix and clean-install verification are being completed.
+
+The replay report contains three trials over three synthetic engineering tasks. Replay exercises the real harness and temporary stores with scripted model responses. It is not native inference or model-quality evidence. Optional Laya has controlled tests. Live Laya and repeated live selector evaluations are being verified; no live selector comparison is claimed yet.
+
+Native probe and targeted decode cancellation passed. See artifacts/live-smoke.json and artifacts/live-cancellation.json. The probe separately records functional tool-result consumption and the smaller model's failure to follow exact output formatting. A native probe pass alone is not the full-handoff evidence.
 
 ## Runtime facts
 
-Windows 11 x64, Ryzen 5 7430U, about 15.4 GiB usable host RAM and 1.68 GiB free at the first check. Integrated Radeon GPU API is Vulkan 1.3.260; loader 1.3.301. Windows Node 22.20.0. These observations are not current free-memory guarantees.
+The checked Windows host has a Ryzen 5 7430U, about 15.4 GiB usable RAM, integrated Radeon GPU API Vulkan 1.3.260 and loader 1.3.301. Windows Node is 22.20.0. Free RAM was about 1.68 GiB at the first check and is not a current guarantee. QVAC 0.22 documents Vulkan 1.4 on Windows, so this host's verified execution path uses Ubuntu 24.04.5 WSL2 CPU inference.
 
-Ubuntu 24.04.5 WSL2 starts successfully, with about 4 GiB RAM and 2 GiB swap. Linux Node 22.21.1 is local in ignored .tools. QVAC 0.22.0, Hyperbee2 2.21.2 and Corestore 7.16.1 are installed. Native CPU inference is verified on this path. Windows Vulkan does not meet QVAC's documented 1.4 requirement.
+WSL has about 4 GiB RAM and 2 GiB swap. Ignored .tools contains Linux Node 22.21.1. Installed packages include QVAC 0.22.0, Hyperbee2 2.21.2 and Corestore 7.16.1. Native worker imports on /mnt/c exceeded the default 30 second RPC deadline. A 120 second allowance and an absolute model-cache path in qvac.config.mjs worked. Linux-only bundling avoids unnecessary mobile packages.
 
-Native worker import I/O on /mnt/c exceeded the default 30 second RPC deadline. A measured 120 second allowance works. The worker requires an absolute model cache path, provided by qvac.config.mjs. Linux-only bundling avoids unnecessary mobile packages. A clean npm install reached about 2.8 GiB RSS even with a smaller V8 heap. Run installation and inference sequentially. No global drivers, global Node or shared inference service was added.
+A clean npm install was observed around 2.8 GiB RSS. Running it concurrently with the first 1.7B model checksum caused a confounded ENOMEM failure. Installation and inference now run sequentially. No graphics drivers, global Node installation or shared inference service was changed.
 
 ## Exact remaining work
 
-1. Finish and retain a passing complete native handoff, including restart deduplication.
-2. Run repeated live deterministic and Laya evaluations on the same task set and compare compatible reports. Retain failures honestly.
-3. Finish current-source build, test matrix, clean setup and documentation review.
-4. Publish private da-goat37/prac-sdk and verify privacy and invitations for Drache93, mialso and NamelsKing. GitHub CLI is already authenticated as da-goat37. Nothing has been published yet.
-5. Ask Suyash for his required personally written design section when the implementation is ready. Insert only his own prose. Do not block independent development on it.
+1. Complete repeated live deterministic and Laya runs on the same task set. Compare compatible reports and retain failures and fallback details.
+2. Finish current-source compilation, tests, clean setup and documentation review.
+3. Publish private da-goat37/prac-sdk and verify privacy and invitations for Drache93, mialso and NamelsKing. GitHub CLI is authenticated as da-goat37. Publication is not yet recorded here.
+4. Ask Suyash for the required personally written design section when implementation is ready. Insert only his own prose.

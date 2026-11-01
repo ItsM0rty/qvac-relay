@@ -6,7 +6,7 @@ The repository is an assessment implementation. See [testing evidence](docs/TEST
 
 ## Requirements and setup
 
-The verified execution candidate is Ubuntu 24.04 in WSL2, using CPU inference. Use Linux Node 22.21 or newer on the 22 line, or Node 24.9 or newer. The Windows host used during development has Vulkan 1.3.260. QVAC documents Vulkan 1.4 as necessary on Windows, including CPU mode, so these instructions use Linux. No cloud API key is required.
+The verified execution path is Ubuntu 24.04 in WSL2, using CPU inference. Use Linux Node 22.21 or newer on the 22 line, or Node 24.9 or newer. The Windows host used during development has Vulkan 1.3.260. QVAC documents Vulkan 1.4 as necessary on Windows, including CPU mode, so these instructions use Linux. No cloud API key is required.
 
 From a Linux terminal inside this checkout:
 
@@ -42,7 +42,7 @@ Each prints an `owner` public key. In a third terminal, substitute those keys:
 npm run relay -- pair --dir .relay/a --key B_OWNER_KEY
 npm run relay -- pair --dir .relay/b --key A_OWNER_KEY
 npm run relay -- connect --dir .relay/a --port 7002
-npm run relay -- create --dir .relay/a --id checkout --title 'Checkout errors' --task 'Investigate checkout errors. Read the health log and deployment configuration. Request configuration if missing and save a pending brief. Distinguish observations from uncertain root cause.'
+npm run relay -- create --dir .relay/a --id checkout --title 'Checkout errors' --task 'Investigate checkout errors. Read the health log and deployment configuration. Request configuration if missing and save a pending brief. Distinguish observations from uncertain root cause.' --needs '[{"id":"deployment-config","question":"What timeout changed in deployment 42, and what value did rollback restore?"}]'
 npm run relay -- evidence --dir .relay/a --case checkout --id health-log --title 'Health log' --text 'Errors rose to 8% after deployment 42. Rollback restored errors to 0.2%. Configuration is absent from this log.'
 npm run relay -- work --dir .relay/a --case checkout
 npm run relay -- inspect --dir .relay/a --case checkout
@@ -75,16 +75,20 @@ npm run relay -- scan --dir .relay/a
 
 `cancel` requests cancellation of the active decode and waits for native settlement through the running operation. Ctrl+C cleans up the peer. To add a UTF-8 evidence file, use `--file path` instead of `--text`. A stable `--id` makes equal evidence retries safe; conflicting content under the same ID is rejected.
 
+The retained [live demonstration](artifacts/live-demo.json) passed with Qwen3 1.7B Q4 in 358177 ms, using five cumulative calls and zero repairs. It includes offline contribution, automatic resumption and restart deduplication. This is one successful demonstration, not a measured success rate.
+
 `npm run demo` runs the complete live-only handoff in two child processes, retains separate stores under `.relay/demo-*`, and writes a report. It fails visibly if the local model cannot create pending work or use the contribution. It never substitutes scripted output.
+
+Cases may declare up to eight structured information needs at creation with `--needs '<JSON array>'`. Each item has a stable `id` and canonical `question`. When the model requests one, it supplies its `needId`; Relay attaches the declared question and stable ID to the request. Requests for undeclared needs are rejected, including when the model claims there are no missing items. The case remains pending until a linked response has been read and cited in the saved brief. Free-text tasks do not provide deterministic semantic coverage checks for required missing information. Declare required gaps with `--needs` when that coverage matters, as the checkout example does for deployment configuration.
 
 ## Model and selector controls
 
 ```sh
-RELAY_MODEL=0.6b RELAY_SELECTOR=deterministic npm run relay -- peer --dir .relay/a --port 7001
+RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic npm run relay -- peer --dir .relay/a --port 7001
 RELAY_MODEL=1.7b RELAY_SELECTOR=laya npm run demo
 ```
 
-The default generator is Qwen3 0.6B Q4 through `@qvac/sdk` 0.22.0. Qwen3 1.7B Q4 is an explicit alternative. The default selector is deterministic. Laya typed decisions Q8 is optional and never rewrites evidence. Its bounded `decide()` call can omit optional snippets; mandatory contribution context is protected. Truncation, malformed results and native selector failures produce a visible deterministic fallback. Confidence values do not authorize actions.
+The default generator is Qwen3 1.7B Q4 through `@qvac/sdk` 0.22.0. It completed the native handoff on this machine. Qwen3 0.6B Q4 remains available for experiments, but its full-task attempts exposed repeated searches, source-ID confusion and output-budget failures. The default selector is deterministic. Laya typed decisions Q8 is optional and never rewrites evidence. Its bounded `decide()` call can omit optional snippets; mandatory contribution context is protected. Truncation and malformed selector results produce a visible deterministic fallback. A native selector call failure falls back only when cleanup succeeds; cleanup failure is an infrastructure failure that stops the run and is quarantined. Confidence values do not authorize actions. Live Laya and repeated selector evaluations are being verified; no performance or token savings are claimed yet.
 
 Application work uses native required-tool mode because its completion contract is a saved brief. The model selects among the declared tools; the harness does not prescribe a successful sequence. Repeating an identical action twice against unchanged data triggers bounded no-progress feedback. The separate probe permits ordinary text so it can verify that a tool result influenced the next model turn.
 
@@ -99,7 +103,7 @@ npm run evaluate -- --mode live --selector laya --trials 3 --output artifacts/la
 npm run evaluate -- --compare artifacts/baseline.json artifacts/laya.json --output artifacts/comparison.json
 ```
 
-Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Measurements and limitations are included in each report. The small synthetic suite does not establish general accuracy or statistical significance.
+Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Each task includes five irrelevant evidence records. Expected source IDs belong to the grader and are not supplied as mandatory selector context. Measurements and limitations are included in each report. The small synthetic suite does not establish general accuracy or statistical significance.
 
 ## Boundaries and limitations
 

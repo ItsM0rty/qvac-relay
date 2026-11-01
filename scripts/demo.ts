@@ -100,7 +100,12 @@ try {
   await call(a, 'create', {
     id: caseId,
     title: 'Checkout rollback',
-    needs:JSON.stringify([{id:'deployment-config',question:'What deployment configuration changed in deployment 42?'}]),
+    needs: JSON.stringify([
+      {
+        id: 'deployment-config',
+        question: 'What deployment configuration changed in deployment 42?',
+      },
+    ]),
     task: 'Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.',
   });
   await call(a, 'evidence', {

@@ -172,6 +172,7 @@ const metricsSchema = z.strictObject({
   loadMs: maybeNumber,
   selectorDecisionCalls: maybeNumber,
   selectorFallbacks: nonnegative.int(),
+  selectorFallbackReasons: z.array(z.string()).optional(),
   selectorUsage: z.array(z.unknown()),
   estimatedInputTokens: nonnegative,
   parentRssBefore: nonnegative,
@@ -495,6 +496,13 @@ async function evaluateOne(
             ? 0
             : null,
         selectorFallbacks: contexts.filter((line) => line.fallback !== undefined).length,
+        selectorFallbackReasons: [
+          ...new Set(
+            contexts
+              .filter((line) => typeof line.fallback === 'string')
+              .map((line) => String(line.fallback)),
+          ),
+        ],
         selectorUsage: uniqueUsage,
         estimatedInputTokens: contexts.reduce(
           (total, line) => total + (recordNumber(line, 'estimatedInputTokens') ?? 0),

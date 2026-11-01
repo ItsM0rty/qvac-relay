@@ -1,8 +1,8 @@
 # Verification record
 
-Commands run under Ubuntu 24.04 WSL2 with local Linux Node 22.21.1. Windows Node and Vulkan do not constitute the verified inference path.
+Commands run under Ubuntu 24.04 WSL2 with project-local Linux Node 22.21.1. Native CPU inference is verified on this path. Windows Node 22.20.0 and Vulkan 1.3 do not meet the documented Windows execution requirements.
 
-## Routine checks
+## Build and controlled tests
 
 ```sh
 npm run build
@@ -10,13 +10,13 @@ npm test
 npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json
 ```
 
-The integrated pre-evaluation suite passed 60 tests. It covers runtime schemas, protocol IDs, argument rejection, context protection, overflow, selector fallback, bounded repair, cancellation, stored outcomes and crash recovery. Separate-process P2P tests exercise real signed replication, offline contribution, reconnect, restart, cached remote blocks and missing-block deadlines. CLI testing starts a real peer and verifies authenticated control, persisted records and shutdown.
+The integrated suite initially passed 60 tests. A clean archive of commit 461bf93 later passed fresh npm installation, QVAC worker bundling, strict compilation and 70 tests, including evaluation and no-progress checks. See artifacts/clean-install.json. It used a fresh Linux temporary directory and node_modules, with the npm download cache available. It did not include inference. WSL removed that temporary directory on restart. This result predates later harness changes; final current-source verification is in progress.
 
-A clean archive of commit461bf93 then passed fresh npm installation, bundling, strict build and all70 tests, including evaluation and no-progress additions. See artifacts/clean-install.json. It used a fresh Linux temporary directory and node_modules, with the npm cache available. WSL removed that temporary directory on restart. This check did not reuse the primary checkout's installed dependencies and did not include inference.
+Tests cover runtime schemas, argument and permission rejection, tool-call/result IDs, context protection, overflow, selector fallback, bounded repair, cancellation, stored outcomes, immutable writes and crash recovery. Separate-process P2P tests exercise real signed replication, offline contribution, reconnect, persistence, cached blocks and missing-block deadlines. CLI tests start a real peer and check authenticated control, persisted records and shutdown.
 
-Scripted model tests inspect actual tool results and histories. They are not evidence of native inference. Resumption tests include real stores and real replication with a controlled runner, so a full live-agent handoff remains a separate check.
+Scripted model tests inspect actual histories and tool results. Resumption tests use real stores and replication with controlled runners. These tests establish harness and store behavior, not live model quality.
 
-## Native checks
+## Native inference
 
 ```sh
 npm run smoke
@@ -24,18 +24,28 @@ node --import tsx scripts/cancel-smoke.ts
 npm run demo
 ```
 
-Native startup initially failed the SDK's 30 second RPC deadline. A heartbeat showed the worker was alive and waiting on WSL filesystem I/O. A 120 second allowance let RPC initialize. The next failure identified a relative cache path rejected by the worker. `qvac.config.mjs` now computes an absolute path.
+artifacts/live-smoke.json records a real Qwen3 0.6B model tool call and a subsequent answer containing a dynamic token supplied only by the tool result. The model added prose and Markdown, so exact-format compliance is recorded separately as false. artifacts/live-cancellation.json records cancellation after native decoding began and native settlement as INFERENCE_CANCELLED.
 
-The first native Qwen3 0.6B run downloaded its GGUF, called a probe tool and reproduced the dynamic tool-result token. It failed the original exact-format assertion because it wrapped the token in prose and Markdown. The retained smoke report separately records functional tool-result consumption and exact formatting. See the current artifacts and STATE for final live status.
+artifacts/live-demo.json records a complete Qwen3 1.7B Q4 handoff across two separate peer processes and directories. A saved pending brief preceded A's shutdown. B wrote linked evidence while A was offline. A reconnected, consumed the contribution and saved a completed brief citing both evidence records. Restart deduplication was checked afterward. The report passed in 358177 ms with five cumulative calls and zero repairs. This is one live demonstration, not a repeated-trial accuracy claim.
 
-The retained 0.6B automatic-tool handoff run failed after repeated searches and a deadline. Required-tool mode and a no-progress guard were added from that evidence. A concurrent clean installation then consumed about2.8GiB RSS while the first1.7B download was being checksummed; the SDK reported ENOMEM before inference. This is a confounded resource failure. Installation and native work now run sequentially. Both failed reports are retained instead of being reported as live passes.
+Earlier failed native reports remain in artifacts. They show ordinary prose, repeated searches, source-ID confusion, repeated draft facts, invalid SDK parameters, output-budget limits and read-permission failures. An ENOMEM failure occurred while installation competed with a model download checksum. It does not establish the model's standalone memory requirement. Installation and native inference must run sequentially on this machine.
 
-## Evaluation
+Native startup on /mnt/c required a 120 second RPC allowance. The worker also required an absolute model-cache path. Both settings are recorded in qvac.config.mjs and the decision notes.
 
-The evaluation suite has three synthetic tasks and five irrelevant evidence records per task. The replay fixture includes a rejected quotation followed by correction. Grading checks stored status, exact quotations, revisions, required source coverage, unexpected citations, missing information and duplicate briefs.
+## Evaluation and ablation
 
-Live deterministic and Laya runs must use the same model, suite, budgets and trial count for comparison. The comparator rejects missing or duplicate case/trial identities and configuration differences other than selector policy. Reports label replay, generator loading, token availability and memory scope. Parent-process RSS excludes native worker memory. No statistical significance or general model performance is claimed.
+```sh
+npm run evaluate -- --mode live --selector deterministic --trials 3 --output artifacts/baseline.json
+npm run evaluate -- --mode live --selector laya --trials 3 --output artifacts/laya.json
+npm run evaluate -- --compare artifacts/baseline.json artifacts/laya.json --output artifacts/comparison.json
+```
 
-## Remaining checks
+The suite uses three synthetic tasks and five irrelevant evidence records per task. The expected source is a grader requirement, not protected context supplied to the selector. Replay includes a rejected quotation followed by correction. Grading checks persisted status, exact quotations, revisions, required source coverage, unexpected citations, unresolved information and duplicate briefs. It cannot establish semantic truth.
 
-Update this section as live artifacts are produced. A mock pass is never a native pass. A native probe pass is not by itself a full handoff pass. Clean-install reproduction, live cancellation, full handoff and Laya ablation status must be read from the current evidence record.
+Reports reject duplicate or missing case/trial identities and incompatible configurations before comparison. They record available generator tokens, model calls, repairs, load time, selector usage, fallbacks and latency. Unsupported measurements are null. Memory measurements sample parent Node RSS and system free memory; native child worker memory is not attributed. Generator models unload between cases, so no separate cross-task warm benchmark is claimed. Three synthetic tasks and a few trials do not support statistical significance or general accuracy claims.
+
+Live Laya and repeated live evaluations are being verified. Until retained reports establish their outcomes, no selector performance or savings are claimed. A fallback is reported as a fallback, not a successful native relevance decision.
+
+## Final checks still in progress
+
+Current-source full tests, final clean installation and documented startup reproduction remain to be recorded. Read docs/STATE.md and the retained reports for the current boundary. A replay pass is never a native pass, and a native probe alone is never a complete handoff pass.

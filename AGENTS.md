@@ -13,7 +13,7 @@ Relay is an engineering handoff agent using local QVAC inference and independent
 
 ## Runtime
 
-Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents Vulkan 1.4 on Windows. Native CPU tool calling and cancellation have passed on Ubuntu 24.04 WSL. A local Node 22.21.1 runtime is in ignored .tools. Use scripts/linux.sh to select it. Do not change global drivers or toolchains. WSL has about4GiB RAM. Run dependency installation and model work sequentially. A clean npm install was observed around2.8GiB RSS even with a bounded V8 heap.
+Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents Vulkan 1.4 on Windows. Native CPU tool calling, cancellation and the full two-peer handoff have passed on Ubuntu 24.04 WSL. Qwen3 1.7B Q4 is the default; one complete handoff took 358177 ms with five cumulative calls and zero repairs. A local Node 22.21.1 runtime is in ignored .tools. Use scripts/linux.sh to select it. Do not change global drivers or toolchains. WSL has about 4 GiB RAM. Run dependency installation and model work sequentially. A clean npm install was observed around 2.8 GiB RSS even with a bounded V8 heap.
 
 ## Project map
 
@@ -21,7 +21,8 @@ Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents 
 - src/records.ts: runtime schemas and stable identities.
 - src/agent.ts: model/tool loop and persisted progress.
 - src/context.ts: bounded context and selectors.
-- src/qvac.ts: SDK boundary and lifecycle.
+- src/qvac.ts: SDK boundary, cancellation and model lifecycle.
+- src/laya.ts: optional bounded native relevance selection with visible fallback.
 - src/cli.ts: peer process and user commands.
 - src/resume.ts: contribution tracking, restart recovery and bounded automatic resumption.
 - src/eval.ts: live and labeled replay evaluation, state checks and strict comparison.
@@ -34,8 +35,9 @@ Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents 
 
 - npm run build
 - npm test (70 tests passed from a clean source installation)
-- npm run smoke (native0.6B tool result round trip, exact format false)
+- npm run smoke (native 0.6B tool result round trip, exact format false)
 - node --import tsx scripts/cancel-smoke.ts (native cancellation)
 - npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json
+- npm run demo (one complete native 1.7B handoff with offline contribution and restart deduplication)
 
-Final live handoff and ablation status is in docs/STATE.md and retained artifacts. Do not infer it from the existence of a script. Keep docs/TESTING.md current after meaningful verification.
+Current-source final tests, clean installation and live Laya ablation are being verified. The earlier clean-install result predates later harness changes. Full handoff evidence and current ablation status are in docs/STATE.md and retained artifacts. Do not infer it from the existence of a script. Keep docs/TESTING.md current after meaningful verification.

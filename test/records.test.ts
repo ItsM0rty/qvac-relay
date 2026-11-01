@@ -143,3 +143,34 @@ test('revision ignores property order and changes when accepted content changes'
   assert.notEqual(revision(accepted), revision({ ...accepted, owner: 'b'.repeat(64) }));
   assert.throws(() => revision({ ...accepted, text: null } as unknown as EvidenceRecord));
 });
+
+test('information needs enforce bounded, unique IDs and strict nonempty fields', () => {
+  const caseRecord = {
+    ...base,
+    id: 'case-1',
+    kind: 'case',
+    title: 'Incident',
+    task: 'Investigate',
+  };
+  const need = { id: 'timeout', question: 'What was the deployed timeout?' };
+  const eight = Array.from({ length: 8 }, (_, index) => ({ ...need, id: `need-${index}` }));
+  assert.doesNotThrow(() => parseRecord({ ...caseRecord, informationNeeds: eight }));
+  for (const informationNeeds of [
+    null,
+    [need, need],
+    [...eight, { ...need, id: 'ninth' }],
+    [{ ...need, id: null }],
+    [{ ...need, id: '' }],
+    [{ ...need, id: '../invalid' }],
+    [{ ...need, question: null }],
+    [{ ...need, question: '  ' }],
+    [{ ...need, question: 'x'.repeat(501) }],
+    [{ ...need, extra: true }],
+    [{ question: need.question }],
+    [{ id: need.id }],
+  ])
+    assert.throws(() => parseRecord({ ...caseRecord, informationNeeds }));
+  const request = { ...base, id: 'request-1', kind: 'request', question: need.question };
+  assert.doesNotThrow(() => parseRecord({ ...request, needId: need.id }));
+  assert.throws(() => parseRecord({ ...request, needId: null }));
+});
