@@ -1,0 +1,42 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 173023,
+  "error": "Live agent did not create pending handoff: {\"id\":\"b68ee020e2058edd03f1ed7a6b72f889c6421cf80904dd9ced6766515146da65\",\"owner\":\"32a3b19f315b5bec7ba12387b91dd835022222b0d73a1389186f6c6190a93266\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T13:28:00.735Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"fddd153b-ccfc-4424-b486-bf4c0d76297e\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":6,\"repairs\":2,\"consumed\":[],\"lastFailure\":\"validation:RECORD_NOT_FOUND:Evidence df3e6d5df9e84978c32992f23cd73baec480e6e614a32c82245428996a1939d6 is not available in this case.\",\"requestIds\":[\"df3e6d5df9e84978c32992f23cd73baec480e6e614a32c82245428996a1939d6\"],\"reason\":\"model: Model exhausted output budget without an action.\"}\n+ actual - expected\n\n+ 'failed'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "32a3b19f315b5bec7ba12387b91dd835022222b0d73a1389186f6c6190a93266",
+      "p2pPort": 41219
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "505a6a79e887128c1352ee25f2a8d6e720ae0d292bb32fb49bbccf46804ed0b5",
+      "p2pPort": 44269
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "b68ee020e2058edd03f1ed7a6b72f889c6421cf80904dd9ced6766515146da65",
+        "owner": "32a3b19f315b5bec7ba12387b91dd835022222b0d73a1389186f6c6190a93266",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T13:28:00.735Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "fddd153b-ccfc-4424-b486-bf4c0d76297e",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 6,
+        "repairs": 2,
+        "consumed": [],
+        "lastFailure": "validation:RECORD_NOT_FOUND:Evidence df3e6d5df9e84978c32992f23cd73baec480e6e614a32c82245428996a1939d6 is not available in this case.",
+        "requestIds": [
+          "df3e6d5df9e84978c32992f23cd73baec480e6e614a32c82245428996a1939d6"
+        ],
+        "reason": "model: Model exhausted output budget without an action."
+      }
+    }
+  ]
+}

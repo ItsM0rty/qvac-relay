@@ -34,7 +34,7 @@ Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents 
 ## Verified commands
 
 - npm run build
-- npm test (70 tests passed from a clean source installation)
+- npm test (101 current-source tests passed; earlier clean installation passed 70)
 - npm run smoke (native 0.6B tool result round trip, exact format false)
 - node --import tsx scripts/cancel-smoke.ts (native cancellation)
 - npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json

@@ -1,0 +1,41 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 331663,
+  "error": "Live agent did not create pending handoff: {\"id\":\"d1f540699cb1c3bf680866790595cd17315cb51da4e6a181ff7076e29cf3a6cc\",\"owner\":\"d62760dd0939e2dc94a41b71008ec57e2f725cebf476ee4ca70cb12ff1b94f48\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T13:57:09.862Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"cc7c095e-6622-41d2-b064-852df534da25\",\"status\":\"cancelled\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":5,\"repairs\":1,\"consumed\":[],\"requestIds\":[\"6b0dbcedd30db0d1ce9ef52e061c196c9055f5ce2ab3e1ec252aa954e2f8ec76\"],\"reason\":\"cancelled: Inference cancelled.\"}\n+ actual - expected\n\n+ 'cancelled'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "d62760dd0939e2dc94a41b71008ec57e2f725cebf476ee4ca70cb12ff1b94f48",
+      "p2pPort": 40627
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "eae9df971c96d06717db3a5e5934d6b033ddb888652abae06d4574a58e194d6a",
+      "p2pPort": 40389
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "d1f540699cb1c3bf680866790595cd17315cb51da4e6a181ff7076e29cf3a6cc",
+        "owner": "d62760dd0939e2dc94a41b71008ec57e2f725cebf476ee4ca70cb12ff1b94f48",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T13:57:09.862Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "cc7c095e-6622-41d2-b064-852df534da25",
+        "status": "cancelled",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 5,
+        "repairs": 1,
+        "consumed": [],
+        "requestIds": [
+          "6b0dbcedd30db0d1ce9ef52e061c196c9055f5ce2ab3e1ec252aa954e2f8ec76"
+        ],
+        "reason": "cancelled: Inference cancelled."
+      }
+    }
+  ]
+}

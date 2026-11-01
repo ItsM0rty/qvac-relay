@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "relay-engineering-handoff-v1",
+  "datasetHash": "80a951b25b42c9fd4f1356d6069055428ea73c6e67cb04b6b34e0ee63e288851",
+  "generatedAt": "2026-10-31T14:36:12.192Z",
+  "config": {
+    "harnessHash": "fba91051e7d40f94a767a1b0b4ff1b2e9d9639c93dade78d4821c39589c38642",
+    "mode": "live",
+    "selector": "deterministic",
+    "generator": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+    "sdkVersion": "0.22.0",
+    "ctxSize": 8192,
+    "maxCalls": 12,
+    "maxRepairs": 2,
+    "contextBudget": 7000,
+    "timeoutMs": 600000,
+    "trials": 2,
+    "caseIds": [
+      "deployment",
+      "queue",
+      "missing-config"
+    ],
+    "temperature": 0.7,
+    "topP": 0.8,
+    "topK": 20,
+    "minP": null,
+    "reasoningBudget": 0,
+    "lifecycle": "Generator unloaded before each task; subsequent turns warm within task. OS/file caches uncontrolled."
+  },
+  "memoryScope": "25 ms sampled parent Node process RSS and system free memory before/after. Native child worker memory is not attributed. This is not machine-wide peak model memory.",
+  "limitations": [
+    "State checks verify shape, exact quotations, required fixture-source coverage and pending/completed outcome. They do not establish semantic truth.",
+    "Three synthetic cases and small repeated trials do not establish statistical significance or general model accuracy.",
+    "Replay is a scripted harness regression, not live inference. Every trial writes only isolated temporary stores that are removed after completion.",
+    "Generator unloads between cases; no separate cross-task warm benchmark is claimed.",
+    "Latency includes fixture-store setup and agent execution, and excludes cleanup. Selector fallbacks count context deliveries using fallback, not distinct native attempts."
+  ],
+  "results": [
+    {
+      "caseId": "deployment",
+      "trial": 1,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 138398.023575,
+        "generatorInputTokens": 2981,
+        "generatorOutputTokens": 195,
+        "loadMs": 69857.344956,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorUsage": [],
+        "estimatedInputTokens": 9211,
+        "parentRssBefore": 169844736,
+        "parentRssAfter": 132292608,
+        "parentRssSampledPeak": 179650560,
+        "systemFreeBefore": 3447869440,
+        "systemFreeAfter": 3231961088
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "deployment-source",
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "irrelevantIds": [
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "queue",
+      "trial": 1,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 136637.44311199998,
+        "generatorInputTokens": 2998,
+        "generatorOutputTokens": 192,
+        "loadMs": 69541.00056300001,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorUsage": [],
+        "estimatedInputTokens": 9032,
+        "parentRssBefore": 133918720,
+        "parentRssAfter": 124641280,
+        "parentRssSampledPeak": 135389184,
+        "systemFreeBefore": 3243601920,
+        "systemFreeAfter": 3218460672
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "queue-source",
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "irrelevantIds": [
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 1,
+      "success": false,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": false,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": false,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 134998.11858300003,
+        "generatorInputTokens": 3002,
+        "generatorOutputTokens": 153,
+        "loadMs": 69150.945091,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorUsage": [],
+        "estimatedInputTokens": 9477,
+        "parentRssBefore": 124641280,
+        "parentRssAfter": 114679808,
+        "parentRssSampledPeak": 125558784,
+        "systemFreeBefore": 3226882048,
+        "systemFreeAfter": 3190816768
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "missing-config-source",
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "irrelevantIds": [
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "deployment",
+      "trial": 2,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 136370.53079500003,
+        "generatorInputTokens": 2990,
+        "generatorOutputTokens": 186,
+        "loadMs": 68582.07980499999,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorUsage": [],
+        "estimatedInputTokens": 9211,
+        "parentRssBefore": 114679808,
+        "parentRssAfter": 101740544,
+        "parentRssSampledPeak": 115240960,
+        "systemFreeBefore": 3204608000,
+        "systemFreeAfter": 3214372864
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "deployment-source",
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "irrelevantIds": [
+          "deployment-noise-0",
+          "deployment-noise-1",
+          "deployment-noise-2",
+          "deployment-noise-3",
+          "deployment-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "queue",
+      "trial": 2,
+      "success": true,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": true,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": true,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 134548.49740800005,
+        "generatorInputTokens": 2983,
+        "generatorOutputTokens": 192,
+        "loadMs": 68154.07052499999,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorUsage": [],
+        "estimatedInputTokens": 9032,
+        "parentRssBefore": 101740544,
+        "parentRssAfter": 96899072,
+        "parentRssSampledPeak": 103321600,
+        "systemFreeBefore": 3214114816,
+        "systemFreeAfter": 3175886848
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "queue-source",
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "irrelevantIds": [
+          "queue-noise-0",
+          "queue-noise-1",
+          "queue-noise-2",
+          "queue-noise-3",
+          "queue-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    },
+    {
+      "caseId": "missing-config",
+      "trial": 2,
+      "success": false,
+      "status": "completed",
+      "checks": {
+        "savedBrief": true,
+        "expectedStatus": false,
+        "citationsValid": true,
+        "requiredCoverage": true,
+        "noUnexpectedCitations": true,
+        "missingInformation": false,
+        "noDuplicateBriefs": true
+      },
+      "requiredEvidenceCoverage": 1,
+      "incorrectRecordIds": [],
+      "omittedRecordIds": [],
+      "failure": null,
+      "metrics": {
+        "calls": 2,
+        "repairs": 0,
+        "latencyMs": 132546.84454000008,
+        "generatorInputTokens": 2994,
+        "generatorOutputTokens": 157,
+        "loadMs": 68561.24386100005,
+        "selectorDecisionCalls": 0,
+        "selectorFallbacks": 0,
+        "selectorUsage": [],
+        "estimatedInputTokens": 9477,
+        "parentRssBefore": 96899072,
+        "parentRssAfter": 98734080,
+        "parentRssSampledPeak": 98996224,
+        "systemFreeBefore": 3195723776,
+        "systemFreeAfter": 3208208384
+      },
+      "contextSelection": {
+        "policy": "deterministic",
+        "initialSelectedIds": [
+          "missing-config-source",
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "irrelevantIds": [
+          "missing-config-noise-0",
+          "missing-config-noise-1",
+          "missing-config-noise-2",
+          "missing-config-noise-3",
+          "missing-config-noise-4"
+        ],
+        "omittedRelevantIds": []
+      }
+    }
+  ]
+}
