@@ -24,6 +24,18 @@ test('owned immutable records survive reopen; duplicate writes are safe', async 
     await assert.rejects(store.put({ ...record, text: 'changed' } as RelayRecord), /Immutable record conflict/);
     await assert.rejects(store.put({ ...record, owner: 'a'.repeat(64) }), /Permission denied/);
     await assert.rejects(store.put({ ...record, schemaVersion: null } as unknown as RelayRecord));
+    const oversized: RelayRecord = {
+      schemaVersion: 1, kind: 'brief', id: stableId(record.owner, 'oversized'), owner: store.owner,
+      caseId: 'handoff', createdAt, basedOn: 'a'.repeat(64), uncertainty: [], missing: [],
+      facts: Array.from({ length: 3 }, (_, fact) => ({
+        text: `Fact ${fact}`,
+        sources: Array.from({ length: 16 }, (_, source) => ({
+          id: `source-${source}`, revision: 'b'.repeat(64), quote: 'x'.repeat(4000),
+        })),
+      })),
+    };
+    await assert.rejects(store.put(oversized), /128 KiB encoded size/);
+    assert.equal(await store.get(oversized.id), undefined);
     const owner = store.owner;
     await store.close();
     store = await RelayStore.open(directory);
@@ -32,6 +44,7 @@ test('owned immutable records survive reopen; duplicate writes are safe', async 
     assert.equal((await store.list('handoff')).length, 1);
   } finally { await store.close(); await rm(directory, { recursive: true, force: true }); }
 });
+
 
 interface Ready { owner: string; port: number }
 class Peer {
@@ -162,5 +175,31 @@ test('unavailable uninitialised peer is visible and bounded; invalid pairing is 
     assert.deepEqual(store.remoteStatus(), [{ owner: 'f'.repeat(64), knownBlocks: 0 }]);
     assert.equal(await store.get('not-known-locally'), undefined);
     await assert.rejects(store.connect(0), /Invalid TCP port/);
+  } finally { await store.close(); await rm(directory, { recursive: true, force: true }); }
+});
+
+test('freshness guard observes prior queued writes and preserves accepted duplicate operations', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'relay-freshness-'));
+  const store = await RelayStore.open(directory);
+  try {
+    const source = evidence(store.owner, 'initial');
+    await store.put(source);
+    const baseline = await store.snapshot('handoff');
+    const brief: RelayRecord = {
+      schemaVersion: 1, kind: 'brief', id: stableId(store.owner, 'brief'), owner: store.owner,
+      caseId: 'handoff', createdAt, basedOn: baseline.fingerprint, uncertainty: [], missing: [],
+      facts: [{ text: 'Initial observation.', sources: [{ id: source.id, revision: 'a'.repeat(64), quote: 'Observed initial' }] }],
+    };
+    await store.put(brief, { expectedFingerprint: baseline.fingerprint });
+    const late = evidence(store.owner, 'late');
+    const queuedEvidence = store.put(late);
+    const staleBrief = { ...brief, id: stableId(store.owner, 'stale-brief') };
+    const rejected = store.put(staleBrief, { expectedFingerprint: baseline.fingerprint });
+    await queuedEvidence;
+    await assert.rejects(rejected, error => error instanceof Error && 'code' in error && error.code === 'STALE_CONTEXT');
+    assert.equal(await store.get(staleBrief.id), undefined);
+    const duplicate = await store.put(brief, { expectedFingerprint: baseline.fingerprint });
+    assert.equal(duplicate.duplicate, true);
+    assert.equal((await store.list('handoff')).filter(record => record.kind === 'brief').length, 1);
   } finally { await store.close(); await rm(directory, { recursive: true, force: true }); }
 });

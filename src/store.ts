@@ -6,12 +6,14 @@ import { createServer, createConnection, type Server, type Socket } from 'node:n
 import { join, resolve } from 'node:path';
 import type { Duplex } from 'node:stream';
 import { parseRecord, revision, stableId, type RelayRecord } from './records.js';
+import { RelayError } from './policy.js';
 
 const KEY = /^[a-f0-9]{64}$/;
 const MAX_PEERS = 16;
 const MAX_RECORDS = 2048;
 const READ_TIMEOUT_MS = 1500;
 const SCAN_TIMEOUT_MS = 5000;
+const MAX_RECORD_BYTES = 128 * 1024;
 
 export class StoreReadError extends Error {
   readonly code = 'STORE_READ';
@@ -91,10 +93,12 @@ export class RelayStore extends EventEmitter {
   }
 
   /** Immutable operation IDs make retries safe, while conflicting payloads fail. */
-  async put(input: RelayRecord): Promise<{ record: RelayRecord; duplicate: boolean }> {
+  async put(input: RelayRecord, options: { expectedFingerprint?: string } = {}): Promise<{ record: RelayRecord; duplicate: boolean }> {
     this.assertOpen();
     const record = parseRecord(input);
     if (record.owner !== this.owner) throw new Error('Permission denied: only the local owner may write this tree');
+    const encoded = Buffer.from(JSON.stringify(record));
+    if (encoded.byteLength > MAX_RECORD_BYTES) throw new Error('Record exceeds 128 KiB encoded size');
     const operation = this.writes.then(async () => {
       this.assertOpen();
       const entry = await this.local.get(Buffer.from(record.id));
@@ -103,9 +107,17 @@ export class RelayStore extends EventEmitter {
         if (revision(previous) !== revision(record)) throw new Error(`Immutable record conflict: ${record.id}`);
         return { record: previous, duplicate: true };
       }
+      // Run after earlier queued writes. This checks the latest available local
+      // snapshot, not a globally atomic view of other peers.
+      if (options.expectedFingerprint !== undefined) {
+        const current = await this.snapshot(record.caseId);
+        if (current.fingerprint !== options.expectedFingerprint) {
+          throw new RelayError('STALE_CONTEXT', 'Locally available evidence changed before the write. Refresh context before saving.');
+        }
+      }
       const batch = this.local.write();
       try {
-        batch.tryPut(Buffer.from(record.id), Buffer.from(JSON.stringify(record)));
+        batch.tryPut(Buffer.from(record.id), encoded);
         // flush takes and releases Hyperbee2's batch lock, even when it fails.
         await batch.flush();
       } finally {
@@ -118,7 +130,7 @@ export class RelayStore extends EventEmitter {
   }
 
   private decode(value: Buffer, owner: string): RelayRecord {
-    if (value.byteLength > 128 * 1024) throw new StoreReadError(owner, 'record exceeds 128 KiB');
+    if (value.byteLength > MAX_RECORD_BYTES) throw new StoreReadError(owner, 'record exceeds 128 KiB');
     const record = parseRecord(JSON.parse(value.toString('utf8')));
     if (record.owner !== owner) throw new StoreReadError(owner, 'record owner does not match its signed tree');
     return record;
