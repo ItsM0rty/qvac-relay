@@ -22,7 +22,7 @@ The clean Linux verification for source `fd54add` passed fresh `npm ci`, QVAC bu
 
 ## Project map
 
-The current passage retrieval implementation is on `code-fix/passage-retrieval`; source `89f9f10` passed 164/164 integrated tests, build and formatting. This includes next-context tool-result admission, single-copy required text and feedback, trusted native page sizing and rejected-draft repair. The fresh installation at `57fc4d6` passed 129/129 tests and zero audit findings with the same dependency lock. Keep those source scopes separate. Current native long-record verification is running; read `docs/STATE.md` before starting any model work.
+The passage implementation is on `code-fix/passage-retrieval`; source `2f23582` passed 168 tests, build and formatting, then passed the real long-record handoff in 711784.74 ms with 11 cumulative calls and 2 repairs. Offline contribution, real replication, both late quotations, cleanup, restart deduplication and graceful peer exit passed. This is one development run, not a general success rate. Fresh installation at 57fc4d6 used the same dependency lock; final 168 tests reused verified dependencies. Read docs/STATE.md for details.
 
 The new selection matrix has 54 rows over nine frozen cases. Each selector recovered 7/9 held-out spans per trial with seven distractor passages; no measured ranker benefit supports changing the lexical default. All six native held-out agent runs at the earlier `57fc4d6` harness failed. Preserve them. Later generic harness repairs do not turn those failures into passes. See `docs/RETRIEVAL_EVALUATION.md`.
 
@@ -37,6 +37,7 @@ The new selection matrix has 54 rows over nine frozen cases. Each selector recov
 - src/laya.ts: optional bounded native relevance selection with visible fallback.
 - src/cli.ts: peer process and user commands.
 - src/control-client.ts: authenticated loopback JSON commands with a full response deadline.
+- src/brief-input.ts: strict native source-keyed quotes and mandatory source schema, with independent runtime checks.
 - src/tool-budget.ts: pure fit check against protected next-turn context and complete protocol.
 - src/resume.ts: contribution tracking, restart recovery and bounded automatic resumption.
 - src/eval.ts: live and labeled replay evaluation, state checks and strict comparison.
@@ -53,7 +54,7 @@ The new selection matrix has 54 rows over nine frozen cases. Each selector recov
 
 - npm run build
 - npm test (110 tests passed from a clean Linux install at source fd54add)
-- npm test (164 tests passed for the passage implementation at source 89f9f10, existing verified dependencies)
+- npm test (168 tests passed for the passage implementation at source 2f23582, existing verified dependencies)
 - npm run ranker:prepare (explicit network download; pinned SHA-256 files)
 - npm run ranker:probe (real CPU logits, paired tokenization and cleanup; retained artifact)
 - npm run evaluate:retrieval -- --mode retrieval --trials 2 (native 54-row captured matrix at 57fc4d6)

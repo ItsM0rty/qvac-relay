@@ -1,6 +1,6 @@
 # Passage retrieval evaluation
 
-The provisional default is deterministic lexical retrieval. In this small frozen synthetic set, MiniLM and Laya changed some ordering and selected passages, but neither improved held-out span recall or the total number of distractors over lexical retrieval. MiniLM remains an optional real local reranker; this experiment did not establish a quality gain from using it. The six captured native agent runs are reported separately below. Current long-running native and peer-to-peer verification is separate from these results.
+The recommended default is deterministic lexical retrieval. In this small frozen synthetic set, MiniLM and Laya changed some ordering and selected passages, but neither improved held-out span recall or the total number of distractors over lexical retrieval. MiniLM remains an optional real local reranker; this experiment did not establish a quality gain from using it. The six captured native agent runs are reported separately below. The later default-selector long-record handoff passed at2f23582. It is a development integration result, not a new held-out quality estimate.
 
 ## Scope and provenance
 
@@ -39,7 +39,7 @@ Laya had 16 native-ranking rows and two empty-candidate rows; its recorded cold 
 
 ## Recorded prediction replay after harness corrections
 
-[The budget replay](../artifacts/passage-ranking-budget-replay.json) reapplies the captured MiniLM logits and Laya classes to the context builder at `cf3b330`. No model ran and no peer store was written. Under the current tool metadata, protected availability summary and initial empty read progress, each arm retained 7/9 held-out spans and admitted six distractor passages per trial. This is a budget regression check over old predictions, not a fresh native quality comparison. Original native timing is not reused as new latency. The [earlier replay at b735b53](../artifacts/passage-ranking-budget-replay-b735b53.json) remains separate.
+[The budget replay](../artifacts/passage-ranking-budget-replay.json) reapplies the captured MiniLM logits and Laya classes to the context builder at `2f23582`. No model ran and no peer store was written. Under the current tool metadata, protected availability summary and initial empty read progress, each arm retained 7/9 held-out spans and admitted six distractor passages per trial. This is a budget regression check over old predictions, not a fresh native quality comparison. Original native timing is not reused as new latency. The [earlier replay at b735b53](../artifacts/passage-ranking-budget-replay-b735b53.json) remains separate.
 
 The raw report lacks both a source commit and captured query text. The replay requires the known historical configuration hash and the caller's explicit clean-manifest attribution to `57fc4d6`. Query identity is inferred from the frozen task fixture and historical harness. The hash checks configuration compatibility; it does not authenticate the supplied scores.
 

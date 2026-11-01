@@ -1,0 +1,84 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 674398.4735460001,
+  "error": "Automatic resumption failed: {\"id\":\"1c3d2b7a175085baec21906a567acd78e23093cb5ad5674281e0c8a57909806e\",\"owner\":\"93e4ced67f60f696501a35efb12fbfb61a106fab6022a80e9bd9f21ebb5681ae\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-11-01T04:40:02.687Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"3af6465850eaffde3b83ec71ce8ec9fa0f4921ebe72c7a5c688b0cd311604a94\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":12,\"repairs\":2,\"consumed\":[\"deployment-config\"],\"requiredIds\":[\"deployment-config\",\"health-log\"],\"requestIds\":[\"9efafb0a639ae935b429d2fdc99828f82eb05ca0d942ddb872b2afff3198c30e\"],\"reason\":\"validation: Cite required contribution health-log.\"}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "93e4ced67f60f696501a35efb12fbfb61a106fab6022a80e9bd9f21ebb5681ae",
+      "p2pPort": 39125
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "d13ed77ffe4dd8dc147ffb0ef569b84c7902847421fbb26b7efdd2b4619e1bd2",
+      "p2pPort": 36041
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "30ecf813f48e1511913f7912483c1498713fb6daeeadddb52ec736d40a73b9ec",
+        "owner": "93e4ced67f60f696501a35efb12fbfb61a106fab6022a80e9bd9f21ebb5681ae",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T04:34:02.458Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "01467dd2-c658-4f49-9214-3b32eebaa1c6",
+        "status": "pending",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 5,
+        "repairs": 1,
+        "consumed": [],
+        "briefId": "126e82c079a9b126491f7230b26e35e4c962fd8a6930aaba5e94ce134d68c234",
+        "requestIds": [
+          "9efafb0a639ae935b429d2fdc99828f82eb05ca0d942ddb872b2afff3198c30e"
+        ]
+      }
+    },
+    {
+      "event": "a-offline"
+    },
+    {
+      "event": "b-contributed-offline",
+      "id": "deployment-config",
+      "requestId": "9efafb0a639ae935b429d2fdc99828f82eb05ca0d942ddb872b2afff3198c30e"
+    },
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "93e4ced67f60f696501a35efb12fbfb61a106fab6022a80e9bd9f21ebb5681ae",
+      "p2pPort": 42493
+    },
+    {
+      "event": "terminal-run-settled",
+      "checkpoint": {
+        "id": "1c3d2b7a175085baec21906a567acd78e23093cb5ad5674281e0c8a57909806e",
+        "owner": "93e4ced67f60f696501a35efb12fbfb61a106fab6022a80e9bd9f21ebb5681ae",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-11-01T04:40:02.687Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "3af6465850eaffde3b83ec71ce8ec9fa0f4921ebe72c7a5c688b0cd311604a94",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 12,
+        "repairs": 2,
+        "consumed": [
+          "deployment-config"
+        ],
+        "requiredIds": [
+          "deployment-config",
+          "health-log"
+        ],
+        "requestIds": [
+          "9efafb0a639ae935b429d2fdc99828f82eb05ca0d942ddb872b2afff3198c30e"
+        ],
+        "reason": "validation: Cite required contribution health-log."
+      },
+      "cleanupError": null,
+      "resumptionError": null
+    }
+  ]
+}

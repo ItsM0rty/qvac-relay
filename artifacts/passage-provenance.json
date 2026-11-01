@@ -102,11 +102,27 @@
     },
     {
       "artifacts": [
-        "passage-code-verification.json",
-        "passage-ranking-budget-replay.json"
+        "passage-code-verification-89f9f10.json"
       ],
       "sourceCommit": "89f9f107d7dfe18a435938a988ee70d1f7d7e648",
       "note": "164tests/build/format with trusted native read sizing; replay reuses57fc captured predictions, not fresh inference."
+    },
+    {
+      "artifacts": [
+        "passage-demo-89f9f10-failed.json"
+      ],
+      "sourceCommit": "89f9f107d7dfe18a435938a988ee70d1f7d7e648",
+      "note": "Real long-record handoff failed required health-log coverage after12 cumulativecalls2repairs. No contextoverflow, cleanup and resumption status null."
+    },
+    {
+      "artifacts": [
+        "passage-code-verification.json",
+        "passage-ranking-budget-replay.json",
+        "passage-demo-2f23582.json",
+        "passage-demo-2f23582-metrics.json"
+      ],
+      "sourceCommit": "2f23582bc24fc344e53e752f5077d9f05a477140",
+      "note": "168 tests/build/format, captured-prediction budget replay, and successful real long-record two-peer handoff. Native report has explicit dynamic store paths; this manifest attributes its functional source. No cloud or scripted substitute."
     }
   ],
   "limits": "The manifest is a development record, not a cryptographic attestation. Native predictions, cached rankings, replay and controlled tests remain distinct."
