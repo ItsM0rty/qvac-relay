@@ -103,9 +103,10 @@ npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json
 npm run evaluate -- --mode live --selector deterministic --trials 3 --output artifacts/baseline.json
 npm run evaluate -- --mode live --selector laya --trials 3 --output artifacts/laya.json
 npm run evaluate -- --compare artifacts/baseline.json artifacts/laya.json --output artifacts/comparison.json
+npm run regrade -- artifacts/live-deterministic.json
 ```
 
-Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Each task includes five irrelevant evidence records. Expected source IDs belong to the grader and are not supplied as mandatory selector context. Measurements and limitations are included in each report. The small synthetic suite does not establish general accuracy or statistical significance.
+Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. `regrade` reads captured version 2 case state and recomputes checks without inference or store writes. It refuses missing state and mismatched identities, and labels its output as recorded-state-regrade. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Each task includes five irrelevant evidence records. Expected source IDs belong to the grader and are not supplied as mandatory selector context. Measurements and limitations are included in each report. The small synthetic suite does not establish general accuracy or statistical significance.
 
 ## Boundaries and limitations
 

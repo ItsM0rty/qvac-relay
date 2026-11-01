@@ -27,6 +27,7 @@ Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents 
 - src/cli.ts: peer process and user commands.
 - src/resume.ts: contribution tracking, restart recovery and bounded automatic resumption.
 - src/eval.ts: live and labeled replay evaluation, state checks and strict comparison.
+- src/regrade.ts: read-only checks over captured version 2 fixture state, without inference or writes.
 - test/: policy, harness and separate-process P2P checks.
 - docs/STATE.md: current evidence and next steps.
 - docs/DECISIONS.md: confirmed requirements and implementation choices.

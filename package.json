@@ -14,6 +14,7 @@
     "bundle:qvac": "node scripts/bundle.mjs",
     "demo": "tsx scripts/demo.ts",
     "evaluate": "tsx scripts/evaluate.ts",
+    "regrade": "tsx scripts/regrade.ts",
     "format:check": "prettier --check src scripts test package.json tsconfig.json qvac.config.mjs"
   },
   "dependencies": {
