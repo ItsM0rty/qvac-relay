@@ -8,15 +8,39 @@ logging.setGlobalLogLevel('debug');
 logging.setGlobalConsoleOutput(true);
 const sdk = await import('@qvac/sdk');
 const started = performance.now();
-console.log(JSON.stringify({ mode: 'native-worker-heartbeat', node: process.version,
-  platform: process.platform, cwd: process.cwd(), expectedWorkerEntry: resolve('qvac/worker.entry.mjs'),
-  rpcTimeoutOverride: process.env.QVAC_RPC_INIT_TIMEOUT_MS ?? null }));
+console.log(
+  JSON.stringify({
+    mode: 'native-worker-heartbeat',
+    node: process.version,
+    platform: process.platform,
+    cwd: process.cwd(),
+    expectedWorkerEntry: resolve('qvac/worker.entry.mjs'),
+    rpcTimeoutOverride: process.env.QVAC_RPC_INIT_TIMEOUT_MS ?? null,
+  }),
+);
 try {
   const response = await sdk.heartbeat();
-  console.log(JSON.stringify({ mode: 'native-worker-heartbeat', passed: true, elapsedMs: performance.now() - started, response }));
+  console.log(
+    JSON.stringify({
+      mode: 'native-worker-heartbeat',
+      passed: true,
+      elapsedMs: performance.now() - started,
+      response,
+    }),
+  );
 } catch (error) {
-  console.error(JSON.stringify({ mode: 'native-worker-heartbeat', passed: false, elapsedMs: performance.now() - started,
-    error: errorDetails(error) }, null, 2));
+  console.error(
+    JSON.stringify(
+      {
+        mode: 'native-worker-heartbeat',
+        passed: false,
+        elapsedMs: performance.now() - started,
+        error: errorDetails(error),
+      },
+      null,
+      2,
+    ),
+  );
   process.exitCode = 1;
 } finally {
   await sdk.close();

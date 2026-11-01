@@ -1,0 +1,39 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 105099,
+  "error": "Live agent did not create pending handoff: {\"id\":\"caa5895c6822bf06ea060c4cd6a2ffef2defe6989e4a5bb51bb3f302e8c4760f\",\"owner\":\"3b03206954160b2a934f2983028be6284812e77d19b654bb723b30a78ad00522\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T12:53:10.818Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"6b96ed15-c735-4f30-9508-686ca80f5ea9\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":1,\"repairs\":0,\"consumed\":[],\"requestIds\":[],\"reason\":\"model: Invalid request:\\n✖ Unrecognized key: \\\"min_p\\\"\\n  → at generationParams\"}\n+ actual - expected\n\n+ 'failed'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "3b03206954160b2a934f2983028be6284812e77d19b654bb723b30a78ad00522",
+      "p2pPort": 46125
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "bee600d93e1cfe3362b522ff0490d686e4f04a419fe840d72a3ecc4b8db3d8ae",
+      "p2pPort": 44193
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "caa5895c6822bf06ea060c4cd6a2ffef2defe6989e4a5bb51bb3f302e8c4760f",
+        "owner": "3b03206954160b2a934f2983028be6284812e77d19b654bb723b30a78ad00522",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T12:53:10.818Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "6b96ed15-c735-4f30-9508-686ca80f5ea9",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 1,
+        "repairs": 0,
+        "consumed": [],
+        "requestIds": [],
+        "reason": "model: Invalid request:\n✖ Unrecognized key: \"min_p\"\n  → at generationParams"
+      }
+    }
+  ]
+}

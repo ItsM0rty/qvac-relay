@@ -1,28 +1,34 @@
-# Implementation state
+# Current implementation state
 
-2026-10-31: isolated project created. No existing Relay checkout found among the workspace's top-level projects. Git branch code-fix/relay-handoff. Both repository-local Git identities verified as Suyash.
+Updated 2026-10-31. Canonical source is this isolated relay-agent checkout. Branch: code-fix/relay-handoff. Repository-local author and committer are Suyash Bhattarai. Source reference projects were preserved unchanged.
 
-## Environment evidence
+## Working code and controlled verification
 
-Read-only checks confirmed Ryzen 5 7430U, Windows 11 x64, about 15.4 GiB usable host RAM and 1.68 GiB free at the check. AMD Radeon integrated GPU API is Vulkan 1.3.260 and loader is 1.3.301. Windows Node is 22.20.0. The initial sandbox CIM/WSL denial was a permission limitation, not evidence of an absent distro.
+Implemented strict record schemas, owned Hyperbee2 trees, actual Corestore replication over loopback TCP, the QVAC adapter, bounded native tools, context policies, optional Laya adapter, CLI, checkpoints, remote-change resumption and evaluation tooling.
 
-An approved WSL check started Ubuntu 24.04.5, kernel 6.18.33.2, x86_64. WSL reported 3916 MiB total RAM and 3390 MiB available. No Linux Node was on PATH. Project-local Node 22.21.1 was downloaded and executed successfully. Installed QVAC 0.22.0, Hyperbee2 2.21.2 and Corestore 7.16.1.
+A clean archive of commit 461bf93 passed fresh npm installation, worker bundling, strict build and 70 tests. The temporary Linux directory was removed by WSL on restart. Later affected harness and state suites also passed. Final verification of the current working tree remains pending. Replay passed three trials over three synthetic tasks; replay is not model-quality evidence.
 
-## Verified implementation
+## Native evidence
 
-The strict TypeScript build passed. The integrated pre-evaluation suite passed 60 tests. Schemas, context policy, controlled agent loops, CLI control, restart recovery and real separate-process replication ran. Three replay trials across three synthetic tasks passed using actual stored state and tool results. These are not native model-quality results.
+- Qwen3 0.6B passed a real dynamic tool-result round trip. It reproduced the token but ignored exact formatting. See artifacts/live-smoke.json.
+- Targeted cancellation after native decode began passed and settled as INFERENCE_CANCELLED. See artifacts/live-cancellation.json.
+- Full application attempts exposed ordinary prose, repeated searches, duplicate draft facts, output-budget exhaustion and premature save attempts. They stopped visibly. Failed reports are retained in artifacts.
+- One native 0.6B run saved a pending brief, A stopped, B contributed to B's own tree, and A reconnected and automatically resumed. That resumed run failed the unread-source rule after spending its repair budget. This is partial live handoff evidence, not a completed demonstration.
+- A larger-model download checksum failed with ENOMEM while a clean npm install was competing for RAM. This was a confounded resource failure. A later solo 1.7B run loaded and read evidence, then failed repeated-draft validation.
+- The current solo 1.7B handoff attempt uses compact draft fields, native read permissions, allowed source-ID enums, non-greedy sampling and reasoning_budget 0. Its result is pending. Optional Laya has controlled tests but no live verification yet.
 
-Native Qwen3 0.6B CPU inference passed a dynamic tool-result round trip. See artifacts/live-smoke.json. Exact formatting failed, but the token returned by the actual tool was reproduced. The retained result labels that limitation. Native cancellation was sent after observing decode output and settled as INFERENCE_CANCELLED. See artifacts/live-cancellation.json. Models were unloaded and SDK workers closed after probes.
+## Runtime facts
 
-Native startup required two fixes. The worker remained alive in WSL 9P filesystem I/O beyond the default 30 second RPC deadline; a 120 second allowance succeeded. The worker then rejected a relative cacheDirectory. qvac.config.mjs computes an absolute local path. Linux-only bundling avoids the default mobile-prebuild requirement.
+Windows 11 x64, Ryzen 5 7430U, about 15.4 GiB usable host RAM and 1.68 GiB free at the first check. Integrated Radeon GPU API is Vulkan 1.3.260; loader 1.3.301. Windows Node 22.20.0. These observations are not current free-memory guarantees.
 
-GitHub CLI account verified as da-goat37 after device login. The repository name prac-sdk is available. Nothing has been published yet.
+Ubuntu 24.04.5 WSL2 starts successfully, with about 4 GiB RAM and 2 GiB swap. Linux Node 22.21.1 is local in ignored .tools. QVAC 0.22.0, Hyperbee2 2.21.2 and Corestore 7.16.1 are installed. Native CPU inference is verified on this path. Windows Vulkan does not meet QVAC's documented 1.4 requirement.
 
-## Next gates
+Native worker import I/O on /mnt/c exceeded the default 30 second RPC deadline. A measured 120 second allowance works. The worker requires an absolute model cache path, provided by qvac.config.mjs. Linux-only bundling avoids unnecessary mobile packages. A clean npm install reached about 2.8 GiB RSS even with a smaller V8 heap. Run installation and inference sequentially. No global drivers, global Node or shared inference service was added.
 
-1. Finish the full live two-peer handoff and retain its report.
-2. Run live repeated-trial deterministic and optional Laya evaluations.
-3. Verify clean-install startup and final build/test matrix.
-4. Publish private da-goat37/prac-sdk and verify collaborator invitations.
+## Exact remaining work
 
-The required personally written design section remains Suyash's work. Ask for it once the implementation is ready.
+1. Finish and retain a passing complete native handoff, including restart deduplication.
+2. Run repeated live deterministic and Laya evaluations on the same task set and compare compatible reports. Retain failures honestly.
+3. Finish current-source build, test matrix, clean setup and documentation review.
+4. Publish private da-goat37/prac-sdk and verify privacy and invitations for Drache93, mialso and NamelsKing. GitHub CLI is already authenticated as da-goat37. Nothing has been published yet.
+5. Ask Suyash for his required personally written design section when the implementation is ready. Insert only his own prose. Do not block independent development on it.

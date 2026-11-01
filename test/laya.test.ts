@@ -6,31 +6,73 @@ import { parseRecord, type EvidenceRecord } from '../src/records.js';
 
 const signal = new AbortController().signal;
 const candidates: Candidate[] = Array.from({ length: 8 }, (_, i) => ({
-  id: `e${i}`, revision: 'r1', title: 'Deployment '.repeat(8), text: 'Deployment evidence '.repeat(20),
+  id: `e${i}`,
+  revision: 'r1',
+  title: 'Deployment '.repeat(8),
+  text: 'Deployment evidence '.repeat(20),
 }));
-function pending<T>(value: T, id: string): Cancellable<T> { return Object.assign(Promise.resolve(value), { requestId: id }); }
+function pending<T>(value: T, id: string): Cancellable<T> {
+  return Object.assign(Promise.resolve(value), { requestId: id });
+}
 function deferred<T>(id: string) {
   let resolve!: (value: T) => void;
   let reject!: (reason: unknown) => void;
-  const promise = Object.assign(new Promise<T>((yes, no) => { resolve = yes; reject = no; }), { requestId: id });
+  const promise = Object.assign(
+    new Promise<T>((yes, no) => {
+      resolve = yes;
+      reject = no;
+    }),
+    { requestId: id },
+  );
   return { promise, resolve, reject };
 }
 function result(keys = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5']) {
-  return { model: 'laya-test-boundary', answers: Object.fromEntries(keys.map((key, i) => [key, {
-    type: 'choice', choice: i % 2 === 0 ? 'include' : 'omit',
-    probabilities: { include: 0.5, omit: 0.5 }, confidence: 0.5, answerConfidence: 0.5,
-    action: { actProbability: i % 2 ? 1 : 0 },
-  }])), usage: { inputTokens: 100, outputTokens: 6, stateTokens: 90, stateTokensDropped: 0,
-    truncated: false, truncatedQuestions: [] as string[] } };
+  return {
+    model: 'laya-test-boundary',
+    answers: Object.fromEntries(
+      keys.map((key, i) => [
+        key,
+        {
+          type: 'choice',
+          choice: i % 2 === 0 ? 'include' : 'omit',
+          probabilities: { include: 0.5, omit: 0.5 },
+          confidence: 0.5,
+          answerConfidence: 0.5,
+          action: { actProbability: i % 2 ? 1 : 0 },
+        },
+      ]),
+    ),
+    usage: {
+      inputTokens: 100,
+      outputTokens: 6,
+      stateTokens: 90,
+      stateTokensDropped: 0,
+      truncated: false,
+      truncatedQuestions: [] as string[],
+    },
+  };
 }
 function fixture(output: unknown = result()) {
   const events: string[] = [];
   let input: LayaInput | undefined;
   const runtime: LayaRuntime = {
-    load: () => { events.push('load'); return pending('model-1', 'load-1'); },
-    decide: (id, request) => { assert.equal(id, 'model-1'); events.push('decide'); input = request; return pending(output, 'decision-1'); },
-    unload: async id => { assert.equal(id, 'model-1'); events.push('unload'); },
-    cancel: async id => { events.push(`cancel:${id}`); },
+    load: () => {
+      events.push('load');
+      return pending('model-1', 'load-1');
+    },
+    decide: (id, request) => {
+      assert.equal(id, 'model-1');
+      events.push('decide');
+      input = request;
+      return pending(output, 'decision-1');
+    },
+    unload: async (id) => {
+      assert.equal(id, 'model-1');
+      events.push('unload');
+    },
+    cancel: async (id) => {
+      events.push(`cancel:${id}`);
+    },
   };
   return { selector: new LayaSelector(async () => runtime), runtime, events, input: () => input };
 }
@@ -44,7 +86,7 @@ test('Laya makes one bounded request and unloads before returning selection', as
   const input = f.input()!;
   assert.equal(input.state.task.length, 240);
   assert.equal(input.state.candidates.length, 6);
-  assert.ok(input.state.candidates.every(c => c.title.length <= 40 && c.text.length <= 80));
+  assert.ok(input.state.candidates.every((c) => c.title.length <= 40 && c.text.length <= 80));
   assert.equal(Object.keys(input.questions).length, 6);
   assert.equal(input.maxLen, 1024);
   assert.equal(input.headMaxLen, 256);
@@ -59,20 +101,40 @@ test('empty candidates avoid native model loading', async () => {
 
 test('pre-cancelled and duplicate inputs do not acquire a native model', async () => {
   const f = fixture();
-  const controller = new AbortController(); controller.abort();
-  await assert.rejects(f.selector.select('Deployment', candidates, controller.signal), { name: 'AbortError' });
-  await assert.rejects(f.selector.select('Deployment', [candidates[0]!, candidates[0]!], signal), /duplicate candidate/);
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(f.selector.select('Deployment', candidates, controller.signal), {
+    name: 'AbortError',
+  });
+  await assert.rejects(
+    f.selector.select('Deployment', [candidates[0]!, candidates[0]!], signal),
+    /duplicate candidate/,
+  );
   assert.deepEqual(f.events, []);
 });
 
 test('malformed, missing, unknown and truncated answers reject after unload', async () => {
-  const truncated = result(); truncated.usage.truncated = true;
-  const dropped = result(); dropped.usage.stateTokensDropped = 1;
-  const questions = result(); questions.usage.truncatedQuestions = ['c0'];
-  const badChoice = result(); badChoice.answers.c0!.choice = 'invented';
-  const badProbabilities = result(); badProbabilities.answers.c0!.probabilities.include = Number.NaN;
-  for (const output of [null, {}, result(['c0']), result(['c0','c1','c2','c3','c4','unknown']),
-    truncated, dropped, questions, badChoice, badProbabilities]) {
+  const truncated = result();
+  truncated.usage.truncated = true;
+  const dropped = result();
+  dropped.usage.stateTokensDropped = 1;
+  const questions = result();
+  questions.usage.truncatedQuestions = ['c0'];
+  const badChoice = result();
+  badChoice.answers.c0!.choice = 'invented';
+  const badProbabilities = result();
+  badProbabilities.answers.c0!.probabilities.include = Number.NaN;
+  for (const output of [
+    null,
+    {},
+    result(['c0']),
+    result(['c0', 'c1', 'c2', 'c3', 'c4', 'unknown']),
+    truncated,
+    dropped,
+    questions,
+    badChoice,
+    badProbabilities,
+  ]) {
     const f = fixture(output);
     await assert.rejects(f.selector.select('Deployment', candidates, signal), /LAYA_/);
     assert.equal(f.events.at(-1), 'unload');
@@ -80,16 +142,27 @@ test('malformed, missing, unknown and truncated answers reject after unload', as
 });
 
 test('buildContext visibly falls back and protects required evidence', async () => {
-  const records = candidates.slice(0, 2).map((c) => parseRecord({
-    schemaVersion: 1, kind: 'evidence', id: c.id, owner: 'a'.repeat(64), caseId: 'case-1',
-    createdAt: '2026-10-31T00:00:00Z', title: c.title, text: c.text,
-  }) as EvidenceRecord);
+  const records = candidates.slice(0, 2).map(
+    (c) =>
+      parseRecord({
+        schemaVersion: 1,
+        kind: 'evidence',
+        id: c.id,
+        owner: 'a'.repeat(64),
+        caseId: 'case-1',
+        createdAt: '2026-10-31T00:00:00Z',
+        title: c.title,
+        text: c.text,
+      }) as EvidenceRecord,
+  );
   const args = { task: 'Deployment', records, history: [], tools: [], requiredIds: ['e1'], signal };
   const broken = await buildContext({ ...args, selector: fixture({}).selector });
   assert.equal(broken.selection.policy, 'deterministic');
   assert.match(broken.selection.fallback!, /LAYA_OUTPUT/);
   const omit = result(['c0', 'c1']);
-  Object.values(omit.answers).forEach(answer => { answer.choice = 'omit'; });
+  Object.values(omit.answers).forEach((answer) => {
+    answer.choice = 'omit';
+  });
   const selected = await buildContext({ ...args, selector: fixture(omit).selector });
   assert.deepEqual(selected.selection.ids, ['e1']);
 });
@@ -99,8 +172,15 @@ test('cancellation waits for native decision settlement and unload', async () =>
   const decision = deferred<unknown>('decision-pending');
   const entered = deferred<void>('entered');
   const cancelAck = deferred<void>('cancel-ack');
-  f.runtime.decide = () => { f.events.push('decide'); entered.resolve(); return decision.promise; };
-  f.runtime.cancel = async id => { f.events.push(`cancel:${id}`); await cancelAck.promise; };
+  f.runtime.decide = () => {
+    f.events.push('decide');
+    entered.resolve();
+    return decision.promise;
+  };
+  f.runtime.cancel = async (id) => {
+    f.events.push(`cancel:${id}`);
+    await cancelAck.promise;
+  };
   const controller = new AbortController();
   const selecting = f.selector.select('Deployment', candidates, controller.signal);
   const rejected = assert.rejects(selecting, { name: 'AbortError' });
@@ -109,7 +189,11 @@ test('cancellation waits for native decision settlement and unload', async () =>
   assert.equal(f.events.includes('unload'), false);
   decision.resolve(result());
   await Promise.resolve();
-  assert.equal(f.events.includes('unload'), false, 'Native cancellation acknowledgement must settle before unload');
+  assert.equal(
+    f.events.includes('unload'),
+    false,
+    'Native cancellation acknowledgement must settle before unload',
+  );
   cancelAck.resolve();
   await rejected;
   assert.deepEqual(f.events, ['load', 'decide', 'cancel:decision-pending', 'unload']);
@@ -119,7 +203,11 @@ test('close cancels model loading and unloads a raced successful acquisition', a
   const f = fixture();
   const loading = deferred<string>('loading-pending');
   const entered = deferred<void>('entered');
-  f.runtime.load = () => { f.events.push('load'); entered.resolve(); return loading.promise; };
+  f.runtime.load = () => {
+    f.events.push('load');
+    entered.resolve();
+    return loading.promise;
+  };
   const selecting = f.selector.select('Deployment', candidates, signal);
   const rejected = assert.rejects(selecting, { name: 'AbortError' });
   await entered.promise;

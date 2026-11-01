@@ -11,9 +11,9 @@ Relay is an engineering handoff agent using local QVAC inference and independent
 - Never substitute replay for a live model result. Never read another peer directory to simulate replication.
 - Leave the assessment's personal design prose to Suyash. Ordinary setup and reference documentation can be maintained here.
 
-## Environment under verification
+## Runtime
 
-Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents Vulkan 1.4 on Windows, so the implementation is probing Ubuntu 24.04 WSL CPU inference. A local Node 22.21.1 runtime is in ignored .tools. Use scripts/linux.sh to select it. Do not change global drivers or toolchains.
+Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents Vulkan 1.4 on Windows. Native CPU tool calling and cancellation have passed on Ubuntu 24.04 WSL. A local Node 22.21.1 runtime is in ignored .tools. Use scripts/linux.sh to select it. Do not change global drivers or toolchains. WSL has about4GiB RAM. Run dependency installation and model work sequentially. A clean npm install was observed around2.8GiB RSS even with a bounded V8 heap.
 
 ## Project map
 
@@ -23,9 +23,19 @@ Windows Node is 22.20.0. Windows GPU Vulkan API is 1.3.260. QVAC 0.22 documents 
 - src/context.ts: bounded context and selectors.
 - src/qvac.ts: SDK boundary and lifecycle.
 - src/cli.ts: peer process and user commands.
+- src/resume.ts: contribution tracking, restart recovery and bounded automatic resumption.
+- src/eval.ts: live and labeled replay evaluation, state checks and strict comparison.
 - test/: policy, harness and separate-process P2P checks.
 - docs/STATE.md: current evidence and next steps.
 - docs/DECISIONS.md: confirmed requirements and implementation choices.
 - docs/TESTING.md: commands, evidence and remaining gaps.
 
-Run commands become verified only when recorded in docs/TESTING.md.
+## Verified commands
+
+- npm run build
+- npm test (70 tests passed from a clean source installation)
+- npm run smoke (native0.6B tool result round trip, exact format false)
+- node --import tsx scripts/cancel-smoke.ts (native cancellation)
+- npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json
+
+Final live handoff and ablation status is in docs/STATE.md and retained artifacts. Do not infer it from the existence of a script. Keep docs/TESTING.md current after meaningful verification.

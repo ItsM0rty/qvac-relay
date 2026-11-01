@@ -1,0 +1,55 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 544369,
+  "error": "Condition timed out: Error: {\"id\":\"170f47c606d09949b4bf112bb7b2d3ac217a5cafc597c9c480a5cac79cb91696\",\"owner\":\"c1d41b019eab4a7276f93419069a89b52c9202d54cc2b74152c0ac099833bf21\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T12:59:41.657Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"a98152a67022465b63c0d0c50d896e17a0af216adbe1b19e380669b9e66c01c3\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":6,\"repairs\":2,\"consumed\":[\"deployment-config\"],\"requestIds\":[\"cb84fa227f8e2163b3ec3f80e07e668b29cdd4bc5ecb72883e8ddc8b1f14bcd9\"],\"reason\":\"validation: Read evidence deployment-config before citing it.\"}",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "c1d41b019eab4a7276f93419069a89b52c9202d54cc2b74152c0ac099833bf21",
+      "p2pPort": 40557
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "2c0cdaad845db7269687a2d1640d44038aa0585fa076ab8c3b0dea94c27f6000",
+      "p2pPort": 43657
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "7aa10b89f6a66440314baa9224cb088fcd9415748fc3d72a5f482519c50c0015",
+        "owner": "c1d41b019eab4a7276f93419069a89b52c9202d54cc2b74152c0ac099833bf21",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T12:57:53.769Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "83467613-c497-4d28-a0c8-75d0685ed950",
+        "status": "pending",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 5,
+        "repairs": 2,
+        "consumed": [],
+        "briefId": "cec2bc42ce871f9201ab3214559980b24df309f194427007ba0d96b4bd0cc6d9",
+        "requestIds": [
+          "cb84fa227f8e2163b3ec3f80e07e668b29cdd4bc5ecb72883e8ddc8b1f14bcd9"
+        ]
+      }
+    },
+    {
+      "event": "a-offline"
+    },
+    {
+      "event": "b-contributed-offline",
+      "id": "deployment-config",
+      "requestId": "cb84fa227f8e2163b3ec3f80e07e668b29cdd4bc5ecb72883e8ddc8b1f14bcd9"
+    },
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "c1d41b019eab4a7276f93419069a89b52c9202d54cc2b74152c0ac099833bf21",
+      "p2pPort": 42137
+    }
+  ]
+}

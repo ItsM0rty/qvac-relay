@@ -12,6 +12,8 @@ npm run evaluate -- --mode replay --trials 3 --output artifacts/replay.json
 
 The integrated pre-evaluation suite passed 60 tests. It covers runtime schemas, protocol IDs, argument rejection, context protection, overflow, selector fallback, bounded repair, cancellation, stored outcomes and crash recovery. Separate-process P2P tests exercise real signed replication, offline contribution, reconnect, restart, cached remote blocks and missing-block deadlines. CLI testing starts a real peer and verifies authenticated control, persisted records and shutdown.
 
+A clean archive of commit461bf93 then passed fresh npm installation, bundling, strict build and all70 tests, including evaluation and no-progress additions. See artifacts/clean-install.json. It used a fresh Linux temporary directory and node_modules, with the npm cache available. WSL removed that temporary directory on restart. This check did not reuse the primary checkout's installed dependencies and did not include inference.
+
 Scripted model tests inspect actual tool results and histories. They are not evidence of native inference. Resumption tests include real stores and real replication with a controlled runner, so a full live-agent handoff remains a separate check.
 
 ## Native checks
@@ -25,6 +27,8 @@ npm run demo
 Native startup initially failed the SDK's 30 second RPC deadline. A heartbeat showed the worker was alive and waiting on WSL filesystem I/O. A 120 second allowance let RPC initialize. The next failure identified a relative cache path rejected by the worker. `qvac.config.mjs` now computes an absolute path.
 
 The first native Qwen3 0.6B run downloaded its GGUF, called a probe tool and reproduced the dynamic tool-result token. It failed the original exact-format assertion because it wrapped the token in prose and Markdown. The retained smoke report separately records functional tool-result consumption and exact formatting. See the current artifacts and STATE for final live status.
+
+The retained 0.6B automatic-tool handoff run failed after repeated searches and a deadline. Required-tool mode and a no-progress guard were added from that evidence. A concurrent clean installation then consumed about2.8GiB RSS while the first1.7B download was being checksummed; the SDK reported ENOMEM before inference. This is a confounded resource failure. Installation and native work now run sequentially. Both failed reports are retained instead of being reported as live passes.
 
 ## Evaluation
 

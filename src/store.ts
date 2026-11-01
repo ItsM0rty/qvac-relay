@@ -17,7 +17,11 @@ const MAX_RECORD_BYTES = 128 * 1024;
 
 export class StoreReadError extends Error {
   readonly code = 'STORE_READ';
-  constructor(readonly owner: string, detail: string, options?: ErrorOptions) {
+  constructor(
+    readonly owner: string,
+    detail: string,
+    options?: ErrorOptions,
+  ) {
     super(`Cannot read peer ${owner}: ${detail}`, options);
     this.name = 'StoreReadError';
   }
@@ -34,7 +38,11 @@ export class RelayStore extends EventEmitter {
   private pairing: Promise<unknown> = Promise.resolve();
   private closed = false;
 
-  private constructor(directory: string, private readonly cores: Corestore, private readonly local: Hyperbee2) {
+  private constructor(
+    directory: string,
+    private readonly cores: Corestore,
+    private readonly local: Hyperbee2,
+  ) {
     super();
     this.directory = directory;
     this.owner = local.core.key.toString('hex');
@@ -51,12 +59,18 @@ export class RelayStore extends EventEmitter {
       const store = new RelayStore(absolute, cores, local);
       local.on('update', () => store.emit('change', { owner: store.owner, remote: false }));
       let keys: unknown;
-      try { keys = JSON.parse(await readFile(join(absolute, '.peers.json'), 'utf8')); }
-      catch (error) {
+      try {
+        keys = JSON.parse(await readFile(join(absolute, '.peers.json'), 'utf8'));
+      } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
         keys = [];
       }
-      if (!Array.isArray(keys) || keys.length > MAX_PEERS || keys.some(key => typeof key !== 'string' || !KEY.test(key)) || new Set(keys).size !== keys.length) {
+      if (
+        !Array.isArray(keys) ||
+        keys.length > MAX_PEERS ||
+        keys.some((key) => typeof key !== 'string' || !KEY.test(key)) ||
+        new Set(keys).size !== keys.length
+      ) {
         throw new Error('Invalid persisted peer list; refusing to discard configuration');
       }
       for (const key of keys as string[]) await store.openRemote(key);
@@ -67,11 +81,18 @@ export class RelayStore extends EventEmitter {
     }
   }
 
-  private assertOpen(): void { if (this.closed) throw new Error('Store is closed'); }
+  private assertOpen(): void {
+    if (this.closed) throw new Error('Store is closed');
+  }
 
   private async openRemote(key: string): Promise<void> {
     if (key === this.owner || this.remotes.has(key)) return;
-    const tree = new Hyperbee2(this.cores.session(), { key: Buffer.from(key, 'hex'), writable: false, autoUpdate: true, timeout: READ_TIMEOUT_MS });
+    const tree = new Hyperbee2(this.cores.session(), {
+      key: Buffer.from(key, 'hex'),
+      writable: false,
+      autoUpdate: true,
+      timeout: READ_TIMEOUT_MS,
+    });
     await tree.ready();
     this.remotes.set(key, tree);
     tree.on('update', () => this.emit('change', { owner: key, remote: true }));
@@ -82,7 +103,8 @@ export class RelayStore extends EventEmitter {
     if (!KEY.test(key)) throw new Error('Peer key must be 64 lowercase hexadecimal characters');
     const operation = this.pairing.then(async () => {
       if (key === this.owner || this.remotes.has(key)) return;
-      if (this.remotes.size >= MAX_PEERS) throw new Error(`At most ${MAX_PEERS} paired peers are supported`);
+      if (this.remotes.size >= MAX_PEERS)
+        throw new Error(`At most ${MAX_PEERS} paired peers are supported`);
       await this.openRemote(key);
       const target = join(this.directory, '.peers.json');
       await writeFile(`${target}.tmp`, JSON.stringify([...this.remotes.keys()].sort()), 'utf8');
@@ -93,18 +115,24 @@ export class RelayStore extends EventEmitter {
   }
 
   /** Immutable operation IDs make retries safe, while conflicting payloads fail. */
-  async put(input: RelayRecord, options: { expectedFingerprint?: string } = {}): Promise<{ record: RelayRecord; duplicate: boolean }> {
+  async put(
+    input: RelayRecord,
+    options: { expectedFingerprint?: string } = {},
+  ): Promise<{ record: RelayRecord; duplicate: boolean }> {
     this.assertOpen();
     const record = parseRecord(input);
-    if (record.owner !== this.owner) throw new Error('Permission denied: only the local owner may write this tree');
+    if (record.owner !== this.owner)
+      throw new Error('Permission denied: only the local owner may write this tree');
     const encoded = Buffer.from(JSON.stringify(record));
-    if (encoded.byteLength > MAX_RECORD_BYTES) throw new Error('Record exceeds 128 KiB encoded size');
+    if (encoded.byteLength > MAX_RECORD_BYTES)
+      throw new Error('Record exceeds 128 KiB encoded size');
     const operation = this.writes.then(async () => {
       this.assertOpen();
       const entry = await this.local.get(Buffer.from(record.id));
       if (entry) {
         const previous = this.decode(entry.value, this.owner);
-        if (revision(previous) !== revision(record)) throw new Error(`Immutable record conflict: ${record.id}`);
+        if (revision(previous) !== revision(record))
+          throw new Error(`Immutable record conflict: ${record.id}`);
         return { record: previous, duplicate: true };
       }
       // Run after earlier queued writes. This checks the latest available local
@@ -112,7 +140,10 @@ export class RelayStore extends EventEmitter {
       if (options.expectedFingerprint !== undefined) {
         const current = await this.snapshot(record.caseId);
         if (current.fingerprint !== options.expectedFingerprint) {
-          throw new RelayError('STALE_CONTEXT', 'Locally available evidence changed before the write. Refresh context before saving.');
+          throw new RelayError(
+            'STALE_CONTEXT',
+            'Locally available evidence changed before the write. Refresh context before saving.',
+          );
         }
       }
       const batch = this.local.write();
@@ -130,9 +161,11 @@ export class RelayStore extends EventEmitter {
   }
 
   private decode(value: Buffer, owner: string): RelayRecord {
-    if (value.byteLength > MAX_RECORD_BYTES) throw new StoreReadError(owner, 'record exceeds 128 KiB');
+    if (value.byteLength > MAX_RECORD_BYTES)
+      throw new StoreReadError(owner, 'record exceeds 128 KiB');
     const record = parseRecord(JSON.parse(value.toString('utf8')));
-    if (record.owner !== owner) throw new StoreReadError(owner, 'record owner does not match its signed tree');
+    if (record.owner !== owner)
+      throw new StoreReadError(owner, 'record owner does not match its signed tree');
     return record;
   }
 
@@ -147,19 +180,26 @@ export class RelayStore extends EventEmitter {
   private async readTree(tree: Hyperbee2, owner: string): Promise<RelayRecord[]> {
     const snapshot = tree.snapshot({ timeout: READ_TIMEOUT_MS, wait: true });
     const stream = snapshot.createReadStream({ limit: MAX_RECORDS + 1 });
-    const timer = setTimeout(() => stream.destroy(new StoreReadError(owner, 'scan deadline exceeded')), SCAN_TIMEOUT_MS);
+    const timer = setTimeout(
+      () => stream.destroy(new StoreReadError(owner, 'scan deadline exceeded')),
+      SCAN_TIMEOUT_MS,
+    );
     try {
       const records: RelayRecord[] = [];
       for await (const entry of stream) {
         const record = this.decode(entry.value, owner);
-        if (entry.key.toString('utf8') !== record.id) throw new StoreReadError(owner, 'key does not match record ID');
+        if (entry.key.toString('utf8') !== record.id)
+          throw new StoreReadError(owner, 'key does not match record ID');
         records.push(record);
-        if (records.length > MAX_RECORDS) throw new StoreReadError(owner, `scan exceeds ${MAX_RECORDS} records`);
+        if (records.length > MAX_RECORDS)
+          throw new StoreReadError(owner, `scan exceeds ${MAX_RECORDS} records`);
       }
       return records;
     } catch (cause) {
       if (cause instanceof StoreReadError) throw cause;
-      throw new StoreReadError(owner, cause instanceof Error ? cause.message : String(cause), { cause });
+      throw new StoreReadError(owner, cause instanceof Error ? cause.message : String(cause), {
+        cause,
+      });
     } finally {
       clearTimeout(timer);
       stream.destroy();
@@ -175,7 +215,8 @@ export class RelayStore extends EventEmitter {
       for (const record of await this.readTree(tree, owner)) {
         if (caseId !== undefined && record.caseId !== caseId) continue;
         const previous = records.get(record.id);
-        if (previous && revision(previous) !== revision(record)) throw new StoreReadError(owner, `cross-tree record ID conflict: ${record.id}`);
+        if (previous && revision(previous) !== revision(record))
+          throw new StoreReadError(owner, `cross-tree record ID conflict: ${record.id}`);
         records.set(record.id, record);
       }
     }
@@ -192,11 +233,14 @@ export class RelayStore extends EventEmitter {
         if (!entry) continue;
         const record = this.decode(entry.value, owner);
         if (record.id !== id) throw new StoreReadError(owner, 'key does not match record ID');
-        if (result && revision(result) !== revision(record)) throw new StoreReadError(owner, `cross-tree record ID conflict: ${id}`);
+        if (result && revision(result) !== revision(record))
+          throw new StoreReadError(owner, `cross-tree record ID conflict: ${id}`);
         result = record;
       } catch (cause) {
         if (cause instanceof StoreReadError) throw cause;
-        throw new StoreReadError(owner, cause instanceof Error ? cause.message : String(cause), { cause });
+        throw new StoreReadError(owner, cause instanceof Error ? cause.message : String(cause), {
+          cause,
+        });
       }
     }
     return result;
@@ -204,8 +248,13 @@ export class RelayStore extends EventEmitter {
 
   async snapshot(caseId: string): Promise<{ records: RelayRecord[]; fingerprint: string }> {
     const records = await this.list(caseId);
-    const relevant = records.filter(record => record.kind === 'case' || record.kind === 'evidence' || record.kind === 'request');
-    return { records, fingerprint: stableId(...relevant.map(record => `${record.id}:${revision(record)}`)) };
+    const relevant = records.filter(
+      (record) => record.kind === 'case' || record.kind === 'evidence' || record.kind === 'request',
+    );
+    return {
+      records,
+      fingerprint: stableId(...relevant.map((record) => `${record.id}:${revision(record)}`)),
+    };
   }
 
   remoteStatus(): Array<{ owner: string; knownBlocks: number }> {
@@ -213,12 +262,21 @@ export class RelayStore extends EventEmitter {
   }
 
   private attach(socket: Socket, initiator: boolean): void {
-    if (this.closed || this.sockets.size >= MAX_PEERS) { socket.destroy(); return; }
+    if (this.closed || this.sockets.size >= MAX_PEERS) {
+      socket.destroy();
+      return;
+    }
     const protocol = this.cores.replicate(initiator);
     this.sockets.set(socket, protocol);
-    socket.on('error', error => this.emit('networkError', error));
-    protocol.on('error', error => { this.emit('networkError', error); socket.destroy(); });
-    socket.on('close', () => { this.sockets.delete(socket); protocol.destroy(); });
+    socket.on('error', (error) => this.emit('networkError', error));
+    protocol.on('error', (error) => {
+      this.emit('networkError', error);
+      socket.destroy();
+    });
+    socket.on('close', () => {
+      this.sockets.delete(socket);
+      protocol.destroy();
+    });
     protocol.on('close', () => socket.destroy());
     socket.pipe(protocol).pipe(socket);
   }
@@ -226,13 +284,16 @@ export class RelayStore extends EventEmitter {
   async listen(port = 0): Promise<number> {
     this.assertOpen();
     if (this.server) throw new Error('Peer is already listening');
-    const server = createServer(socket => this.attach(socket, false));
+    const server = createServer((socket) => this.attach(socket, false));
     this.server = server;
     await new Promise<void>((resolve, reject) => {
       server.once('error', reject);
-      server.listen(port, '127.0.0.1', () => { server.removeListener('error', reject); resolve(); });
+      server.listen(port, '127.0.0.1', () => {
+        server.removeListener('error', reject);
+        resolve();
+      });
     });
-    server.on('error', error => this.emit('networkError', error));
+    server.on('error', (error) => this.emit('networkError', error));
     const address = server.address();
     if (!address || typeof address === 'string') throw new Error('Listener has no TCP address');
     return address.port;
@@ -243,23 +304,35 @@ export class RelayStore extends EventEmitter {
     if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Invalid TCP port');
     const socket = createConnection({ host: '127.0.0.1', port });
     await new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(() => { socket.destroy(); reject(new Error('Peer connection timed out')); }, 3000);
+      const timer = setTimeout(() => {
+        socket.destroy();
+        reject(new Error('Peer connection timed out'));
+      }, 3000);
       socket.once('error', failed);
-      function failed(error: Error): void { clearTimeout(timer); reject(error); }
-      socket.once('connect', () => { clearTimeout(timer); socket.removeListener('error', failed); resolve(); });
+      function failed(error: Error): void {
+        clearTimeout(timer);
+        reject(error);
+      }
+      socket.once('connect', () => {
+        clearTimeout(timer);
+        socket.removeListener('error', failed);
+        resolve();
+      });
     });
     this.attach(socket, true);
   }
 
-  disconnect(): void { for (const socket of this.sockets.keys()) socket.destroy(); }
+  disconnect(): void {
+    for (const socket of this.sockets.keys()) socket.destroy();
+  }
 
   async close(): Promise<void> {
     if (this.closed) return;
     this.closed = true;
     await Promise.allSettled([this.writes, this.pairing]);
     this.disconnect();
-    if (this.server) await new Promise<void>(resolve => this.server!.close(() => resolve()));
-    await Promise.all([...this.remotes.values()].map(tree => tree.close()));
+    if (this.server) await new Promise<void>((resolve) => this.server!.close(() => resolve()));
+    await Promise.all([...this.remotes.values()].map((tree) => tree.close()));
     await this.local.close();
     await this.cores.close();
     this.removeAllListeners();

@@ -16,6 +16,14 @@ The first full Qwen3 0.6B application run in automatic-tool mode answered in pro
 
 The CLI's five minute run deadline allows measured cold startup and several model turns. Calls and repairs remain bounded and cumulative through automatic resumption. Trying Qwen3 1.7B is based on observed task failure by the smaller candidate, not parameter-count promises. Model selection remains provisional until the handoff and evaluations run.
 
+## Compact model draft contract
+
+The solo1.7B run read actual evidence, then produced repeated duplicate facts and stopped on equivalent validation feedback. The model-facing brief is now bounded to three short facts, each with up to three references. A proposed reference needs an evidence ID and exact quotation. Revision can be omitted; trusted code attaches the revision captured by read_record and verifies it still matches current local data. A supplied wrong revision remains an error. The stored record always includes complete revisions. This removes unnecessary hash transcription from a small model without relaxing source freshness.
+
+Generation now uses temperature0.7, top_p0.8 and top_k20. The installed SDK also supports reasoning_budget0, which disables the reasoning channel explicitly. The /no_think instruction remains in the prompt. Qwen's official1.7B model card recommends non-greedy non-thinking sampling and warns about greedy repetition. Its min_p recommendation is not exposed by this SDK's strict generation schema, so Relay leaves it unset and reports null. An attempted min_p request was rejected before inference and retained as integration evidence. The sampler now satisfies the installed completion function's parameter type directly.
+
+The earlier temperature0 runs remain retained as failed evidence. Context filtering, validation and acceptance remain deterministic. Live generation is stochastic; evaluations therefore repeat trials and record all exposed sampler settings.
+
 ## Reference patterns
 
 Entode owns the acceptance contract and separates repairable draft failures from infrastructure problems. Relay will retain committed effects and valid tool protocol while refreshing rejected drafts. OpenSwitch contributes pure policies, explicit budgets and structured decisions. Its existing routing does not establish quality-aware local routing. EvalGate contributes replay, repeated trials and explicit checks. Relay must additionally check persisted agent state and reject duplicate or missing evaluation identities before comparison. No Rust dependency is justified.

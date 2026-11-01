@@ -1,0 +1,40 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 250802,
+  "error": "Live agent did not create pending handoff: {\"id\":\"5df8abd7ca588312e43cf0f32c49e222b1c95a744ac96217ab481a6cde29cc12\",\"owner\":\"37b43d1f96fac1d50df2f00d68cac425c33b503b0991157c2ec444ecaa5e081e\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T13:14:40.635Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"cfa0fc0a-c8bf-461b-bc41-48788c4ec754\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":3,\"repairs\":1,\"consumed\":[],\"lastFailure\":\"validation:ARGUMENTS:[{\\\"field\\\":\\\"facts\\\",\\\"code\\\":\\\"custom\\\",\\\"message\\\":\\\"Use one distinct fact per source. Remove repeated facts and rebuild the draft.\\\"}]\",\"requestIds\":[],\"reason\":\"validation: [{\\\"field\\\":\\\"facts\\\",\\\"code\\\":\\\"custom\\\",\\\"message\\\":\\\"Use one distinct fact per source. Remove repeated facts and rebuild the draft.\\\"}]\"}\n+ actual - expected\n\n+ 'failed'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "37b43d1f96fac1d50df2f00d68cac425c33b503b0991157c2ec444ecaa5e081e",
+      "p2pPort": 39743
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "f5aa4d19afc50cf98401418c229ae66ffece3f2b5b2252d05ec51ff3f29cd21d",
+      "p2pPort": 43487
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "5df8abd7ca588312e43cf0f32c49e222b1c95a744ac96217ab481a6cde29cc12",
+        "owner": "37b43d1f96fac1d50df2f00d68cac425c33b503b0991157c2ec444ecaa5e081e",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T13:14:40.635Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "cfa0fc0a-c8bf-461b-bc41-48788c4ec754",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 3,
+        "repairs": 1,
+        "consumed": [],
+        "lastFailure": "validation:ARGUMENTS:[{\"field\":\"facts\",\"code\":\"custom\",\"message\":\"Use one distinct fact per source. Remove repeated facts and rebuild the draft.\"}]",
+        "requestIds": [],
+        "reason": "validation: [{\"field\":\"facts\",\"code\":\"custom\",\"message\":\"Use one distinct fact per source. Remove repeated facts and rebuild the draft.\"}]"
+      }
+    }
+  ]
+}

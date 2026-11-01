@@ -12,7 +12,7 @@ declare module 'corestore' {
     constructor(directory: string);
     ready(): Promise<void>;
     session(): Corestore;
-    get(options: {key?: Buffer; name?: string}): Core;
+    get(options: { key?: Buffer; name?: string }): Core;
     replicate(initiator: boolean): Duplex;
     close(): Promise<void>;
   }
@@ -22,11 +22,23 @@ declare module 'hyperbee2' {
   import { EventEmitter } from 'node:events';
   import { Readable } from 'node:stream';
   import Corestore, { Core } from 'corestore';
-  export interface Entry { key: Buffer; value: Buffer; seq: number }
-  export interface ReadOptions { timeout?: number; wait?: boolean }
-  export interface EntryStream extends Readable { [Symbol.asyncIterator](): AsyncIterableIterator<Entry> }
+  export interface Entry {
+    key: Buffer;
+    value: Buffer;
+    seq: number;
+  }
+  export interface ReadOptions {
+    timeout?: number;
+    wait?: boolean;
+  }
+  export interface EntryStream extends Readable {
+    [Symbol.asyncIterator](): AsyncIterableIterator<Entry>;
+  }
   export default class Hyperbee2 extends EventEmitter {
-    constructor(store: Corestore, options?: ReadOptions & {key?: Buffer; writable?: boolean; autoUpdate?: boolean});
+    constructor(
+      store: Corestore,
+      options?: ReadOptions & { key?: Buffer; writable?: boolean; autoUpdate?: boolean },
+    );
     core: Core;
     ready(): Promise<void>;
     close(): Promise<void>;
@@ -34,6 +46,11 @@ declare module 'hyperbee2' {
     snapshot(options?: ReadOptions): Hyperbee2;
     get(key: Buffer, options?: ReadOptions): Promise<Entry | null>;
     createReadStream(options?: { limit?: number }): EntryStream;
-    write(): { tryPut(key: Buffer, value: Buffer): void; flush(): Promise<void>; close(): Promise<void>; closed: boolean };
+    write(): {
+      tryPut(key: Buffer, value: Buffer): void;
+      flush(): Promise<void>;
+      close(): Promise<void>;
+      closed: boolean;
+    };
   }
 }

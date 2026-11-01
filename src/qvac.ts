@@ -1,10 +1,21 @@
 import {
-  cancel, close as closeSdk, completion, loadModel, toolSchema, unloadModel,
-  QWEN3_600M_INST_Q4, QWEN3_1_7B_INST_Q4,
+  cancel,
+  close as closeSdk,
+  completion,
+  loadModel,
+  toolSchema,
+  unloadModel,
+  QWEN3_600M_INST_Q4,
+  QWEN3_1_7B_INST_Q4,
 } from '@qvac/sdk';
 import { performance } from 'node:perf_hooks';
+import { SAMPLING } from './policy.js';
 
-export interface ToolCall { id: string; name: string; arguments: unknown }
+export interface ToolCall {
+  id: string;
+  name: string;
+  arguments: unknown;
+}
 export interface Message {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string;
@@ -12,7 +23,11 @@ export interface Message {
   toolCallId?: string;
   toolName?: string;
 }
-export interface ToolSpec { name: string; description: string; parameters: Record<string, unknown> }
+export interface ToolSpec {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+}
 export interface ModelReply {
   content: string;
   calls: ToolCall[];
@@ -22,6 +37,7 @@ export interface ModelReply {
 }
 export interface Model {
   name: string;
+  readonly configuration?: Record<string, unknown>;
   complete(history: Message[], tools: ToolSpec[], signal: AbortSignal): Promise<ModelReply>;
   close(): Promise<void>;
   release?(): Promise<void>;
@@ -37,8 +53,23 @@ function objectArguments(value: unknown): Record<string, unknown> {
 /** One process owns this adapter and the SDK lifecycle. No cloud fallback. */
 export class QvacModel implements Model {
   readonly name: string;
+  get configuration(): Record<string, unknown> {
+    return {
+      sdkVersion: '0.22.0',
+      candidate: this.candidate,
+      device: 'cpu',
+      ctxSize: 8192,
+      predict: 768,
+      sampling: SAMPLING,
+      toolChoice: this.toolChoice,
+      parallel: 1,
+    };
+  }
   readonly measurements = {
-    loadMs: 0, generationMs: 0, calls: 0, cancellations: 0,
+    loadMs: 0,
+    generationMs: 0,
+    calls: 0,
+    cancellations: 0,
     cancellationErrors: [] as string[],
   };
   private readonly candidate: '0.6b' | '1.7b';
@@ -48,7 +79,10 @@ export class QvacModel implements Model {
   private closing?: Promise<void>;
   private closed = false;
 
-  constructor(candidate = process.env.RELAY_MODEL ?? '0.6b',private readonly toolChoice:'auto'|'required'='required') {
+  constructor(
+    candidate = process.env.RELAY_MODEL ?? '0.6b',
+    private readonly toolChoice: 'auto' | 'required' = 'required',
+  ) {
     if (candidate !== '0.6b' && candidate !== '1.7b') {
       throw new Error('RELAY_MODEL must be 0.6b or 1.7b');
     }
@@ -63,37 +97,63 @@ export class QvacModel implements Model {
     const operation = this.generate(history, tools, combined);
     this.active = operation;
     // Attach both outcomes without creating a detached rejecting finally promise.
-    void operation.then(() => { this.active = undefined; }, () => { this.active = undefined; });
+    void operation.then(
+      () => {
+        this.active = undefined;
+      },
+      () => {
+        this.active = undefined;
+      },
+    );
     return operation;
   }
 
-  private async cancellable<T>(operation: Promise<T>, requestId: string, signal: AbortSignal): Promise<T> {
+  private async cancellable<T>(
+    operation: Promise<T>,
+    requestId: string,
+    signal: AbortSignal,
+  ): Promise<T> {
     let requested = false;
-    let cancellation:Promise<void>|undefined;
+    let cancellation: Promise<void> | undefined;
     const abort = () => {
       if (requested) return;
       requested = true;
       this.measurements.cancellations++;
       // Keep awaiting native settlement; a Promise.race would abandon native work.
-      cancellation=cancel({ requestId }).catch((error: unknown) => {
-        this.measurements.cancellationErrors.push(error instanceof Error ? error.message : String(error));
+      cancellation = cancel({ requestId }).catch((error: unknown) => {
+        this.measurements.cancellationErrors.push(
+          error instanceof Error ? error.message : String(error),
+        );
       });
     };
     signal.addEventListener('abort', abort, { once: true });
     if (signal.aborted) abort();
-    try { return await operation; }
-    finally { signal.removeEventListener('abort', abort); await cancellation; }
+    try {
+      return await operation;
+    } finally {
+      signal.removeEventListener('abort', abort);
+      await cancellation;
+    }
   }
 
-  private async generate(history: Message[], tools: ToolSpec[], signal: AbortSignal): Promise<ModelReply> {
+  private async generate(
+    history: Message[],
+    tools: ToolSpec[],
+    signal: AbortSignal,
+  ): Promise<ModelReply> {
     signal.throwIfAborted();
     // Validate SDK-shaped definitions before downloading or loading any weights.
     const definitions = tools.map((tool) => toolSchema.parse({ type: 'function', ...tool }));
     const messages = history.map(({ toolCalls, ...message }) => ({
       ...message,
-      ...(toolCalls ? { toolCalls: toolCalls.map((call) => ({
-        ...call, arguments: objectArguments(call.arguments),
-      })) } : {}),
+      ...(toolCalls
+        ? {
+            toolCalls: toolCalls.map((call) => ({
+              ...call,
+              arguments: objectArguments(call.arguments),
+            })),
+          }
+        : {}),
     }));
     let turnLoadMs = 0;
     if (!this.modelId) {
@@ -111,29 +171,58 @@ export class QvacModel implements Model {
     signal.throwIfAborted();
     const started = performance.now();
     const run = completion({
-      modelId: this.modelId, history: messages, tools: definitions,
-      stream: true, captureThinking: true,
-      generationParams: { temp: 0, predict: 768, parallel_tool_calls: false, tool_choice: this.toolChoice },
+      modelId: this.modelId,
+      history: messages,
+      tools: definitions,
+      stream: true,
+      captureThinking: true,
+      generationParams: {
+        ...SAMPLING,
+        predict: 768,
+        parallel_tool_calls: false,
+        tool_choice: this.toolChoice,
+      },
     });
     this.measurements.calls++;
-    let stopReason='unknown';
-    const events=(async()=>{for await(const event of run.events)if(event.type==='completionDone')stopReason=event.stopReason??'unknown';})();
-    const final = await this.cancellable(Promise.all([run.final,events]).then(([result])=>result), run.requestId, signal);
+    let stopReason = 'unknown';
+    const events = (async () => {
+      for await (const event of run.events)
+        if (event.type === 'completionDone') stopReason = event.stopReason ?? 'unknown';
+    })();
+    const final = await this.cancellable(
+      Promise.all([run.final, events]).then(([result]) => result),
+      run.requestId,
+      signal,
+    );
     const generationMs = performance.now() - started;
     this.measurements.generationMs += generationMs;
     signal.throwIfAborted();
     return {
       content: final.contentText,
-      calls: final.toolCalls.map(({ id, name, arguments: args }) => ({ id, name, arguments: args })),
+      calls: final.toolCalls.map(({ id, name, arguments: args }) => ({
+        id,
+        name,
+        arguments: args,
+      })),
       toolErrors: final.toolErrors ?? [],
       stopReason,
-      stats: { ...final.stats, loadMs: turnLoadMs, generationMs },
+      stats: {
+        ...final.stats,
+        loadMs: turnLoadMs,
+        generationMs,
+        thinkingChars: (final.thinkingText ?? '').length,
+        contentChars: final.contentText.length,
+      },
     };
   }
 
   async release(): Promise<void> {
     if (this.active) throw new Error('MODEL_BUSY: cannot release active generation');
-    if (this.modelId) {const id=this.modelId;this.modelId=undefined;await unloadModel({modelId:id,clearStorage:false});}
+    if (this.modelId) {
+      const id = this.modelId;
+      this.modelId = undefined;
+      await unloadModel({ modelId: id, clearStorage: false });
+    }
   }
 
   close(): Promise<void> {

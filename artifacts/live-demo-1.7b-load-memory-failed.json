@@ -1,0 +1,39 @@
+{
+  "mode": "live-qvac-two-peer",
+  "passed": false,
+  "elapsedMs": 220443,
+  "error": "Live agent did not create pending handoff: {\"id\":\"bb8913735c6cd56c7ea1b30c30bf9899b262403c12b21710e43d3816d6229ec0\",\"owner\":\"567199db53c449c6d085f3db6957cc3a5aab508013c8863012523f89e89dd859\",\"caseId\":\"rollback-investigation\",\"createdAt\":\"2026-10-31T12:36:55.467Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"fc94b0ad-5be4-4ab5-8531-4868c8cbdb63\",\"status\":\"failed\",\"task\":\"Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.\",\"calls\":1,\"repairs\":0,\"consumed\":[],\"requestIds\":[],\"reason\":\"model: Failed to load model: Failed to load model: Could not download \\\"Qwen3-1.7B-Q4_0.gguf\\\" from the registry on this network (Checksum calculation error: ENOMEM: not enough memory, read 31). If the registry is not reliably reachable here, pass a fallbackSrc (an HTTP URL or local file path) to load this model from an alternate source.\"}\n+ actual - expected\n\n+ 'failed'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "567199db53c449c6d085f3db6957cc3a5aab508013c8863012523f89e89dd859",
+      "p2pPort": 42265
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "cd5dacd8d8a3d95738ab0e646812338dd2bd571d4f453e2d95f1d8364a837138",
+      "p2pPort": 42005
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "bb8913735c6cd56c7ea1b30c30bf9899b262403c12b21710e43d3816d6229ec0",
+        "owner": "567199db53c449c6d085f3db6957cc3a5aab508013c8863012523f89e89dd859",
+        "caseId": "rollback-investigation",
+        "createdAt": "2026-10-31T12:36:55.467Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "fc94b0ad-5be4-4ab5-8531-4868c8cbdb63",
+        "status": "failed",
+        "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+        "calls": 1,
+        "repairs": 0,
+        "consumed": [],
+        "requestIds": [],
+        "reason": "model: Failed to load model: Failed to load model: Could not download \"Qwen3-1.7B-Q4_0.gguf\" from the registry on this network (Checksum calculation error: ENOMEM: not enough memory, read 31). If the registry is not reliably reachable here, pass a fallbackSrc (an HTTP URL or local file path) to load this model from an alternate source."
+      }
+    }
+  ]
+}

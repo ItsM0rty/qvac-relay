@@ -86,6 +86,8 @@ RELAY_MODEL=1.7b RELAY_SELECTOR=laya npm run demo
 
 The default generator is Qwen3 0.6B Q4 through `@qvac/sdk` 0.22.0. Qwen3 1.7B Q4 is an explicit alternative. The default selector is deterministic. Laya typed decisions Q8 is optional and never rewrites evidence. Its bounded `decide()` call can omit optional snippets; mandatory contribution context is protected. Truncation, malformed results and native selector failures produce a visible deterministic fallback. Confidence values do not authorize actions.
 
+Application work uses native required-tool mode because its completion contract is a saved brief. The model selects among the declared tools; the harness does not prescribe a successful sequence. Repeating an identical action twice against unchanged data triggers bounded no-progress feedback. The separate probe permits ordinary text so it can verify that a tool result influenced the next model turn.
+
 One peer permits one inference at a time. This is a per-process limit. Running work on both peers simultaneously can exceed this machine's resources; use one active owner in the demonstration. No machine-wide inference service is claimed.
 
 ## Evaluations and replay

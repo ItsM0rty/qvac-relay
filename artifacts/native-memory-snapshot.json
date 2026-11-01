@@ -1,0 +1,12 @@
+{
+  "mode": "native-memory-snapshot",
+  "candidate": "Qwen3 1.7B Q4 CPU",
+  "scope": "Single sample of Bare worker RSS in KiB and WSL system memory in MiB during live-demo-03. Includes runtime, model and native allocations; not a measured peak or exclusive model attribution.",
+  "sampledAt": "2026-10-31T12:46:34.4390335Z",
+  "output": [
+    "    668 3199272",
+    "               total        used        free      shared  buff/cache   available",
+    "Mem:            3916        2626          63           3        1361        1289",
+    "Swap:           2048         129        1918"
+  ]
+}
