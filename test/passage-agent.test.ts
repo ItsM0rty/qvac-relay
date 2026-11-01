@@ -4,7 +4,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
-import { Agent } from '../src/agent.js';
+import { Agent, validateArguments } from '../src/agent.js';
 import { buildContext, validateHistory } from '../src/context.js';
 import { RelayStore } from '../src/store.js';
 import { revision, type EvidenceRecord } from '../src/records.js';
@@ -29,6 +29,12 @@ const action = (name: string, args: unknown, turn: number): ModelReply => ({
   calls: [{ id: `call-${turn}`, name, arguments: args }],
   toolErrors: [],
   stopReason: 'eos',
+});
+test('search cursors beyond the former 2048 limit remain usable without unsafe arithmetic', () => {
+  assert.equal(validateArguments('find_evidence', { query: 'zircon', skip: 2049 }).skip, 2049);
+  assert.throws(() =>
+    validateArguments('find_evidence', { query: 'zircon', skip: Number.MAX_SAFE_INTEGER }),
+  );
 });
 function result<T>(history: Message[], name: string): T {
   const message = history.findLast((m) => m.role === 'tool' && m.toolName === name);

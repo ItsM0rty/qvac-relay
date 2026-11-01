@@ -27,7 +27,12 @@ import {
 const schemas = {
   find_evidence: z.strictObject({
     query: z.string().max(200),
-    skip: z.number().int().min(0).max(2048).optional(),
+    skip: z
+      .number()
+      .int()
+      .min(0)
+      .max(Number.MAX_SAFE_INTEGER - 13)
+      .optional(),
     limit: z.number().int().min(1).max(12).optional(),
   }),
   read_record: z.strictObject({
@@ -588,7 +593,10 @@ export class Agent {
               if (matches.length && !found.length)
                 throw new RelayError(
                   'SEARCH_RESULT_BUDGET',
-                  'Search results do not fit this batch. Submit one search per turn with a smaller limit.',
+                  reply.calls.length > 1
+                    ? 'Search results do not fit this batch. Submit one search per turn.'
+                    : 'A search location cannot fit the configured context budget. Increase contextBudget before starting another run.',
+                  reply.calls.length > 1 ? 'validation' : 'overflow',
                 );
               if (found.length)
                 found.at(-1)!.nextSkip = matches.length > found.length ? skip + found.length : null;
@@ -633,7 +641,10 @@ export class Agent {
               if (!text.length)
                 throw new RelayError(
                   'READ_RESULT_BUDGET',
-                  'This batch leaves no room for source text. Read one record per turn.',
+                  reply.calls.length > 1
+                    ? 'This batch leaves no room for source text. Read one record per turn.'
+                    : 'A read result cannot fit the configured context budget. Increase contextBudget before starting another run.',
+                  reply.calls.length > 1 ? 'validation' : 'overflow',
                 );
               const rev = revision(record),
                 previous = read.get(record.id);
