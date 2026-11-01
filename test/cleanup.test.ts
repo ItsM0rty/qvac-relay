@@ -123,7 +123,11 @@ test('cleanup failure after acceptance preserves the persisted completed checkpo
     assert.ok(cleanup);
     assert.equal(cleanup.kind, 'infrastructure');
     assert.equal(cleanup.code, 'MODEL_RELEASE_FAILED');
-    assert.ok(releases >= 2, 'Fixture must distinguish pre-context release from final cleanup');
+    assert.equal(
+      releases,
+      1,
+      'Pure lexical selection releases the generator only during final cleanup',
+    );
   } finally {
     await f.close();
   }

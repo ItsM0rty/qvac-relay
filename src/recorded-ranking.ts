@@ -125,6 +125,7 @@ export async function replayRecordedRankings(
       task: entry.task,
       records,
       history: [],
+      readIds: [],
       tools: TOOLS,
       selector: {
         select: async (query, candidates) => {
