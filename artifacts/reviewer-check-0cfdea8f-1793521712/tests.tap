@@ -1,0 +1,1126 @@
+
+> prac-sdk@0.1.0 test
+> tsx --test --test-concurrency=1 test/*.test.ts
+
+TAP version 13
+# Subtest: scripted model follows real find/read results and commits a cited brief
+ok 1 - scripted model follows real find/read results and commits a cited brief
+  ---
+  duration_ms: 151.75966
+  type: 'test'
+  ...
+# Subtest: a different valid sequence can directly read the indexed evidence and save
+ok 2 - a different valid sequence can directly read the indexed evidence and save
+  ---
+  duration_ms: 82.329623
+  type: 'test'
+  ...
+# Subtest: re-finding an evicted known ID refreshes its read permission
+ok 3 - re-finding an evicted known ID refreshes its read permission
+  ---
+  duration_ms: 137.455063
+  type: 'test'
+  ...
+# Subtest: missing information is committed once and the saved brief remains pending
+ok 4 - missing information is committed once and the saved brief remains pending
+  ---
+  duration_ms: 78.509008
+  type: 'test'
+  ...
+# Subtest: malformed arguments produce concrete protocol feedback and can be corrected
+ok 5 - malformed arguments produce concrete protocol feedback and can be corrected
+  ---
+  duration_ms: 86.370024
+  type: 'test'
+  ...
+# Subtest: an invalid citation is rejected before any brief write and repaired using read state
+ok 6 - an invalid citation is rejected before any brief write and repaired using read state
+  ---
+  duration_ms: 85.585801
+  type: 'test'
+  ...
+# Subtest: repeated equivalent failure stops: unknown tool
+ok 7 - repeated equivalent failure stops: unknown tool
+  ---
+  duration_ms: 71.076001
+  type: 'test'
+  ...
+# Subtest: repeated equivalent failure stops: prototype method is not an allowed tool
+ok 8 - repeated equivalent failure stops: prototype method is not an allowed tool
+  ---
+  duration_ms: 66.584971
+  type: 'test'
+  ...
+# Subtest: repeated equivalent failure stops: evidence outside the case
+ok 9 - repeated equivalent failure stops: evidence outside the case
+  ---
+  duration_ms: 58.125471
+  type: 'test'
+  ...
+# Subtest: repair budget exhaustion stops differing malformed proposals
+ok 10 - repair budget exhaustion stops differing malformed proposals
+  ---
+  duration_ms: 55.398797
+  type: 'test'
+  ...
+# Subtest: ordinary prose never count as saved work
+ok 11 - ordinary prose never count as saved work
+  ---
+  duration_ms: 58.017634
+  type: 'test'
+  ...
+# Subtest: malformed native tools never count as saved work
+ok 12 - malformed native tools never count as saved work
+  ---
+  duration_ms: 56.460412
+  type: 'test'
+  ...
+# Subtest: cancelling active inference persists cancelled state without tool effects
+ok 13 - cancelling active inference persists cancelled state without tool effects
+  ---
+  duration_ms: 49.376521
+  type: 'test'
+  ...
+# Subtest: cancelling during a tool store read prevents a subsequent request write
+ok 14 - cancelling during a tool store read prevents a subsequent request write
+  ---
+  duration_ms: 52.008699
+  type: 'test'
+  ...
+# Subtest: new locally available evidence during generation rejects the stale brief
+ok 15 - new locally available evidence during generation rejects the stale brief
+  ---
+  duration_ms: 68.291508
+  type: 'test'
+  ...
+# Subtest: brief repair preserves a committed request and does not repeat the write
+ok 16 - brief repair preserves a committed request and does not repeat the write
+  ---
+  duration_ms: 81.482691
+  type: 'test'
+  ...
+# Subtest: call IDs remain unique after older protocol groups leave the context
+ok 17 - call IDs remain unique after older protocol groups leave the context
+  ---
+  duration_ms: 76.805603
+  type: 'test'
+  ...
+# Subtest: model errors stop without spending repair attempts
+ok 18 - model errors stop without spending repair attempts
+  ---
+  duration_ms: 51.834481
+  type: 'test'
+  ...
+# Subtest: model-call budget exhaustion preserves observed state without a false result
+ok 19 - model-call budget exhaustion preserves observed state without a false result
+  ---
+  duration_ms: 58.030162
+  type: 'test'
+  ...
+# Subtest: required-context overflow fails before invoking the model
+ok 20 - required-context overflow fails before invoking the model
+  ---
+  duration_ms: 48.732843
+  type: 'test'
+  ...
+# Subtest: unchanged repeated actions receive bounded no-progress feedback
+ok 21 - unchanged repeated actions receive bounded no-progress feedback
+  ---
+  duration_ms: 72.795844
+  type: 'test'
+  ...
+# Subtest: invalid library options do not leave the peer busy or create unsafe trace paths
+ok 22 - invalid library options do not leave the peer busy or create unsafe trace paths
+  ---
+  duration_ms: 59.153811
+  type: 'test'
+  ...
+# Subtest: failed selector is attempted once per unchanged candidate set and fallback remains visible
+ok 23 - failed selector is attempted once per unchanged candidate set and fallback remains visible
+  ---
+  duration_ms: 57.778322
+  type: 'test'
+  ...
+# Subtest: trusted code stamps an omitted draft revision from the actual read result
+ok 24 - trusted code stamps an omitted draft revision from the actual read result
+  ---
+  duration_ms: 58.917861
+  type: 'test'
+  ...
+# Subtest: unexpected parallel dependent calls cannot commit any tool effects
+ok 25 - unexpected parallel dependent calls cannot commit any tool effects
+  ---
+  duration_ms: 49.830557
+  type: 'test'
+  ...
+# Subtest: native context overflow stops distinctly without consuming draft repairs
+ok 26 - native context overflow stops distinctly without consuming draft repairs
+  ---
+  duration_ms: 48.290329
+  type: 'test'
+  ...
+# Subtest: exact duplicate draft facts normalize once while invalid quotations still fail
+ok 27 - exact duplicate draft facts normalize once while invalid quotations still fail
+  ---
+  duration_ms: 127.60917
+  type: 'test'
+  ...
+# Subtest: search handles exact IDs and separated query words without matching case-ID prefixes
+ok 28 - search handles exact IDs and separated query words without matching case-ID prefixes
+  ---
+  duration_ms: 61.674672
+  type: 'test'
+  ...
+# Subtest: a linked contribution arriving during generation becomes required and is consumed after a fresh brief
+ok 29 - a linked contribution arriving during generation becomes required and is consumed after a fresh brief
+  ---
+  duration_ms: 196.484133
+  type: 'test'
+  ...
+# Subtest: independent native read batches retain every call/result pair and can save a combined brief
+ok 30 - independent native read batches retain every call/result pair and can save a combined brief
+  ---
+  duration_ms: 60.424748
+  type: 'test'
+  ...
+# Subtest: persisted unresolved questions are projected into a brief even when the model omits their text
+ok 31 - persisted unresolved questions are projected into a brief even when the model omits their text
+  ---
+  duration_ms: 68.29617
+  type: 'test'
+  ...
+# Subtest: a rejected multi-write reply spends one repair and supplies a result for every denied call
+ok 32 - a rejected multi-write reply spends one repair and supplies a result for every denied call
+  ---
+  duration_ms: 87.204131
+  type: 'test'
+  ...
+# Subtest: mixed malformed native output denies every valid-looking action and preserves its protocol results
+ok 33 - mixed malformed native output denies every valid-looking action and preserves its protocol results
+  ---
+  duration_ms: 76.043013
+  type: 'test'
+  ...
+# Subtest: a relevant contribution arriving after the brief commit keeps the final checkpoint pending
+ok 34 - a relevant contribution arriving after the brief commit keeps the final checkpoint pending
+  ---
+  duration_ms: 181.364393
+  type: 'test'
+  ...
+# Subtest: output-limit feedback preserves a committed request and permits a pending brief
+ok 35 - output-limit feedback preserves a committed request and permits a pending brief
+  ---
+  duration_ms: 163.766589
+  type: 'test'
+  ...
+# Subtest: repeated output-limit responses stop after one repair without saving a brief
+ok 36 - repeated output-limit responses stop after one repair without saving a brief
+  ---
+  duration_ms: 65.182796
+  type: 'test'
+  ...
+# Subtest: compiles exact source quotes into independent facts without changing source text
+ok 37 - compiles exact source quotes into independent facts without changing source text
+  ---
+  duration_ms: 3.41042
+  type: 'test'
+  ...
+# Subtest: native schema enumerates read sources, requires mandatory IDs and passes SDK tool schema
+ok 38 - native schema enumerates read sources, requires mandatory IDs and passes SDK tool schema
+  ---
+  duration_ms: 3.263873
+  type: 'test'
+  ...
+# Subtest: strict envelope rejects malformed keys, empty or oversized quotes, and invalid notes
+ok 39 - strict envelope rejects malformed keys, empty or oversized quotes, and invalid notes
+  ---
+  duration_ms: 1.9902
+  type: 'test'
+  ...
+# Subtest: one read source is explicitly required without forcing every optional multi-source quote
+ok 40 - one read source is explicitly required without forcing every optional multi-source quote
+  ---
+  duration_ms: 0.48996
+  type: 'test'
+  ...
+# Subtest: cleanup failure after acceptance preserves the persisted completed checkpoint and brief
+ok 41 - cleanup failure after acceptance preserves the persisted completed checkpoint and brief
+  ---
+  duration_ms: 135.45886
+  type: 'test'
+  ...
+# Subtest: cleanup failure before context selection stops as infrastructure without a generator call or selector fallback
+ok 42 - cleanup failure before context selection stops as infrastructure without a generator call or selector fallback
+  ---
+  duration_ms: 66.035706
+  type: 'test'
+  ...
+# Subtest: CLI process exposes authenticated control, persistent case and evidence, and cleans up
+ok 43 - CLI process exposes authenticated control, persistent case and evidence, and cleans up
+  ---
+  duration_ms: 922.500833
+  type: 'test'
+  ...
+# Subtest: drops only the oldest complete resolved group while preserving required context and latest protocol
+ok 44 - drops only the oldest complete resolved group while preserving required context and latest protocol
+  ---
+  duration_ms: 4.979624
+  type: 'test'
+  ...
+# Subtest: one oversized latest group raises context overflow instead of truncating protocol
+ok 45 - one oversized latest group raises context overflow instead of truncating protocol
+  ---
+  duration_ms: 1.201003
+  type: 'test'
+  ...
+# Subtest: exact retained error feedback is referenced once while mandatory context is preserved
+ok 46 - exact retained error feedback is referenced once while mandatory context is preserved
+  ---
+  duration_ms: 3.682694
+  type: 'test'
+  ...
+# Subtest: nonmatching, malformed and successful results retain base feedback
+ok 47 - nonmatching, malformed and successful results retain base feedback
+  ---
+  duration_ms: 1.528619
+  type: 'test'
+  ...
+# Subtest: discarding rejected draft under pressure restores feedback in protected base
+ok 48 - discarding rejected draft under pressure restores feedback in protected base
+  ---
+  duration_ms: 0.715917
+  type: 'test'
+  ...
+# Subtest: full exact retained read projects only the duplicate required text and preserves metadata
+ok 49 - full exact retained read projects only the duplicate required text and preserves metadata
+  ---
+  duration_ms: 3.21361
+  type: 'test'
+  ...
+# Subtest: partial, stale, malformed and incorrect reads cannot suppress source text
+ok 50 - partial, stale, malformed and incorrect reads cannot suppress source text
+  ---
+  duration_ms: 2.090746
+  type: 'test'
+  ...
+# Subtest: pruning a covering old group restores required passage text
+ok 51 - pruning a covering old group restores required passage text
+  ---
+  duration_ms: 0.932675
+  type: 'test'
+  ...
+# Subtest: baseline selection uses task overlap and stable ID tie breaks
+ok 52 - baseline selection uses task overlap and stable ID tie breaks
+  ---
+  duration_ms: 2.870103
+  type: 'test'
+  ...
+# Subtest: projection covers original evidence in bounded exact passages with full-record revisions
+ok 53 - projection covers original evidence in bounded exact passages with full-record revisions
+  ---
+  duration_ms: 0.849221
+  type: 'test'
+  ...
+# Subtest: context preserves trusted instructions, task, feedback, requests and tool protocol
+ok 54 - context preserves trusted instructions, task, feedback, requests and tool protocol
+  ---
+  duration_ms: 2.399967
+  type: 'test'
+  ...
+# Subtest: required context survives a selector that omits all candidates
+ok 55 - required context survives a selector that omits all candidates
+  ---
+  duration_ms: 1.171231
+  type: 'test'
+  ...
+# Subtest: selector errors, duplicate IDs and unknown IDs visibly fall back
+ok 56 - selector errors, duplicate IDs and unknown IDs visibly fall back
+  ---
+  duration_ms: 1.572503
+  type: 'test'
+  ...
+# Subtest: budget prunes optional evidence and refuses to prune required protocol
+ok 57 - budget prunes optional evidence and refuses to prune required protocol
+  ---
+  duration_ms: 1.114436
+  type: 'test'
+  ...
+# Subtest: protocol rejects orphaned, mismatched, repeated and unresolved call IDs
+ok 58 - protocol rejects orphaned, mismatched, repeated and unresolved call IDs
+  ---
+  duration_ms: 0.328526
+  type: 'test'
+  ...
+# Subtest: selector cancellation propagates without deterministic fallback
+ok 59 - selector cancellation propagates without deterministic fallback
+  ---
+  duration_ms: 0.348852
+  type: 'test'
+  ...
+# Subtest: cancellation is checked before selector execution and after a normal selector return
+ok 60 - cancellation is checked before selector execution and after a normal selector return
+  ---
+  duration_ms: 0.679889
+  type: 'test'
+  ...
+# Subtest: information need state follows persisted request and response even when selector omits evidence
+ok 61 - information need state follows persisted request and response even when selector omits evidence
+  ---
+  duration_ms: 2.556649
+  type: 'test'
+  ...
+# Subtest: delayed headers succeed within the wall-clock deadline with loopback command and auth
+ok 62 - delayed headers succeed within the wall-clock deadline with loopback command and auth
+  ---
+  duration_ms: 166.590034
+  type: 'test'
+  ...
+# Subtest: wall-clock timeout covers headers and response body
+ok 63 - wall-clock timeout covers headers and response body
+  ---
+  duration_ms: 306.417809
+  type: 'test'
+  ...
+# Subtest: abort before request and during response rejects and tears down the connection
+ok 64 - abort before request and during response rejects and tears down the connection
+  ---
+  duration_ms: 151.718819
+  type: 'test'
+  ...
+# Subtest: non-2xx JSON details, malformed JSON, and oversized responses reject
+ok 65 - non-2xx JSON details, malformed JSON, and oversized responses reject
+  ---
+  duration_ms: 45.476831
+  type: 'test'
+  ...
+# Subtest: parses only complete peer-ready JSON across chunks and unrelated output
+ok 66 - parses only complete peer-ready JSON across chunks and unrelated output
+  ---
+  duration_ms: 1.166982
+  type: 'test'
+  ...
+# Subtest: real child startup fails promptly, and signaled processes stop without hanging
+ok 67 - real child startup fails promptly, and signaled processes stop without hanging
+  ---
+  duration_ms: 53.105756
+  type: 'test'
+  ...
+# Subtest: progress only emits changed states or periodic waiting heartbeat
+ok 68 - progress only emits changed states or periodic waiting heartbeat
+  ---
+  duration_ms: 0.5992
+  type: 'test'
+  ...
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"deployment","trial":1,"status":"completed","success":true,"calls":3,"repairs":0,"failure":null}
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"queue","trial":1,"status":"completed","success":true,"calls":4,"repairs":1,"failure":null}
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"missing-config","trial":1,"status":"pending","success":true,"calls":4,"repairs":0,"failure":null}
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"deployment","trial":2,"status":"completed","success":true,"calls":3,"repairs":0,"failure":null}
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"queue","trial":2,"status":"completed","success":true,"calls":4,"repairs":1,"failure":null}
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"missing-config","trial":2,"status":"pending","success":true,"calls":4,"repairs":0,"failure":null}
+# Subtest: repeated replay uses real agent writes, tool results and state checks across all cases
+ok 69 - repeated replay uses real agent writes, tool results and state checks across all cases
+  ---
+  duration_ms: 654.005574
+  type: 'test'
+  ...
+# Subtest: replay rejects broken or missing tool protocol rather than returning fixture success
+ok 70 - replay rejects broken or missing tool protocol rather than returning fixture success
+  ---
+  duration_ms: 2.084066
+  type: 'test'
+  ...
+# Subtest: replay cannot implicitly load Laya and trials must be bounded
+ok 71 - replay cannot implicitly load Laya and trials must be bounded
+  ---
+  duration_ms: 0.353578
+  type: 'test'
+  ...
+# Subtest: comparison allows selector ablation and detects a state regression
+ok 72 - comparison allows selector ablation and detects a state regression
+  ---
+  duration_ms: 3.144295
+  type: 'test'
+  ...
+# Subtest: comparison refuses missing/duplicate identities, changed cases and incompatible configuration
+ok 73 - comparison refuses missing/duplicate identities, changed cases and incompatible configuration
+  ---
+  duration_ms: 23.216437
+  type: 'test'
+  ...
+# Subtest: report validation rejects inconsistent success and invalid measurements
+ok 74 - report validation rejects inconsistent success and invalid measurements
+  ---
+  duration_ms: 2.460613
+  type: 'test'
+  ...
+# Subtest: state grader catches valid-shaped citations to unexpected or omitted evidence
+ok 75 - state grader catches valid-shaped citations to unexpected or omitted evidence
+  ---
+  duration_ms: 0.380901
+  type: 'test'
+  ...
+# Subtest: state grader requires exact quoted observations and the root-cause uncertainty notice
+ok 76 - state grader requires exact quoted observations and the root-cause uncertainty notice
+  ---
+  duration_ms: 0.691504
+  type: 'test'
+  ...
+# Subtest: missing-information grader requires the matching open request and pending checkpoint linkage
+ok 77 - missing-information grader requires the matching open request and pending checkpoint linkage
+  ---
+  duration_ms: 0.675327
+  type: 'test'
+  ...
+# Subtest: premature completion is repaired by requesting the required information
+ok 78 - premature completion is repaired by requesting the required information
+  ---
+  duration_ms: 150.195094
+  type: 'test'
+  ...
+# Subtest: unknown need ID has no request side effect, and an unrelated request cannot satisfy the need
+ok 79 - unknown need ID has no request side effect, and an unrelated request cannot satisfy the need
+  ---
+  duration_ms: 119.571874
+  type: 'test'
+  ...
+# Subtest: a linked remote response must be read and cited before completion
+ok 80 - a linked remote response must be read and cited before completion
+  ---
+  duration_ms: 209.183875
+  type: 'test'
+  ...
+# Subtest: Laya classifies complete passages in bounded batches and unloads
+ok 81 - Laya classifies complete passages in bounded batches and unloads
+  ---
+  duration_ms: 6.820044
+  type: 'test'
+  ...
+# Subtest: reversed batches and options map results back by passage and rank by class
+ok 82 - reversed batches and options map results back by passage and rank by class
+  ---
+  duration_ms: 1.82896
+  type: 'test'
+  ...
+# Subtest: empty, pre-cancelled, oversized and duplicate inputs avoid native model loading
+ok 83 - empty, pre-cancelled, oversized and duplicate inputs avoid native model loading
+  ---
+  duration_ms: 1.126763
+  type: 'test'
+  ...
+# Subtest: malformed, missing, unknown and truncated batch results reject after unload
+ok 84 - malformed, missing, unknown and truncated batch results reject after unload
+  ---
+  duration_ms: 5.640775
+  type: 'test'
+  ...
+# Subtest: buildContext visibly falls back on malformed native output and protects required evidence
+ok 85 - buildContext visibly falls back on malformed native output and protects required evidence
+  ---
+  duration_ms: 3.77041
+  type: 'test'
+  ...
+# Subtest: cancellation waits for native decision settlement and unload
+ok 86 - cancellation waits for native decision settlement and unload
+  ---
+  duration_ms: 0.632923
+  type: 'test'
+  ...
+# Subtest: close cancels model loading and unloads a raced successful acquisition
+ok 87 - close cancels model loading and unloads a raced successful acquisition
+  ---
+  duration_ms: 0.466209
+  type: 'test'
+  ...
+# Subtest: native failures unload and concurrent selection is rejected
+ok 88 - native failures unload and concurrent selection is rejected
+  ---
+  duration_ms: 0.436723
+  type: 'test'
+  ...
+# Subtest: failed unload quarantines the retained model and close retries the same resource
+ok 89 - failed unload quarantines the retained model and close retries the same resource
+  ---
+  duration_ms: 0.826854
+  type: 'test'
+  ...
+# Subtest: failed load cancellation still releases an acquired model before fallback
+ok 90 - failed load cancellation still releases an acquired model before fallback
+  ---
+  duration_ms: 7.958107
+  type: 'test'
+  ...
+# Subtest: selector cleanup failure propagates through buildContext instead of allowing generator fallback
+ok 91 - selector cleanup failure propagates through buildContext instead of allowing generator fallback
+  ---
+  duration_ms: 1.997246
+  type: 'test'
+  ...
+# Subtest: ordinary decision errors still fall back after successful native cleanup
+ok 92 - ordinary decision errors still fall back after successful native cleanup
+  ---
+  duration_ms: 0.874888
+  type: 'test'
+  ...
+# Subtest: orders raw logits, including negative values, based on actual query and passage
+ok 93 - orders raw logits, including negative values, based on actual query and passage
+  ---
+  duration_ms: 2.216752
+  type: 'test'
+  ...
+# Subtest: malformed logits and token counts release runtime and visibly fall back without dropping required sources
+ok 94 - malformed logits and token counts release runtime and visibly fall back without dropping required sources
+  ---
+  duration_ms: 6.759529
+  type: 'test'
+  ...
+# Subtest: cache keys include query, revision, and text; oldest entry is evicted at 32
+ok 95 - cache keys include query, revision, and text; oldest entry is evicted at 32
+  ---
+  duration_ms: 2.759281
+  type: 'test'
+  ...
+# Subtest: cancellation before loading avoids acquiring a runtime
+ok 96 - cancellation before loading avoids acquiring a runtime
+  ---
+  duration_ms: 0.644777
+  type: 'test'
+  ...
+# Subtest: cancellation during batch waits for its settlement before unloading
+ok 97 - cancellation during batch waits for its settlement before unloading
+  ---
+  duration_ms: 0.386814
+  type: 'test'
+  ...
+# Subtest: close cancels active work and waits for batch settlement and unload
+ok 98 - close cancels active work and waits for batch settlement and unload
+  ---
+  duration_ms: 0.390413
+  type: 'test'
+  ...
+# Subtest: cleanup failure quarantines ranking and fallback until close retries retained resource
+ok 99 - cleanup failure quarantines ranking and fallback until close retries retained resource
+  ---
+  duration_ms: 0.656864
+  type: 'test'
+  ...
+# Subtest: legacy interpretation is labelled as uncertainty while facts are canonical quotations
+ok 100 - legacy interpretation is labelled as uncertainty while facts are canonical quotations
+  ---
+  duration_ms: 257.176512
+  type: 'test'
+  ...
+# Subtest: quote-only drafts still enforce coverage, revisions and exact quotations
+ok 101 - quote-only drafts still enforce coverage, revisions and exact quotations
+  ---
+  duration_ms: 110.282663
+  type: 'test'
+  ...
+# Subtest: quotes preserve surrounding source whitespace and reject whitespace-only excerpts
+ok 102 - quotes preserve surrounding source whitespace and reject whitespace-only excerpts
+  ---
+  duration_ms: 82.210914
+  type: 'test'
+  ...
+# Subtest: availability counts all accepted passages even when selector omits everything; required context stays protected
+ok 103 - availability counts all accepted passages even when selector omits everything; required context stays protected
+  ---
+  duration_ms: 8.718951
+  type: 'test'
+  ...
+# Subtest: offered tool schemas omit needId with no needs and allow a quoted brief
+ok 104 - offered tool schemas omit needId with no needs and allow a quoted brief
+  ---
+  duration_ms: 125.05386
+  type: 'test'
+  ...
+# Subtest: offered tool schemas enumerate declared need IDs; unknown IDs are rejected and the required request can be saved pending
+ok 105 - offered tool schemas enumerate declared need IDs; unknown IDs are rejected and the required request can be saved pending
+  ---
+  duration_ms: 104.053547
+  type: 'test'
+  ...
+# Subtest: search cursors beyond the former 2048 limit remain usable without unsafe arithmetic
+ok 106 - search cursors beyond the former 2048 limit remain usable without unsafe arithmetic
+  ---
+  duration_ms: 3.127412
+  type: 'test'
+  ...
+# Subtest: omitted late source is found through the actual search result, read at its offset and cited
+ok 107 - omitted late source is found through the actual search result, read at its offset and cited
+  ---
+  duration_ms: 154.745597
+  type: 'test'
+  ...
+# Subtest: separate excerpts can both be cited, while an unread gap is rejected and repaired
+ok 108 - separate excerpts can both be cited, while an unread gap is rejected and repaired
+  ---
+  duration_ms: 109.203685
+  type: 'test'
+  ...
+# Subtest: replicated evidence becomes searchable by an existing agent and by a restarted agent
+ok 109 - replicated evidence becomes searchable by an existing agent and by a restarted agent
+  ---
+  duration_ms: 261.406923
+  type: 'test'
+  ...
+# Subtest: bounded search navigates paginated matches and recovers a late source via read
+ok 110 - bounded search navigates paginated matches and recovers a late source via read
+  ---
+  duration_ms: 114.042568
+  type: 'test'
+  ...
+# Subtest: parallel read payloads are bounded and undelivered text cannot be cited before a later read
+ok 111 - parallel read payloads are bounded and undelivered text cannot be cited before a later read
+  ---
+  duration_ms: 82.186448
+  type: 'test'
+  ...
+# Subtest: oversized rejected draft repairs from protected read progress without repeating the read
+ok 112 - oversized rejected draft repairs from protected read progress without repeating the read
+  ---
+  duration_ms: 76.017463
+  type: 'test'
+  ...
+# Subtest: new owned checkpoints remain later than persisted progress after a wall-clock rollback
+ok 113 - new owned checkpoints remain later than persisted progress after a wall-clock rollback
+  ---
+  duration_ms: 76.815699
+  type: 'test'
+  ...
+# Subtest: both exact quotes remain usable after the first read leaves protocol history
+ok 114 - both exact quotes remain usable after the first read leaves protocol history
+  ---
+  duration_ms: 91.151233
+  type: 'test'
+  ...
+# Subtest: escape-heavy required sources respect the configured 7000 budget
+ok 115 - escape-heavy required sources respect the configured 7000 budget
+  ---
+  duration_ms: 81.371628
+  type: 'test'
+  ...
+# Subtest: escape-heavy required sources respect the configured 8000 budget
+ok 116 - escape-heavy required sources respect the configured 8000 budget
+  ---
+  duration_ms: 83.141877
+  type: 'test'
+  ...
+# Subtest: resumed long-record work can use no-progress feedback without duplicating it into overflow
+ok 117 - resumed long-record work can use no-progress feedback without duplicating it into overflow
+  ---
+  duration_ms: 153.197224
+  type: 'test'
+  ...
+# Subtest: native source-keyed quote input enforces required coverage and compiles delivered quotations
+ok 118 - native source-keyed quote input enforces required coverage and compiles delivered quotations
+  ---
+  duration_ms: 84.085847
+  type: 'test'
+  ...
+# Subtest: classification distinguishes model, tool, validation, overflow, infrastructure and cancellation
+ok 119 - classification distinguishes model, tool, validation, overflow, infrastructure and cancellation
+  ---
+  duration_ms: 0.745695
+  type: 'test'
+  ...
+# Subtest: cancel check prevents work only after signal is aborted
+ok 120 - cancel check prevents work only after signal is aborted
+  ---
+  duration_ms: 0.366591
+  type: 'test'
+  ...
+# Subtest: repair stops on equivalent failures, exhausted budgets and nonvalidation errors
+ok 121 - repair stops on equivalent failures, exhausted budgets and nonvalidation errors
+  ---
+  duration_ms: 0.249247
+  type: 'test'
+  ...
+# Subtest: failed unload retains its resource and quarantines generation until cleanup retry succeeds
+ok 122 - failed unload retains its resource and quarantines generation until cleanup retry succeeds
+  ---
+  duration_ms: 2.805657
+  type: 'test'
+  ...
+# Subtest: concurrent release callers share cleanup and generation cannot overlap it
+ok 123 - concurrent release callers share cleanup and generation cannot overlap it
+  ---
+  duration_ms: 0.453792
+  type: 'test'
+  ...
+# Subtest: shutdown retries quarantined resource and closes SDK despite persistent unload failure
+ok 124 - shutdown retries quarantined resource and closes SDK despite persistent unload failure
+  ---
+  duration_ms: 0.625643
+  type: 'test'
+  ...
+# Subtest: shutdown reports both unload and SDK-close failures without dropping either cause
+ok 125 - shutdown reports both unload and SDK-close failures without dropping either cause
+  ---
+  duration_ms: 0.557631
+  type: 'test'
+  ...
+# Subtest: close waits for native acquisition and cancellation acknowledgement before releasing a raced model
+ok 126 - close waits for native acquisition and cancellation acknowledgement before releasing a raced model
+  ---
+  duration_ms: 0.551338
+  type: 'test'
+  ...
+# Subtest: protected read IDs and source survive discarding only a rejected draft under pressure
+ok 127 - protected read IDs and source survive discarding only a rejected draft under pressure
+  ---
+  duration_ms: 5.146512
+  type: 'test'
+  ...
+# Subtest: without explicit flag or nonempty feedback the latest rejected draft stays protected
+ok 128 - without explicit flag or nonempty feedback the latest rejected draft stays protected
+  ---
+  duration_ms: 1.772757
+  type: 'test'
+  ...
+# Subtest: successful, malformed, unrelated or unresolved groups are never discarded as rejected drafts
+ok 129 - successful, malformed, unrelated or unresolved groups are never discarded as rejected drafts
+  ---
+  duration_ms: 1.511376
+  type: 'test'
+  ...
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":10.335818000000017,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":3.3025010000000066,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# Subtest: replays frozen logits/classes and cached trial with current context, no native inference or input mutation
+ok 130 - replays frozen logits/classes and cached trial with current context, no native inference or input mutation
+  ---
+  duration_ms: 75.379945
+  type: 'test'
+  ...
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":2.961477000000059,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# Subtest: rejects malformed or incompatible recorded model, candidate pool, scores and classes
+ok 131 - rejects malformed or incompatible recorded model, candidate pool, scores and classes
+  ---
+  duration_ms: 33.036375
+  type: 'test'
+  ...
+# Subtest: requires explicit provenance for missing source and rejects other historical configurations
+ok 132 - requires explicit provenance for missing source and rejects other historical configurations
+  ---
+  duration_ms: 16.057002
+  type: 'test'
+  ...
+# Subtest: parses each record kind and retains source revisions
+ok 133 - parses each record kind and retains source revisions
+  ---
+  duration_ms: 7.900998
+  type: 'test'
+  ...
+# Subtest: rejects missing, null, malformed and unknown record fields
+ok 134 - rejects missing, null, malformed and unknown record fields
+  ---
+  duration_ms: 1.990984
+  type: 'test'
+  ...
+# Subtest: brief requires facts, citation shape and distinct references
+ok 135 - brief requires facts, citation shape and distinct references
+  ---
+  duration_ms: 1.468607
+  type: 'test'
+  ...
+# Subtest: checkpoint rejects duplicate operation references and invalid counters/status
+ok 136 - checkpoint rejects duplicate operation references and invalid counters/status
+  ---
+  duration_ms: 1.015178
+  type: 'test'
+  ...
+# Subtest: the same observation may retain distinct source excerpts without losing either citation
+ok 137 - the same observation may retain distinct source excerpts without losing either citation
+  ---
+  duration_ms: 0.201905
+  type: 'test'
+  ...
+# Subtest: stable identities preserve boundaries, order and empty parts
+ok 138 - stable identities preserve boundaries, order and empty parts
+  ---
+  duration_ms: 0.39621
+  type: 'test'
+  ...
+# Subtest: revision ignores property order and changes when accepted content changes
+ok 139 - revision ignores property order and changes when accepted content changes
+  ---
+  duration_ms: 0.728429
+  type: 'test'
+  ...
+# Subtest: information needs enforce bounded, unique IDs and strict nonempty fields
+ok 140 - information needs enforce bounded, unique IDs and strict nonempty fields
+  ---
+  duration_ms: 1.629018
+  type: 'test'
+  ...
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"deployment","trial":1,"status":"completed","success":true,"calls":3,"repairs":0,"failure":null}
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"queue","trial":1,"status":"completed","success":true,"calls":4,"repairs":1,"failure":null}
+# {"event":"evaluation-case","mode":"replay","selector":"deterministic","caseId":"missing-config","trial":1,"status":"pending","success":true,"calls":4,"repairs":0,"failure":null}
+# Subtest: regrades captured replay state without modifying it or trusting recorded checks
+ok 141 - regrades captured replay state without modifying it or trusting recorded checks
+  ---
+  duration_ms: 356.408524
+  type: 'test'
+  ...
+# Subtest: request committed at cancellation boundary survives restart and a retry does not duplicate it
+ok 142 - request committed at cancellation boundary survives restart and a retry does not duplicate it
+  ---
+  duration_ms: 182.10128
+  type: 'test'
+  ...
+# Subtest: active work fails on unavailable paired blocks and a reconnect permits an honest retry
+ok 143 - active work fails on unavailable paired blocks and a reconnect permits an honest retry
+  ---
+  duration_ms: 1770.583202
+  type: 'test'
+  ...
+# Subtest: request-only pending resumes once after a real peer contribution
+ok 144 - request-only pending resumes once after a real peer contribution
+  ---
+  duration_ms: 358.706884
+  type: 'test'
+  ...
+# Subtest: malformed output after a request does not create request-only pending
+ok 145 - malformed output after a request does not create request-only pending
+  ---
+  duration_ms: 77.199507
+  type: 'test'
+  ...
+# Subtest: length-limited output after a request does not create request-only pending
+ok 146 - length-limited output after a request does not create request-only pending
+  ---
+  duration_ms: 67.153756
+  type: 'test'
+  ...
+# Subtest: cancellation while checking unanswered requests does not persist request-only pending
+ok 147 - cancellation while checking unanswered requests does not persist request-only pending
+  ---
+  duration_ms: 56.07544
+  type: 'test'
+  ...
+# Subtest: relevant replicated evidence resumes once with cumulative budgets and survives coordinator restart
+ok 148 - relevant replicated evidence resumes once with cumulative budgets and survives coordinator restart
+  ---
+  duration_ms: 200.583363
+  type: 'test'
+  ...
+# Subtest: unrelated, already consumed and local evidence cannot resume pending work
+ok 149 - unrelated, already consumed and local evidence cannot resume pending work
+  ---
+  duration_ms: 265.137443
+  type: 'test'
+  ...
+# Subtest: terminal checkpoints never automatically resume
+ok 150 - terminal checkpoints never automatically resume
+  ---
+  duration_ms: 393.887403
+  type: 'test'
+  ...
+# Subtest: interrupted runs recover with stable identity and preserved counters
+ok 151 - interrupted runs recover with stable identity and preserved counters
+  ---
+  duration_ms: 106.046522
+  type: 'test'
+  ...
+# Subtest: crash after brief commit settles persisted outcome without executing tools again
+ok 152 - crash after brief commit settles persisted outcome without executing tools again
+  ---
+  duration_ms: 97.774087
+  type: 'test'
+  ...
+# Subtest: recovery resumes a committed brief when a request answer arrived after its citations
+ok 153 - recovery resumes a committed brief when a request answer arrived after its citations
+  ---
+  duration_ms: 145.838273
+  type: 'test'
+  ...
+# Subtest: pending brief with a stale citation resumes even if its evidence ID was already consumed
+ok 154 - pending brief with a stale citation resumes even if its evidence ID was already consumed
+  ---
+  duration_ms: 158.312556
+  type: 'test'
+  ...
+# Subtest: recovery completes without inference when the committed brief already cites the answer revision
+ok 155 - recovery completes without inference when the committed brief already cites the answer revision
+  ---
+  duration_ms: 158.503928
+  type: 'test'
+  ...
+# Subtest: cumulative exhausted calls and repeated crash recovery stop without new inference
+ok 156 - cumulative exhausted calls and repeated crash recovery stop without new inference
+  ---
+  duration_ms: 185.917924
+  type: 'test'
+  ...
+# Subtest: coordinator close aborts its active run and removes watchers
+ok 157 - coordinator close aborts its active run and removes watchers
+  ---
+  duration_ms: 88.063787
+  type: 'test'
+  ...
+# Subtest: manual active work is not mistaken for an interrupted run
+ok 158 - manual active work is not mistaken for an interrupted run
+  ---
+  duration_ms: 98.53826
+  type: 'test'
+  ...
+# Subtest: remote notifications trigger scans, duplicates stay harmless and cleanup removes watchers
+ok 159 - remote notifications trigger scans, duplicates stay harmless and cleanup removes watchers
+  ---
+  duration_ms: 209.927254
+  type: 'test'
+  ...
+# Subtest: reopening the physical store retains contribution consumption and terminal status
+ok 160 - reopening the physical store retains contribution consumption and terminal status
+  ---
+  duration_ms: 163.491137
+  type: 'test'
+  ...
+# Subtest: frozen retrieval cases have valid, unambiguous annotations
+ok 161 - frozen retrieval cases have valid, unambiguous annotations
+  ---
+  duration_ms: 2.514154
+  type: 'test'
+  ...
+# Subtest: conditional, negative, and unit-sensitive facts stay intact
+ok 162 - conditional, negative, and unit-sensitive facts stay intact
+  ---
+  duration_ms: 0.232574
+  type: 'test'
+  ...
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-1","selector":"deterministic","trial":1,"success":false,"ms":10.447520000000054,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-db-1","selector":"deterministic","trial":1,"success":false,"ms":3.6892970000000105,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":3.1325449999999364,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"held-none-1","selector":"deterministic","trial":1,"success":false,"ms":3.5091810000000123,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-1","selector":"deterministic","trial":1,"success":false,"ms":3.8412399999999707,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-db-1","selector":"deterministic","trial":1,"success":false,"ms":3.5451960000000327,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":2.9998990000000276,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-1","selector":"deterministic","trial":1,"success":false,"ms":3.275556999999935,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-db-1","selector":"deterministic","trial":1,"success":false,"ms":4.852626999999984,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":3.0966569999999365,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# Subtest: deterministic retrieval reports real passage coverage and distractors without claiming model inference
+ok 163 - deterministic retrieval reports real passage coverage and distractors without claiming model inference
+  ---
+  duration_ms: 49.260699
+  type: 'test'
+  ...
+# Subtest: validator rejects missing, duplicate and unknown case, trial, selector and configuration identities
+ok 164 - validator rejects missing, duplicate and unknown case, trial, selector and configuration identities
+  ---
+  duration_ms: 22.100776
+  type: 'test'
+  ...
+# Subtest: validator and runner reject out-of-bounds or inconsistent options
+ok 165 - validator and runner reject out-of-bounds or inconsistent options
+  ---
+  duration_ms: 22.519208
+  type: 'test'
+  ...
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-1","selector":"deterministic","trial":1,"success":false,"ms":15.582269999999994,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-db-1","selector":"deterministic","trial":1,"success":false,"ms":3.8191130000000157,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":3.4132880000000796,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"held-none-1","selector":"deterministic","trial":1,"success":false,"ms":3.4253439999999955,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-1","selector":"deterministic","trial":1,"success":false,"ms":3.3083090000000084,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-db-1","selector":"deterministic","trial":1,"success":false,"ms":5.568489,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":2.721164999999928,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"held-none-1","selector":"deterministic","trial":1,"success":false,"ms":3.3056510000000117,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-1","selector":"deterministic","trial":1,"success":false,"ms":3.1009689999999637,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-db-1","selector":"deterministic","trial":1,"success":false,"ms":2.989828999999986,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"dev-checkout-2","selector":"deterministic","trial":1,"success":true,"ms":2.6712589999999636,"failure":null}
+# {"event":"passage-evaluation","mode":"retrieval","caseId":"held-none-1","selector":"deterministic","trial":1,"success":false,"ms":2.9182010000000673,"failure":null}
+# fatal: not a git repository (or any of the parent directories): .git
+# Subtest: regrade reconstructs recorded coverage, including null no-answer recall, without mutating input or inference
+ok 166 - regrade reconstructs recorded coverage, including null no-answer recall, without mutating input or inference
+  ---
+  duration_ms: 45.158879
+  type: 'test'
+  ...
+# Subtest: a captured MiniLM fallback cannot become a successful native ranking even with full recall
+ok 167 - a captured MiniLM fallback cannot become a successful native ranking even with full recall
+  ---
+  duration_ms: 28.174431
+  type: 'test'
+  ...
+# Subtest: regrade rejects missing, duplicate, or unknown passage identities
+ok 168 - regrade rejects missing, duplicate, or unknown passage identities
+  ---
+  duration_ms: 23.943417
+  type: 'test'
+  ...
+# Subtest: passages cover long evidence verbatim, including negation and late facts
+ok 169 - passages cover long evidence verbatim, including negation and late facts
+  ---
+  duration_ms: 4.861023
+  type: 'test'
+  ...
+# Subtest: overlong sentences are covered with overlap and original offsets
+ok 170 - overlong sentences are covered with overlap and original offsets
+  ---
+  duration_ms: 0.586898
+  type: 'test'
+  ...
+# Subtest: ranking uses full words, titles, stable ties, and explicit source lookup
+ok 171 - ranking uses full words, titles, stable ties, and explicit source lookup
+  ---
+  duration_ms: 1.245068
+  type: 'test'
+  ...
+# Subtest: index reflects additions, revision, removal and reconstruction
+ok 172 - index reflects additions, revision, removal and reconstruction
+  ---
+  duration_ms: 1.196274
+  type: 'test'
+  ...
+# Subtest: owned immutable records survive reopen; duplicate writes are safe
+ok 173 - owned immutable records survive reopen; duplicate writes are safe
+  ---
+  duration_ms: 134.273238
+  type: 'test'
+  ...
+# Subtest: real separate peers replicate, disconnect, reconnect and retain remote blocks across restart
+ok 174 - real separate peers replicate, disconnect, reconnect and retain remote blocks across restart
+  ---
+  duration_ms: 3491.711777
+  type: 'test'
+  ...
+# Subtest: unavailable uninitialised peer is visible and bounded; invalid pairing is rejected
+ok 175 - unavailable uninitialised peer is visible and bounded; invalid pairing is rejected
+  ---
+  duration_ms: 45.912369
+  type: 'test'
+  ...
+# Subtest: freshness guard observes prior queued writes and preserves accepted duplicate operations
+ok 176 - freshness guard observes prior queued writes and preserves accepted duplicate operations
+  ---
+  duration_ms: 58.18415
+  type: 'test'
+  ...
+# Subtest: accounts for actual JSON-escaped UTF-8 and future tool placeholders at the protected budget boundary
+ok 177 - accounts for actual JSON-escaped UTF-8 and future tool placeholders at the protected budget boundary
+  ---
+  duration_ms: 4.886859
+  type: 'test'
+  ...
+# Subtest: protocol mismatches, missing required records and cancellation propagate instead of returning false
+ok 178 - protocol mismatches, missing required records and cancellation propagate instead of returning false
+  ---
+  duration_ms: 0.941613
+  type: 'test'
+  ...
+1..178
+# tests 178
+# suites 0
+# pass 178
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 28725.121845

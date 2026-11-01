@@ -3,7 +3,12 @@ import { spawn, execFileSync, type ChildProcess } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { idSchema } from '../src/records.js';
-import { DemoProgress, waitForPeerReady, stopChild } from '../src/demo-progress.js';
+import {
+  DemoProgress,
+  waitForPeerReady,
+  stopChild,
+  resumptionSettled,
+} from '../src/demo-progress.js';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { latestCheckpoint } from '../src/agent.js';
@@ -283,6 +288,8 @@ try {
     final = await until(async () => {
       const records = (await call(a!, 'inspect', { case: caseId })) as RelayRecord[];
       const cp = latestCheckpoint(records, a!.owner);
+      if (cp && cp.status !== 'completed' && resumptionSettled(cp, initial.runId))
+        return { records, checkpoint: cp };
       if (cp?.status === 'failed' || cp?.status === 'cancelled') return { records, checkpoint: cp };
       return cp?.status === 'completed' && cp.consumed.includes(contribution.id)
         ? { records, checkpoint: cp }

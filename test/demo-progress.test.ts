@@ -1,7 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { DemoProgress, ReadyParser, stopChild, waitForPeerReady } from '../src/demo-progress.js';
+import {
+  DemoProgress,
+  ReadyParser,
+  stopChild,
+  waitForPeerReady,
+  resumptionSettled,
+} from '../src/demo-progress.js';
+
+test('new terminal pending resumption is visible while initial pending and running still wait', () => {
+  assert.equal(resumptionSettled(undefined, 'initial'), false);
+  assert.equal(resumptionSettled({ runId: 'initial', status: 'pending' }, 'initial'), false);
+  assert.equal(resumptionSettled({ runId: 'child', status: 'running' }, 'initial'), false);
+  for (const status of ['pending', 'failed', 'cancelled', 'completed'] as const)
+    assert.equal(resumptionSettled({ runId: 'child', status }, 'initial'), true);
+});
 
 test('parses only complete peer-ready JSON across chunks and unrelated output', () => {
   const parser = new ReadyParser();

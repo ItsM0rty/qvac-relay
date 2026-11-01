@@ -978,8 +978,10 @@ export class Agent {
               );
               if (draft.missing.length && !open.length)
                 throw new RelayError(
-                  'REQUEST_REQUIRED',
-                  'Persist a request_information question for missing evidence before saving.',
+                  requestIds.length ? 'ANSWERED_REQUEST' : 'REQUEST_REQUIRED',
+                  requestIds.length
+                    ? 'Existing requests have linked responses. Do not repeat answered needIds. Remove resolved items from missing after reading/citing their answers; put interpretations in uncertainty. For a genuinely new gap, call request_information with a new question and omit needId.'
+                    : 'Persist a request_information question for missing evidence before saving.',
                 );
               const missing = [
                 ...new Set([

@@ -1,0 +1,445 @@
+{
+  "mode": "native-review-diagnostics",
+  "plan": {
+    "sourceCommit": "0cfdea8f4139da0507f1cca5bbc7a95d8cb3b9ce",
+    "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+    "selector": "deterministic",
+    "repeatedAttempts": 3,
+    "repeatedScenario": "default checkout handoff, short records",
+    "variation": "data/review-handoff-v1.json",
+    "variationAttempts": 1,
+    "freshStoresPerAttempt": true,
+    "scope": "Serial native inference. Existing model weights and uncontrolled OS caches. No success-rate or speedup claim."
+  },
+  "repeatedConfigurationConsistent": true,
+  "rows": [
+    {
+      "attempt": "repeat-1",
+      "group": "repeated-default-handoff",
+      "mode": "live-qvac-two-peer",
+      "nativeInference": true,
+      "sourceCommit": "0cfdea8f4139da0507f1cca5bbc7a95d8cb3b9ce",
+      "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+      "selector": "deterministic",
+      "configurations": [
+        {
+          "sdkVersion": "0.22.0",
+          "candidate": "1.7b",
+          "device": "cpu",
+          "ctxSize": 8192,
+          "predict": 768,
+          "sampling": {
+            "temp": 0.7,
+            "top_p": 0.8,
+            "top_k": 20,
+            "reasoning_budget": 0
+          },
+          "toolChoice": "required",
+          "parallel": 1
+        }
+      ],
+      "configurationMatches": true,
+      "fixtureId": null,
+      "scenarioSHA256": null,
+      "passed": true,
+      "exitCode": 0,
+      "elapsedMs": 289397.614564,
+      "calls": 7,
+      "repairs": 1,
+      "observedModelReplies": 7,
+      "cleanupPassed": true,
+      "finalCleanup": [],
+      "settled": [
+        {
+          "event": "initial-run-settled",
+          "cleanupError": null,
+          "active": false
+        },
+        {
+          "event": "terminal-run-settled",
+          "checkpoint": {
+            "id": "6fd18dc01458f12337d6fc371cf5fe82f82f489d69105ccf2583e928237c3838",
+            "owner": "9764e7a8a908661bffba03bd4d9edf60ef2a4694c80837357b9446b35b249316",
+            "caseId": "rollback-investigation",
+            "createdAt": "2026-11-01T08:38:53.152Z",
+            "schemaVersion": 1,
+            "kind": "checkpoint",
+            "runId": "5205c2092bec746757afef5bacd7962df6f70f17b67912238600265dc8a64706",
+            "status": "completed",
+            "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+            "calls": 7,
+            "repairs": 1,
+            "consumed": [
+              "deployment-config"
+            ],
+            "requiredIds": [
+              "deployment-config",
+              "health-log"
+            ],
+            "briefId": "fedff7523344ae6c2e26b67e79f412607b881dc01ac8da19ece0731b803794e4",
+            "requestIds": [
+              "02a7f4b5252c757564ceee83887898ab730a65d11de9d3a886d20920db866817"
+            ]
+          },
+          "cleanupError": null,
+          "resumptionError": null
+        }
+      ],
+      "error": null,
+      "validationFailures": [
+        {
+          "at": "2026-11-01T08:35:27.568Z",
+          "runId": "f815b26e-5b50-46ba-89e6-6ce5c9475ae2",
+          "peer": "9764e7a8a908661bffba03bd4d9edf60ef2a4694c80837357b9446b35b249316",
+          "event": "validation",
+          "callId": "call_4sh16c_2",
+          "name": "save_brief",
+          "kind": "validation",
+          "signature": "validation:REQUIRED_INFORMATION_REQUEST:Required question is untracked. Call request_information with needId \"deployment-config\" and question \"What deployment configuration changed in deployment 42?\" before saving. An empty missing list cannot satisfy this requirement."
+        }
+      ],
+      "usage": {
+        "scope": "Sum of exposed per-call SDK counters; includes loading after peer restart. OS/file caches uncontrolled. No worker memory peak measured.",
+        "promptTokens": 11040,
+        "generatedTokens": 420,
+        "loadMs": 43462.560178,
+        "generationMs": 240714.47209500003
+      },
+      "report": "repeat-1/report.json",
+      "traces": "repeat-1/traces"
+    },
+    {
+      "attempt": "repeat-2",
+      "group": "repeated-default-handoff",
+      "mode": "live-qvac-two-peer",
+      "nativeInference": true,
+      "sourceCommit": "0cfdea8f4139da0507f1cca5bbc7a95d8cb3b9ce",
+      "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+      "selector": "deterministic",
+      "configurations": [
+        {
+          "sdkVersion": "0.22.0",
+          "candidate": "1.7b",
+          "device": "cpu",
+          "ctxSize": 8192,
+          "predict": 768,
+          "sampling": {
+            "temp": 0.7,
+            "top_p": 0.8,
+            "top_k": 20,
+            "reasoning_budget": 0
+          },
+          "toolChoice": "required",
+          "parallel": 1
+        }
+      ],
+      "configurationMatches": true,
+      "fixtureId": null,
+      "scenarioSHA256": null,
+      "passed": true,
+      "exitCode": 0,
+      "elapsedMs": 285490.674933,
+      "calls": 7,
+      "repairs": 1,
+      "observedModelReplies": 7,
+      "cleanupPassed": true,
+      "finalCleanup": [],
+      "settled": [
+        {
+          "event": "initial-run-settled",
+          "cleanupError": null,
+          "active": false
+        },
+        {
+          "event": "terminal-run-settled",
+          "checkpoint": {
+            "id": "b939f3272201df0f5784710d55789b6aa743aae1be788bd8aefcf8d3604fbf2c",
+            "owner": "c0aed8b754989c7a9db9a2fa5847b7477c8c310340c5c23c65920675db2dde60",
+            "caseId": "rollback-investigation",
+            "createdAt": "2026-11-01T08:43:44.413Z",
+            "schemaVersion": 1,
+            "kind": "checkpoint",
+            "runId": "091759df0a5d7e5c3211e3a239e34b1c4b493f5bcd1d516419d17e63ff05efe5",
+            "status": "completed",
+            "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+            "calls": 7,
+            "repairs": 1,
+            "consumed": [
+              "deployment-config"
+            ],
+            "requiredIds": [
+              "deployment-config",
+              "health-log"
+            ],
+            "briefId": "9f8503302c2962fd51c715f34c58df93009e4bf9ca324817f79f14b0768a84b6",
+            "requestIds": [
+              "35eb1a0df9e6e34697a1afb4f432f6b4268d87365617f03f19bc09ad417d9dea"
+            ]
+          },
+          "cleanupError": null,
+          "resumptionError": null
+        }
+      ],
+      "error": null,
+      "validationFailures": [
+        {
+          "at": "2026-11-01T08:40:27.958Z",
+          "runId": "053d976a-2367-4c6e-a43d-7d01565c89af",
+          "peer": "c0aed8b754989c7a9db9a2fa5847b7477c8c310340c5c23c65920675db2dde60",
+          "event": "validation",
+          "callId": "call_4sh16c_2",
+          "name": "save_brief",
+          "kind": "validation",
+          "signature": "validation:REQUIRED_INFORMATION_REQUEST:Required question is untracked. Call request_information with needId \"deployment-config\" and question \"What deployment configuration changed in deployment 42?\" before saving. An empty missing list cannot satisfy this requirement."
+        }
+      ],
+      "usage": {
+        "scope": "Sum of exposed per-call SDK counters; includes loading after peer restart. OS/file caches uncontrolled. No worker memory peak measured.",
+        "promptTokens": 10987,
+        "generatedTokens": 420,
+        "loadMs": 45738.879061,
+        "generationMs": 234410.36449
+      },
+      "report": "repeat-2/report.json",
+      "traces": "repeat-2/traces"
+    },
+    {
+      "attempt": "repeat-3",
+      "group": "repeated-default-handoff",
+      "mode": "live-qvac-two-peer",
+      "nativeInference": true,
+      "sourceCommit": "0cfdea8f4139da0507f1cca5bbc7a95d8cb3b9ce",
+      "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+      "selector": "deterministic",
+      "configurations": [
+        {
+          "sdkVersion": "0.22.0",
+          "candidate": "1.7b",
+          "device": "cpu",
+          "ctxSize": 8192,
+          "predict": 768,
+          "sampling": {
+            "temp": 0.7,
+            "top_p": 0.8,
+            "top_k": 20,
+            "reasoning_budget": 0
+          },
+          "toolChoice": "required",
+          "parallel": 1
+        }
+      ],
+      "configurationMatches": true,
+      "fixtureId": null,
+      "scenarioSHA256": null,
+      "passed": true,
+      "exitCode": 0,
+      "elapsedMs": 381208.886062,
+      "calls": 9,
+      "repairs": 2,
+      "observedModelReplies": 9,
+      "cleanupPassed": true,
+      "finalCleanup": [],
+      "settled": [
+        {
+          "event": "initial-run-settled",
+          "cleanupError": null,
+          "active": false
+        },
+        {
+          "event": "terminal-run-settled",
+          "checkpoint": {
+            "id": "6ed41ae02cf85a47a969fbb58964e27401a2e97671ac426e4cf3f005fd8072dd",
+            "owner": "5d7e428c3e12de671cf213c6954638c78b0be6dd6a1e0d14d71dbcfa2daa9077",
+            "caseId": "rollback-investigation",
+            "createdAt": "2026-11-01T08:50:10.086Z",
+            "schemaVersion": 1,
+            "kind": "checkpoint",
+            "runId": "f23b6f20cb0cec4009aef1b7f6eff3a75f2bc82a3818f794be35e7daec1363ed",
+            "status": "completed",
+            "task": "Prepare an engineering handoff about checkout errors after deployment 42. Cover both the health log and deployment configuration. If deployment configuration is unavailable, request it from a collaborator and save a pending brief with the missing information. When supplied, update the brief using the new source. Distinguish observed timing from uncertain root cause.",
+            "calls": 9,
+            "repairs": 2,
+            "consumed": [
+              "deployment-config"
+            ],
+            "requiredIds": [
+              "deployment-config",
+              "health-log"
+            ],
+            "briefId": "465b0cbd15d295be2f07f2d5e0a5d9f166ddf7d322417728ed7782061ead16c1",
+            "requestIds": [
+              "ded6c4403de55ba01f220625eabedfb002a1b865fb6cecb4f1d1109cf30eb5aa"
+            ]
+          },
+          "cleanupError": null,
+          "resumptionError": null
+        }
+      ],
+      "error": null,
+      "validationFailures": [
+        {
+          "at": "2026-11-01T08:48:46.285Z",
+          "runId": "f23b6f20cb0cec4009aef1b7f6eff3a75f2bc82a3818f794be35e7daec1363ed",
+          "peer": "5d7e428c3e12de671cf213c6954638c78b0be6dd6a1e0d14d71dbcfa2daa9077",
+          "event": "validation",
+          "callId": "call_693jhf_4",
+          "name": "save_brief",
+          "kind": "validation",
+          "signature": "validation:REQUEST_REQUIRED:Persist a request_information question for missing evidence before saving."
+        },
+        {
+          "at": "2026-11-01T08:45:11.661Z",
+          "runId": "fbc57946-b2b4-4aac-b4f1-39e8c7d9fe0d",
+          "peer": "5d7e428c3e12de671cf213c6954638c78b0be6dd6a1e0d14d71dbcfa2daa9077",
+          "event": "validation",
+          "callId": "call_4sh16c_2",
+          "name": "save_brief",
+          "kind": "validation",
+          "signature": "validation:REQUIRED_INFORMATION_REQUEST:Required question is untracked. Call request_information with needId \"deployment-config\" and question \"What deployment configuration changed in deployment 42?\" before saving. An empty missing list cannot satisfy this requirement."
+        }
+      ],
+      "usage": {
+        "scope": "Sum of exposed per-call SDK counters; includes loading after peer restart. OS/file caches uncontrolled. No worker memory peak measured.",
+        "promptTokens": 14594,
+        "generatedTokens": 597,
+        "loadMs": 50052.745786,
+        "generationMs": 325263.041656
+      },
+      "report": "repeat-3/report.json",
+      "traces": "repeat-3/traces"
+    },
+    {
+      "attempt": "variation-atlas",
+      "group": "new-incident-variation",
+      "mode": "live-qvac-two-peer",
+      "nativeInference": true,
+      "sourceCommit": "0cfdea8f4139da0507f1cca5bbc7a95d8cb3b9ce",
+      "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+      "selector": "deterministic",
+      "configurations": [
+        {
+          "sdkVersion": "0.22.0",
+          "candidate": "1.7b",
+          "device": "cpu",
+          "ctxSize": 8192,
+          "predict": 768,
+          "sampling": {
+            "temp": 0.7,
+            "top_p": 0.8,
+            "top_k": 20,
+            "reasoning_budget": 0
+          },
+          "toolChoice": "required",
+          "parallel": 1
+        }
+      ],
+      "configurationMatches": true,
+      "fixtureId": "review-export-handoff-v1",
+      "scenarioSHA256": "b5bd9fb2f063da1318f41b5c6dc03f12209687621b2a008d9a0ba61f742024c2",
+      "passed": false,
+      "exitCode": 1,
+      "elapsedMs": 333917.245204,
+      "calls": 8,
+      "repairs": 2,
+      "observedModelReplies": 8,
+      "cleanupPassed": true,
+      "finalCleanup": [
+        {
+          "peer": "a",
+          "exitCode": 0,
+          "signal": null,
+          "error": null
+        },
+        {
+          "peer": "b",
+          "exitCode": 0,
+          "signal": null,
+          "error": null
+        }
+      ],
+      "settled": [
+        {
+          "event": "initial-run-settled",
+          "cleanupError": null,
+          "active": false
+        },
+        {
+          "event": "terminal-run-settled",
+          "checkpoint": {
+            "id": "8b8ef244e64338e8f07e4ac07e8de16fb9fa46b795753cba1f7f98c8f56aaa53",
+            "owner": "4e57072be2c563bf08a1d7348f2a34b0e7fdc861fc30afa261086fbea4f884d9",
+            "caseId": "atlas-export-investigation",
+            "createdAt": "2026-11-01T08:55:50.296Z",
+            "schemaVersion": 1,
+            "kind": "checkpoint",
+            "runId": "76a8ea2839dd64b5f2af481d03379b87159aa03533edb81e3928ed7593d8be75",
+            "status": "failed",
+            "task": "Prepare a handoff for the Atlas asset export stall. Read the export journal and the chunk configuration. If the configuration is missing, request it and save pending work. When it arrives, cite both sources and complete the handoff. Distinguish recorded observations from an unverified explanation.",
+            "calls": 8,
+            "repairs": 2,
+            "consumed": [
+              "chunk-configuration"
+            ],
+            "requiredIds": [
+              "chunk-configuration",
+              "export-journal"
+            ],
+            "requestIds": [
+              "8bb561f1f3f6fc0228596b155f1984e70caf070c1ab27b582c4d323b961e8158"
+            ],
+            "reason": "validation: Persist a request_information question for missing evidence before saving."
+          },
+          "cleanupError": null,
+          "resumptionError": null
+        }
+      ],
+      "error": "Automatic resumption failed: {\"id\":\"8b8ef244e64338e8f07e4ac07e8de16fb9fa46b795753cba1f7f98c8f56aaa53\",\"owner\":\"4e57072be2c563bf08a1d7348f2a34b0e7fdc861fc30afa261086fbea4f884d9\",\"caseId\":\"atlas-export-investigation\",\"createdAt\":\"2026-11-01T08:55:50.296Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"76a8ea2839dd64b5f2af481d03379b87159aa03533edb81e3928ed7593d8be75\",\"status\":\"failed\",\"task\":\"Prepare a handoff for the Atlas asset export stall. Read the export journal and the chunk configuration. If the configuration is missing, request it and save pending work. When it arrives, cite both sources and complete the handoff. Distinguish recorded observations from an unverified explanation.\",\"calls\":8,\"repairs\":2,\"consumed\":[\"chunk-configuration\"],\"requiredIds\":[\"chunk-configuration\",\"export-journal\"],\"requestIds\":[\"8bb561f1f3f6fc0228596b155f1984e70caf070c1ab27b582c4d323b961e8158\"],\"reason\":\"validation: Persist a request_information question for missing evidence before saving.\"}\n+ actual - expected\n\n+ 'failed'\n- 'completed'\n",
+      "validationFailures": [
+        {
+          "at": "2026-11-01T08:54:32.796Z",
+          "runId": "76a8ea2839dd64b5f2af481d03379b87159aa03533edb81e3928ed7593d8be75",
+          "peer": "4e57072be2c563bf08a1d7348f2a34b0e7fdc861fc30afa261086fbea4f884d9",
+          "event": "validation",
+          "callId": "call_8rg396_4",
+          "name": "save_brief",
+          "kind": "validation",
+          "signature": "validation:REQUEST_REQUIRED:Persist a request_information question for missing evidence before saving."
+        },
+        {
+          "at": "2026-11-01T08:55:50.278Z",
+          "runId": "76a8ea2839dd64b5f2af481d03379b87159aa03533edb81e3928ed7593d8be75",
+          "peer": "4e57072be2c563bf08a1d7348f2a34b0e7fdc861fc30afa261086fbea4f884d9",
+          "event": "validation",
+          "callId": "call_h6zzau_8",
+          "name": "save_brief",
+          "kind": "validation",
+          "signature": "validation:REQUEST_REQUIRED:Persist a request_information question for missing evidence before saving."
+        },
+        {
+          "at": "2026-11-01T08:51:37.653Z",
+          "runId": "d982e427-6d08-4312-ba6a-85b00fc06113",
+          "peer": "4e57072be2c563bf08a1d7348f2a34b0e7fdc861fc30afa261086fbea4f884d9",
+          "event": "validation",
+          "callId": "call_segmtj_2",
+          "name": "save_brief",
+          "kind": "validation",
+          "signature": "validation:REQUIRED_INFORMATION_REQUEST:Required question is untracked. Call request_information with needId \"chunk-setting\" and question \"What chunk ceiling was applied to the Atlas asset exporter?\" before saving. An empty missing list cannot satisfy this requirement."
+        }
+      ],
+      "usage": {
+        "scope": "Sum of exposed per-call SDK counters; includes loading after peer restart. OS/file caches uncontrolled. No worker memory peak measured.",
+        "promptTokens": 13019,
+        "generatedTokens": 590,
+        "loadMs": 40639.381925,
+        "generationMs": 284469.46361199993
+      },
+      "report": "variation-atlas/report.json",
+      "traces": "variation-atlas/traces"
+    }
+  ],
+  "limitations": [
+    "Three repeated runs support this demonstration only, not broad reliability or statistical significance.",
+    "Scenario variations are separate from repeated default handoffs. No scripted model responses count as native success.",
+    "Fresh peer directories per attempt; same bundled source and dependency install. Model weights reused; per-run model loading remains measured."
+  ]
+}

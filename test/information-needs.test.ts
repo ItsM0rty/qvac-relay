@@ -10,6 +10,87 @@ import type { Message, Model, ModelReply, ToolSpec } from '../src/qvac.js';
 
 const question = 'What timeout setting was deployed?';
 const needId = 'deployed-timeout';
+
+for (const followup of ['resolve', 'new-gap'] as const)
+  test(`answered-request feedback permits ${followup} without repeating the answered write`, async () => {
+    const f = await fixture();
+    const requestId = stableId(f.store.owner, 'incident', 'need', needId);
+    const base = {
+      schemaVersion: 1 as const,
+      owner: f.store.owner,
+      caseId: 'incident',
+      createdAt: '2026-10-31T00:00:00.000Z',
+    };
+    const newQuestion = 'Which upstream condition remains unverified?';
+    try {
+      await f.store.put({ ...base, kind: 'request', id: requestId, needId, question });
+      await f.store.put({
+        ...base,
+        kind: 'evidence',
+        id: 'answer',
+        title: 'Configuration',
+        text: 'The timeout was 100 ms.',
+        requestId,
+      });
+      let read: { id: string; text: string };
+      const steps: Step[] = [
+        (_h, t) => action('read_record', { id: 'answer' }, t),
+        (h, t) => {
+          read = result(h, 'read_record');
+          return action(
+            'save_brief',
+            { quotes: { [read.id]: read.text }, uncertainty: [], missing: [question] },
+            t,
+          );
+        },
+        (h, t) => {
+          const rejected = result<{ code: string; feedback: string }>(h, 'save_brief');
+          assert.equal(rejected.code, 'ANSWERED_REQUEST');
+          assert.match(rejected.feedback, /Do not repeat answered needIds/);
+          assert.match(rejected.feedback, /Remove resolved items/);
+          assert.match(rejected.feedback, /new question and omit needId/);
+          return followup === 'resolve'
+            ? action(
+                'save_brief',
+                { quotes: { [read.id]: read.text }, uncertainty: [], missing: [] },
+                t,
+              )
+            : action('request_information', { question: newQuestion }, t);
+        },
+      ];
+      if (followup === 'new-gap')
+        steps.push((h, t) => {
+          assert.equal(
+            result<{ status: string }>(h, 'request_information').status,
+            'awaiting-response',
+          );
+          return action(
+            'save_brief',
+            { quotes: { [read.id]: read.text }, uncertainty: [], missing: [newQuestion] },
+            t,
+          );
+        });
+      const checkpoint = await new Agent(f.store, new ScriptedModel(steps)).run('incident');
+      assert.equal(
+        checkpoint.status,
+        followup === 'resolve' ? 'completed' : 'pending',
+        checkpoint.reason,
+      );
+      assert.equal(checkpoint.repairs, 1);
+      const records = await f.store.list('incident');
+      assert.equal(records.filter((r) => r.kind === 'request' && r.needId === needId).length, 1);
+      assert.equal(
+        records.filter((r) => r.kind === 'request').length,
+        followup === 'resolve' ? 1 : 2,
+      );
+      const briefs = records.filter((r) => r.kind === 'brief');
+      assert.equal(briefs.length, 1);
+      assert.deepEqual(briefs[0]!.missing, followup === 'resolve' ? [] : [newQuestion]);
+      assert.equal(briefs[0]!.facts[0]!.sources[0]!.quote, read!.text);
+    } finally {
+      await f.close();
+    }
+  });
 type Step = (history: Message[], turn: number) => ModelReply | Promise<ModelReply>;
 class ScriptedModel implements Model {
   readonly name = 'information-needs-test-not-live';

@@ -1,4 +1,13 @@
 import { type ChildProcess } from 'node:child_process';
+import type { CheckpointRecord } from './records.js';
+
+/** A new terminal pending run needs human input, not another timeout-sized wait. */
+export function resumptionSettled(
+  checkpoint: Pick<CheckpointRecord, 'runId' | 'status'> | undefined,
+  initialRunId: string,
+): boolean {
+  return !!checkpoint && checkpoint.runId !== initialRunId && checkpoint.status !== 'running';
+}
 
 const TAIL_LIMIT = 16 * 1024;
 export interface PeerReady {
