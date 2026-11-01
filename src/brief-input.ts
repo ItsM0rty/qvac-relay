@@ -6,12 +6,11 @@ const notes = z
   .max(3)
   .refine((values) => new Set(values).size === values.length, 'Duplicate entries are not allowed');
 const envelope = z.strictObject({
-  quotes: z
-    .record(idSchema, z.string().min(1).max(1000))
-    .refine(
-      (quotes) => Object.keys(quotes).length >= 1 && Object.keys(quotes).length <= 32,
-      'Provide 1..32 quotes',
-    ),
+  quotes: z.record(idSchema, z.string().min(1).max(1000)).superRefine((quotes, context) => {
+    const count = Object.keys(quotes).length;
+    if (count < 1 || count > 32)
+      context.addIssue({ code: 'custom', message: `Provide 1..32 quotes; received ${count}.` });
+  }),
   uncertainty: notes,
   missing: notes,
 });
@@ -55,7 +54,12 @@ export function quotedBriefParameters(
         properties: Object.fromEntries(
           [...readIds].sort().map((id) => [id, { type: 'string', minLength: 1, maxLength: 1000 }]),
         ),
-        required: [...requiredIds].sort(),
+        // With one available key, nonempty means that key is required. Spell
+        // out the equivalent constraint rather than relying on minProperties
+        // alone in native tool generation. Runtime validation remains separate.
+        required: [
+          ...(requiredIds.length ? requiredIds : readIds.length === 1 ? readIds : []),
+        ].sort(),
         additionalProperties: false,
         minProperties: 1,
         maxProperties: 32,

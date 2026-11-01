@@ -70,3 +70,20 @@ test('strict envelope rejects malformed keys, empty or oversized quotes, and inv
   ];
   for (const value of invalid) assert.throws(() => parseQuotedBrief(value));
 });
+
+test('one read source is explicitly required without forcing every optional multi-source quote', () => {
+  const single = quotedBriefParameters(['journal'], []);
+  const parsed = toolSchema.parse({
+    type: 'function',
+    name: 'save_brief',
+    description: 'Save quotations',
+    parameters: single,
+  });
+  const quotes = parsed.parameters.properties.quotes as Record<string, any>;
+  assert.deepEqual(quotes.required, ['journal']);
+  assert.equal(quotes.minProperties, 1);
+  assert.equal(quotes.additionalProperties, false);
+  const multiple = quotedBriefParameters(['journal', 'config'], []);
+  assert.deepEqual((multiple.properties as Record<string, any>).quotes.required, []);
+  assert.throws(() => parseQuotedBrief({ quotes: {}, uncertainty: [], missing: [] }), /received 0/);
+});

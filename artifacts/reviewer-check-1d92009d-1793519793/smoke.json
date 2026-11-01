@@ -1,0 +1,72 @@
+{
+  "mode": "live-qvac",
+  "passed": true,
+  "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-auto",
+  "toolExecuted": true,
+  "exactFormat": true,
+  "elapsedMs": 34231.907464,
+  "measurements": {
+    "loadMs": 25303.246463000003,
+    "generationMs": 8922.984409000004,
+    "calls": 2,
+    "cancellations": 0,
+    "cancellationErrors": []
+  },
+  "turns": [
+    {
+      "turn": 0,
+      "calls": [
+        {
+          "id": "call_8tlxxn_0",
+          "name": "read_probe"
+        }
+      ],
+      "toolErrors": [],
+      "stopReason": "unknown",
+      "stats": {
+        "timeToFirstToken": 3709.080844,
+        "tokensPerSecond": 22.340602093971228,
+        "promptTokensPerSecond": 53.3824978013879,
+        "cacheTokens": 0,
+        "promptTokens": 198,
+        "generatedTokens": 15,
+        "emittedTokens": 15,
+        "avgConcurrentSeq": 1,
+        "toolDefinitionsDropped": 0,
+        "backendDevice": "cpu",
+        "loadMs": 25303.246463000003,
+        "generationMs": 4442.961770000002,
+        "thinkingChars": 0,
+        "contentChars": 0
+      }
+    },
+    {
+      "turn": 1,
+      "calls": [],
+      "toolErrors": [],
+      "stopReason": "unknown",
+      "stats": {
+        "timeToFirstToken": 3984.470492,
+        "tokensPerSecond": 21.148368998764077,
+        "promptTokensPerSecond": 60.233850515864226,
+        "cacheTokens": 0,
+        "promptTokens": 240,
+        "generatedTokens": 10,
+        "emittedTokens": 10,
+        "avgConcurrentSeq": 1,
+        "toolDefinitionsDropped": 0,
+        "backendDevice": "cpu",
+        "loadMs": 0,
+        "generationMs": 4480.0226390000025,
+        "thinkingChars": 0,
+        "contentChars": 16
+      }
+    }
+  ],
+  "memory": {
+    "scope": "Node parent RSS only; excludes QVAC Bare worker. Host free memory is system-wide, not model attribution.",
+    "peakParentRssBytes": 160264192,
+    "minimumHostFreeBytes": 1587884032,
+    "hostTotalBytes": 4106866688
+  }
+}

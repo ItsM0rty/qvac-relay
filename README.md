@@ -11,7 +11,7 @@ The verified execution path is Ubuntu 24.04 in WSL2, using CPU inference. Use Li
 The repository is private. If you have access, clone it from a Linux terminal, preferably into your Linux home directory:
 
 ```sh
-sudo apt-get update && sudo apt-get install -y libatomic1
+sudo apt-get update && sudo apt-get install -y git ca-certificates libatomic1
 cd ~
 git clone https://github.com/da-goat37/prac-sdk.git
 cd prac-sdk
@@ -92,7 +92,7 @@ The [long-record native handoff](artifacts/passage-demo-2f23582.json) passed at 
 For a guided live handoff, run the frozen reviewer scenario:
 
 ```sh
-RELAY_SELECTOR=deterministic RELAY_DEMO_SCENARIO_FILE=data/review-handoff-v1.json npm run demo
+RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic RELAY_DEMO_SCENARIO_FILE=data/review-handoff-v1.json npm run demo
 ```
 
 The live-only demo starts two separate child processes, writes concise progress and waiting updates to stderr, and prints the final JSON report to stdout. It retains each peer's store and a `report.json` under the unique `.relay/demo-*` directory named in the report. The report contains the final brief when the handoff completes. It fails visibly if the model cannot create pending work or use the contribution; no scripted output replaces inference. For the historical checkout long-record scenario, use `RELAY_DEMO_LONG=1 RELAY_SELECTOR=deterministic npm run demo`. See [reviewer instructions](docs/REVIEWING.md) for status, inspection, and clean verification.
