@@ -18,7 +18,9 @@
     "ranker:prepare": "tsx scripts/ranker-prepare.ts",
     "ranker:probe": "tsx scripts/ranker-probe.ts",
     "evaluate:retrieval": "tsx scripts/retrieval-evaluate.ts",
-    "format:check": "prettier --check src scripts test package.json tsconfig.json qvac.config.mjs"
+    "format:check": "prettier --check src scripts test package.json tsconfig.json qvac.config.mjs",
+    "diagnose:review": "tsx scripts/review-diagnostics.ts",
+    "verify:review": "bash scripts/reviewer-clean-check.sh"
   },
   "dependencies": {
     "@huggingface/transformers": "4.3.2",

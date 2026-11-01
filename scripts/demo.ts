@@ -16,12 +16,16 @@ const directory = resolve(process.argv[2] ?? `.relay/demo-${Date.now()}`);
 await mkdir(directory, { recursive: true });
 const events: unknown[] = [];
 const progress = new DemoProgress((line) => console.error(line));
-let sourceCommit = 'unavailable';
+let sourceCommit = process.env.RELAY_SOURCE_COMMIT ?? 'unavailable';
+if (sourceCommit !== 'unavailable' && !/^[a-f0-9]{40}$/.test(sourceCommit))
+  throw new Error('Invalid RELAY_SOURCE_COMMIT');
+let sourceCommitBasis = sourceCommit === 'unavailable' ? 'unavailable' : 'caller archive manifest';
 try {
   sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'ignore'],
   }).trim();
+  sourceCommitBasis = 'git checkout';
 } catch {}
 const evidenceSchema = z.strictObject({
   id: idSchema,
@@ -343,6 +347,7 @@ try {
   const report = {
     mode: 'live-qvac-two-peer',
     sourceCommit,
+    sourceCommitBasis,
     scenarioSHA256,
     fixtureId: scenario?.fixtureId ?? null,
     longEvidence,
@@ -371,6 +376,7 @@ try {
   const report = {
     mode: 'live-qvac-two-peer',
     sourceCommit,
+    sourceCommitBasis,
     scenarioSHA256,
     fixtureId: scenario?.fixtureId ?? null,
     passed: false,

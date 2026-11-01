@@ -248,7 +248,10 @@ for (const incident of cases) {
 }
 const report = {
   mode: 'frozen-review-controlled-diagnostics',
-  sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+  sourceCommit:
+    process.env.RELAY_SOURCE_COMMIT ??
+    execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+  sourceCommitBasis: process.env.RELAY_SOURCE_COMMIT ? 'caller archive manifest' : 'git checkout',
   fixtureFreeze: freeze,
   model: 'controlled-review-fixture-not-live',
   selector: 'deterministic',
