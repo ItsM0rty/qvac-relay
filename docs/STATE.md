@@ -1,14 +1,20 @@
 # Current state
 
-Updated 2026-11-01. Current application source is `c4702c214abff5f507cb0a5f342b4973e9f93b41`, fixing all three independent-review findings reproduced at `e9731d0`. It passed bundle, build, formatting, 187 tests, three controlled incident checks and nine replay rows using existing dependencies. No new native inference ran on this source. The historical native reliability pass remains at `cd4b146d29981574c70897e5ff479e1658f7ca3e`; evidence and documentation through `e9731d0` did not change that older application source. The working branch is `code-fix/reviewer-reliability`; the private repository's default branch remains `code-fix/relay-handoff`.
+Updated 2026-11-02. Current application source is `c4702c214abff5f507cb0a5f342b4973e9f93b41`, fixing all three independent-review findings reproduced at `e9731d0`. It passed bundle, build, formatting, 187 tests, three controlled incident checks and nine replay rows using existing dependencies. A final native default handoff then passed at checkout `f1b1ccf`, which has the same application code, in 458437.24 ms with 7 calls and 1 repair. The historical native reliability pass remains at `cd4b146d29981574c70897e5ff479e1658f7ca3e`; evidence and documentation through `e9731d0` did not change that older application source. The working branch is `code-fix/reviewer-reliability`; the private repository's default branch remains `code-fix/relay-handoff`.
 
 The canonical checkout is `C:\Users\m0rty\Desktop\Programming\Research\New folder\byteask\relay-agent`. Use Ubuntu 24.04 WSL2 CPU with Linux Node 22.21.1, or the documented supported Node range. Windows Node 22.20 and the observed Vulkan 1.3 path are not the verified inference environment. Do not change global tools or drivers.
+
+## Final native follow-up
+
+Checkout `f1b1ccf834641b5eabb57c22d1515ab6c9a11eb1` passed one real QVAC 1.7B Q4 CPU handoff with deterministic selection and fresh stores. Offline contribution, actual replication, automatic resumption, both exact current-revision citations, empty missing items, restart deduplication and cleanup passed. The one repair tracked the required request before saving. Elapsed time was 458437.24 ms; there were 7 cumulative calls. No terminal error occurred, and no WSL Node/Bare/npm/tsx process remained after the audit. Evidence: artifacts/final-native-f1b1ccf-20261102-d99154/summary.json. Stores and older artifacts remain intact.
+
+The setup and weights were reused, with no installation or application change. Prior 187-test verification at `c4702c2` covers identical application code; no additional full non-native run was necessary. This single native pass remains separate from the older repeated-run set and does not establish broad reliability, a new long-record result or optional-selector quality. A documentation/evidence commit can follow this tested source without changing application code. Publish the verified history to both existing branches through checked fast-forwards only. Access stays private and owner-only; personal design prose remains deferred.
 
 ## Independent review repair status
 
 All three defects are fixed and regression-tested, including committed-brief recovery for owner-written linked answers. Store close attempts every captured resource, aggregates failures and allows an explicit retry of only rejected steps while rejecting new work. Diagnostic failures retain their report and exit nonzero. See docs/REVIEW_RESULTS.md and artifacts/review-fixes-e9731d0/verification.json for exact scope and pre-fix reproductions. Evaluation identities are v15 and passage configuration 11.
 
-The full verifier that includes fresh installation and native handoffs was not rerun. A new native run, if desired before submission, must be attributed to this changed source rather than combined with the historical three-pass set. No current failure remains from the three review findings. The final WSL process check found no Node, Bare, npm or tsx processes. Personal design prose stays deferred; access and historical stores/reports remain unchanged.
+The full verifier that includes fresh installation and native handoffs was not rerun. The final native follow-up above is attributed to its own checkout and is not combined with the historical three-pass set. No current failure remains from the three review findings. The final WSL process check found no Node, Bare, npm or tsx processes. Personal design prose stays deferred; access and historical stores/reports remain unchanged.
 
 ## Historical native-tested snapshot
 

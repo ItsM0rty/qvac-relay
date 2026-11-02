@@ -1,0 +1,47 @@
+
+> prac-sdk@0.1.0 demo
+> tsx scripts/demo.ts .relay/final-native-f1b1ccf-20261102-d99154
+
+{
+  "passed": true,
+  "report": "/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/.relay/final-native-f1b1ccf-20261102-d99154/report.json",
+  "elapsedMs": 458437.2405,
+  "calls": 7,
+  "repairs": 1,
+  "brief": {
+    "id": "c4060f257fa5754fe30e3027aeb7dfeb57c37b1373b93fcd297eebbc8206c7a2",
+    "owner": "2c3df74797ef47fd1f77f9f6a52a130536f9f96e1d5aa962b82ffd9da89846ad",
+    "caseId": "rollback-investigation",
+    "createdAt": "2026-11-02T05:41:12.584Z",
+    "schemaVersion": 1,
+    "kind": "brief",
+    "factPolicy": "quoted-observations-v1",
+    "facts": [
+      {
+        "text": "Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification.",
+        "sources": [
+          {
+            "id": "deployment-config",
+            "revision": "ca0752562bacf5311ce246264d98a94eeae311bdee9467533c28e6efe514f204",
+            "quote": "Deployment 42 changed checkout database timeout from 3000 ms to 100 ms. The rollback restored timeout to 3000 ms. This change is documented in the deployment configuration; causality still requires verification."
+          }
+        ]
+      },
+      {
+        "text": "Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%.",
+        "sources": [
+          {
+            "id": "health-log",
+            "revision": "78c6c9289e55d1038773ef038c60cbc2166391725d7b98eadea118511533d472",
+            "quote": "Checkout errors rose from 0.2% to 8% after deployment 42 at 09:14. Rolling back at 09:22 restored errors to 0.2%."
+          }
+        ]
+      }
+    ],
+    "uncertainty": [
+      "Source quotations alone do not establish root cause."
+    ],
+    "missing": [],
+    "basedOn": "e657afb4da8d521bfe2f06875b803c53bb44df0843fe5f68d15ddc139ee6229d"
+  }
+}

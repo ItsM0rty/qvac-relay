@@ -6,6 +6,10 @@ Relay is a local engineering handoff agent. Each peer owns its writable tree. Co
 
 The user later revoked the request to invite reviewers. The repository must remain owner-only unless he explicitly asks to add someone. After the interrupted invitation attempt, GitHub reported no pending invitations and only da-goat37 as a collaborator. Privacy remains verified as PRIVATE.
 
+## Final native follow-up
+
+After fixing the three independent-review findings, one native default handoff was run on clean checkout `f1b1ccf`, with unchanged application code from `c4702c2`. It passed in 458437.24 ms with 7 calls and 1 repair, including offline contribution, real replication, resumption, citation validation, restart deduplication and cleanup. Existing dependencies, native bundle and model weights were reused; stores were fresh. No further application fix was needed. This result is retained separately from the historical three-pass set. It does not establish a repeated-run rate, long-record behavior or a speed improvement. The prior controlled fault regressions cover owner-written post-commit answers and rejected close retries; the native run did not inject those faults.
+
 ## Independent review fixes
 
 The user requested fixes for three reproduced findings at `e9731d0`. Linked-answer citation coverage now includes evidence written by the case owner as well as other peers. The same pure policy controls final checkpointing and recovery of an already committed brief. A new uncited answer keeps that brief pending and is required for its refresh. A committed brief that already cites the answer revision can settle without inference. This does not undo or repeat committed writes. The separate policy for detecting new remote contributions without an accepted brief remains unchanged.

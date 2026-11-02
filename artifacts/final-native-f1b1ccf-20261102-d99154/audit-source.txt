@@ -1,0 +1,69 @@
+import assert from 'node:assert/strict';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { RelayStore } from '../src/store.js';
+import { latestCheckpoint } from '../src/agent.js';
+import { revision } from '../src/records.js';
+const label=process.argv[2]!;
+const directory=join('artifacts',label);
+const plan=JSON.parse(await readFile(join(directory,'plan.json'),'utf8'));
+const report=JSON.parse(await readFile(join(directory,'report.json'),'utf8'));
+const events:any[]=[];
+for(const name of (await readdir(join(directory,'traces'))).filter(name=>name.endsWith('.jsonl')))
+ for(const line of (await readFile(join(directory,'traces',name),'utf8')).split('\n')) if(line.trim()) events.push(JSON.parse(line));
+const starts=events.filter(e=>e.event==='start');
+const models=events.filter(e=>e.event==='model');
+const transitions=events.filter(e=>e.event==='transition');
+const configurationSet=[...new Set(starts.map(e=>JSON.stringify(e.configuration)))];
+const settled=report.events.filter((e:any)=>['initial-run-settled','terminal-run-settled'].includes(e.event));
+const errors:string[]=[];
+let audit:unknown=null;
+try {
+ assert.equal(report.sourceCommit,plan.sourceCommit);
+ assert.equal(report.model,plan.model);
+ assert.equal(report.selector,'deterministic');
+ assert.equal(configurationSet.length,1);
+ assert.ok(starts.length>=2 && starts.every(e=>e.model===plan.model));
+ assert.ok(models.length>0);
+ if(report.passed) {
+  for(const name of ['a-offline','b-contributed-offline','resumed','restart-deduplication-verified','model-cleanup-verified','peers-stopped-cleanly'])
+   assert.ok(report.events.some((e:any)=>e.event===name),`Missing demo event ${name}`);
+  assert.ok(settled.length===2 && settled.every((e:any)=>!e.cleanupError && !e.resumptionError));
+  assert.equal(report.cleanupPassed,true);
+  const store=await RelayStore.open(plan.storeDirectory+'/a');
+  try {
+   const records=await store.list('rollback-investigation');
+   const cp=latestCheckpoint(records,store.owner)!;
+   const resumed=report.events.find((e:any)=>e.event==='resumed');
+   assert.equal(cp.id,resumed.checkpoint.id);
+   assert.equal(cp.runId,resumed.checkpoint.runId);
+   assert.equal(cp.status,'completed');
+   assert.ok(cp.consumed.includes('deployment-config'));
+   const brief=records.find(r=>r.kind==='brief' && r.id===cp.briefId)!;
+   assert.equal(brief.kind,'brief');
+   if(brief.kind!=='brief') throw new Error('No final brief');
+   const ids=new Set(brief.facts.flatMap(f=>f.sources.map(s=>s.id)));
+   assert.ok(ids.has('health-log') && ids.has('deployment-config'));
+   for(const fact of brief.facts) for(const source of fact.sources) {
+    const evidence=records.find(r=>r.id===source.id)!;
+    assert.ok(evidence && evidence.kind==='evidence');
+    assert.equal(source.revision,revision(evidence));
+    if(evidence.kind==='evidence') assert.ok(evidence.text.includes(source.quote));
+   }
+   const contribution=records.find(r=>r.id==='deployment-config')!;
+   const b=report.events.find((e:any)=>e.event==='peer-started' && e.name==='b');
+   assert.equal(contribution.owner,b.owner);
+   assert.notEqual(contribution.owner,store.owner);
+   assert.ok(contribution.kind==='evidence' && cp.requestIds.includes(contribution.requestId!));
+   assert.deepEqual(brief.missing,[]);
+   assert.ok(brief.uncertainty.some(value=>/root cause|causal|causality/i.test(value)));
+   audit={passed:true,scope:"Read only peer A after shutdown. The other peer directory was not read.",finalCheckpointId:cp.id,runId:cp.runId,sourceIds:[...ids].sort(),currentRevisionsAndExactQuotes:true,linkedAnswerOwner:b.owner,missing:brief.missing,uncertaintyPresent:true,restartCheckpointUnchanged:true};
+  } finally { await store.close(); }
+ }
+} catch(error) { errors.push(error instanceof Error ? error.message : String(error)); }
+const exitCode=Number((await readFile(join(directory,'exit-code.txt'),'utf8')).trim());
+const total=(key:string)=>models.reduce((sum,e)=>sum+(e.stats?.[key]??0),0);
+const summary={mode:'final-native-qvac-two-peer',sourceCommit:report.sourceCommit,applicationChangeCommit:plan.applicationChangeCommit,model:report.model,selector:report.selector,nativeInference:true,scenario:plan.scenario,passed:report.passed===true && exitCode===0 && report.cleanupPassed===true && errors.length===0,exitCode,calls:Math.max(0,...transitions.map(e=>e.calls??0)),repairs:Math.max(0,...transitions.map(e=>e.repairs??0)),observedModelReplies:models.length,elapsedMs:report.elapsedMs,configurations:configurationSet.map(value=>JSON.parse(value!)),error:report.error??null,auditErrors:errors,validationFailures:events.filter(e=>['validation','failure'].includes(e.event)),cleanupPassed:report.cleanupPassed,settled,finalCleanup:report.finalCleanup,usage:{promptTokens:total('promptTokens'),generatedTokens:total('generatedTokens'),loadMs:total('loadMs'),generationMs:total('generationMs'),scope:'Sum of exposed per-call SDK counters, including reload after peer restart. No model worker memory measurement.'},stateAudit:audit,limits:['One default short-record native attempt on this source, not a reliability rate or a long-record/selector comparison.','Existing runtime, installed dependencies, worker bundle and cached weights reused; fresh peer stores. No fresh install or uncached download.','Quotations and state checks do not prove source truth or causal correctness.','New owner-answer and partial-cleanup failures have controlled regressions; this ordinary native handoff does not inject those faults.']};
+await writeFile(join(directory,'summary.json'),JSON.stringify(summary,null,2)+'\n');
+console.log(JSON.stringify({sourceCommit:summary.sourceCommit,passed:summary.passed,calls:summary.calls,repairs:summary.repairs,elapsedMs:summary.elapsedMs,error:summary.error,auditErrors:errors,usage:summary.usage,stateAudit:audit},null,2));
+if(!summary.passed) process.exitCode=1;
