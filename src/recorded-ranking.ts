@@ -16,7 +16,7 @@ import {
 
 const sha = (v: unknown) => createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
-const SCORE_SOURCE = '57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4';
+const SCORE_SOURCE = '99721195552a73dbbccb9ecdee7830cc095b59bd';
 const HISTORICAL_CONFIGURATION_HASH =
   '9d4148548b6e4fe09c2c4fe4af9c6512449574b32a25906d30ac69d06b60a4e8';
 type Usage = {

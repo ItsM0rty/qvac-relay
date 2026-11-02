@@ -1,0 +1,34 @@
+{
+  "applicationSource": "cfa92b6cb4e5eec89b5412588b7cc175c28bd933",
+  "scope": "Pre-fix application with newly added regression tests; no application changes yet. Controlled models and real temporary stores, no native inference.",
+  "command": "node --import tsx --test --test-concurrency=1 --test-name-pattern 'owner|cleanup attempts every|controlled diagnostic subprocess' test/agent.test.ts test/resume.test.ts test/reviewer-regressions.test.ts",
+  "retainedRun": {
+    "tests": 6,
+    "passed": 2,
+    "failed": 4,
+    "exitCode": 1,
+    "tap": "before.tap"
+  },
+  "reproductions": [
+    {
+      "path": "final checkpoint",
+      "observed": "Owner linked answer present, outdated brief missing the answer, checkpoint completed instead of pending."
+    },
+    {
+      "path": "committed-brief recovery",
+      "observed": "Completed directly instead of settling pending and scheduling one refresh."
+    },
+    {
+      "path": "store cleanup",
+      "observed": "Remote close rejected, another remote attempted, local tree and Corestore both skipped; concurrent second close returned success."
+    },
+    {
+      "path": "diagnostic subprocess",
+      "observed": "Three failed rows persisted and read from the output report; subprocess exited 0."
+    }
+  ],
+  "positiveControls": [
+    "Already-cited owner answer recovers without inference.",
+    "Successful controlled diagnostics persist three passing rows and exit 0."
+  ]
+}

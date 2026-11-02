@@ -1,0 +1,18 @@
+{
+  "mode": "working-checkout-verification",
+  "passed": true,
+  "sourceCommit": "1cf402ad23465a428c028ad68ef5a2719b98313f",
+  "platform": "Ubuntu24.04 WSL2 CPU, localNode22.21.1",
+  "commands": [
+    "npm run build",
+    "npm run format:check",
+    "npm test"
+  ],
+  "tests": {
+    "durationMs": 162227.125716,
+    "passed": 164,
+    "failed": 0
+  },
+  "dependencyScope": "Existing verified dependencies, unchanged lockfile; fresh npm ci separately verified at9972119.",
+  "scope": "Controlled harness includes genuine process replication, protected context, feedback and native-schema checks. Native completion is separate."
+}

@@ -7,121 +7,121 @@
         "clean-install.json",
         "minilm-native-probe.json",
         "laya-passage-probe.json",
-        "passage-retrieval-raw-57fc4d6.json",
+        "passage-retrieval-raw-9972119.json",
         "passage-agent.json",
-        "passage-demo-minilm-57fc4d6-failed.json"
+        "passage-demo-minilm-9972119-failed.json"
       ],
       "note": "Raw archived evaluation reports cannot read Git metadata; this manifest supplies the source attribution, not new inference.",
-      "sourceCommit": "57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4"
+      "sourceCommit": "99721195552a73dbbccb9ecdee7830cc095b59bd"
     },
     {
       "artifacts": [
-        "passage-demo-lexical-13eafee-failed.json",
+        "passage-demo-lexical-70890e2-failed.json",
         "current-source-recheck.json"
       ],
       "note": "Fresh source with reused verified dependencies.",
-      "sourceCommit": "13eafee"
+      "sourceCommit": "70890e2"
     },
     {
       "artifacts": [
         "minilm-native-probe-initial.json"
       ],
       "note": "First direct-checkout probe retained from Git; before clean archive probe.",
-      "sourceCommit": "57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4"
+      "sourceCommit": "99721195552a73dbbccb9ecdee7830cc095b59bd"
     },
     {
       "artifacts": [
-        "passage-ranking-budget-replay-b735b53.json"
+        "passage-ranking-budget-replay-fcb1ecb.json"
       ],
       "note": "Inference-free replay, historical score attribution explicit in report.",
-      "sourceCommit": "b735b535ba1a7a583ccbbdb582890d0f244355fb"
+      "sourceCommit": "fcb1ecb11007b0e1206084aa115f5d178053f68e"
     },
     {
       "artifacts": [
-        "passage-demo-control-timeout-b735b53-failed.json"
+        "passage-demo-control-timeout-fcb1ecb-failed.json"
       ],
-      "sourceCommit": "b735b535ba1a7a583ccbbdb582890d0f244355fb",
+      "sourceCommit": "fcb1ecb11007b0e1206084aa115f5d178053f68e",
       "note": "Real development attempt; control request failed around300s and coordinator then cancelled peer. Not a successful handoff."
     },
     {
       "artifacts": [
-        "passage-code-verification-1a1e8c5.json"
+        "passage-code-verification-ed6a2b7.json"
       ],
-      "sourceCommit": "1a1e8c50d3f11d12f9ef6d9174cae4da91e0234e",
+      "sourceCommit": "ed6a2b7fb3e95a7dc4b14b5c8a730ccf19a1e291",
       "note": "147 controlled tests plus build and formatting; existing verified dependencies."
     },
     {
       "artifacts": [
-        "passage-demo-read-progress-1a1e8c5-failed.json"
+        "passage-demo-read-progress-ed6a2b7-failed.json"
       ],
-      "sourceCommit": "1a1e8c5",
+      "sourceCommit": "ed6a2b7",
       "note": "Pending work and replication succeeded; resumed read loop, incomplete coverage and overflow failed. Cleanup reported unload failure. WSL wall-clock drift occurred mid-run."
     },
     {
       "artifacts": [
-        "passage-code-verification-538481a.json",
-        "passage-demo-user-paused-538481a.json"
+        "passage-code-verification-8a41fa4.json",
+        "passage-demo-user-paused-8a41fa4.json"
       ],
-      "sourceCommit": "538481a2f79cb1e716abc6d56c0547e6ee76fd32",
+      "sourceCommit": "8a41fa41b73bbc02e236ed18ede53c5bfd8660fe",
       "note": "153 tests plus build and formatting passed. Native demonstration was cancelled on user request before its first reply and is not quality evidence."
     },
     {
       "artifacts": [
-        "passage-demo-cc543bd-failed.json"
+        "passage-demo-fa6cecd-failed.json"
       ],
-      "sourceCommit": "cc543bda826d3c605ced3904de50d89a3fc90246",
+      "sourceCommit": "fa6cecd08054115da0cdd2550dcafac666f04c02",
       "note": "Fresh real development attempt after pause; pending work, offline contribution and replication succeeded; resumed repeated read overflowed. Native unload failure retained."
     },
     {
       "artifacts": [
-        "passage-code-verification-cf3b330.json"
+        "passage-code-verification-34d4714.json"
       ],
-      "sourceCommit": "cf3b330ef89a149f80f8a10d9809fa69d8eb6bda",
+      "sourceCommit": "34d47147ba79e2c68e4fcdd1710ac4f0bb0bcf72",
       "note": "160 tests, build and formatting with verified unchanged dependencies. Budget replay uses captured historical scores with no inference."
     },
     {
       "artifacts": [
-        "passage-demo-cf3b330-failed.json"
+        "passage-demo-34d4714-failed.json"
       ],
-      "sourceCommit": "cf3b330",
+      "sourceCommit": "34d4714",
       "note": "Long-record native attempt: pending at10calls1repair; offline contribution and realreplication; failed resumption at15calls2repairs after NO_PROGRESS feedback overflow. Terminal cleanup and resumption status null."
     },
     {
       "artifacts": [
-        "passage-code-verification-ae3a53f.json"
+        "passage-code-verification-5a9b855.json"
       ],
-      "sourceCommit": "ae3a53f7f8c975cd1af6e9f584bf56d04a8eb4f9",
+      "sourceCommit": "5a9b855cbc996344d7b8eec49ec78b9464d91ea2",
       "note": "164 tests, build, format. Captured ranking budget replay is inference-free with explicit57fc attribution."
     },
     {
       "artifacts": [
-        "passage-demo-ae3a53f-failed.json"
+        "passage-demo-5a9b855-failed.json"
       ],
-      "sourceCommit": "ae3a53f",
+      "sourceCommit": "5a9b855",
       "note": "Initial-phase native attempt stopped after repeated exact-quotation validation. One159-character read; attempted quotations not recorded, so exact mismatch cause unknown. No request or replication phase reached."
     },
     {
       "artifacts": [
-        "passage-code-verification-89f9f10.json"
+        "passage-code-verification-1cf402a.json"
       ],
-      "sourceCommit": "89f9f107d7dfe18a435938a988ee70d1f7d7e648",
+      "sourceCommit": "1cf402ad23465a428c028ad68ef5a2719b98313f",
       "note": "164tests/build/format with trusted native read sizing; replay reuses57fc captured predictions, not fresh inference."
     },
     {
       "artifacts": [
-        "passage-demo-89f9f10-failed.json"
+        "passage-demo-1cf402a-failed.json"
       ],
-      "sourceCommit": "89f9f107d7dfe18a435938a988ee70d1f7d7e648",
+      "sourceCommit": "1cf402ad23465a428c028ad68ef5a2719b98313f",
       "note": "Real long-record handoff failed required health-log coverage after12 cumulativecalls2repairs. No contextoverflow, cleanup and resumption status null."
     },
     {
       "artifacts": [
         "passage-code-verification.json",
         "passage-ranking-budget-replay.json",
-        "passage-demo-2f23582.json",
-        "passage-demo-2f23582-metrics.json"
+        "passage-demo-59fd3a5.json",
+        "passage-demo-59fd3a5-metrics.json"
       ],
-      "sourceCommit": "2f23582bc24fc344e53e752f5077d9f05a477140",
+      "sourceCommit": "59fd3a5623b78ce0c4f2e43c9e7c94d09e16c2d8",
       "note": "168 tests/build/format, captured-prediction budget replay, and successful real long-record two-peer handoff. Native report has explicit dynamic store paths; this manifest attributes its functional source. No cloud or scripted substitute."
     }
   ],

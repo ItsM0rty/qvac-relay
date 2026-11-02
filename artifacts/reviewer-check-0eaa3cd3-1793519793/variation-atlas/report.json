@@ -1,0 +1,68 @@
+{
+  "mode": "live-qvac-two-peer",
+  "sourceCommit": "0eaa3cd3ca6b8bc920ce8843fb56e4994e3a746c",
+  "sourceCommitBasis": "caller archive manifest",
+  "scenarioSHA256": "b5bd9fb2f063da1318f41b5c6dc03f12209687621b2a008d9a0ba61f742024c2",
+  "fixtureId": "review-export-handoff-v1",
+  "selector": "deterministic",
+  "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+  "passed": false,
+  "elapsedMs": 190245.97925200002,
+  "error": "Live agent did not create pending handoff: {\"id\":\"696563cd0e3cc24a409dab08e274becd719f65fa0e225391d90b99bb8a3d9672\",\"owner\":\"0edc7fb52b7a25ee0f9a3b90ac13f68f6bdec87ee55dfdda7ef2fcee52d1d259\",\"caseId\":\"atlas-export-investigation\",\"createdAt\":\"2026-11-01T08:21:27.876Z\",\"schemaVersion\":1,\"kind\":\"checkpoint\",\"runId\":\"d8e241c6-ee04-43de-9445-857767c31994\",\"status\":\"failed\",\"task\":\"Prepare a handoff for the Atlas asset export stall. Read the export journal and the chunk configuration. If the configuration is missing, request it and save pending work. When it arrives, cite both sources and complete the handoff. Distinguish recorded observations from an unverified explanation.\",\"calls\":5,\"repairs\":2,\"consumed\":[],\"lastFailure\":\"validation:ARGUMENTS:[{\\\"field\\\":\\\"quotes\\\",\\\"code\\\":\\\"custom\\\",\\\"message\\\":\\\"Provide 1..32 quotes\\\"}]\",\"requestIds\":[\"fdd93dbdaee2b17efdabc19714269712dd86cceb5d59ab39dce6a3bdf96a2d4c\"],\"reason\":\"validation: [{\\\"field\\\":\\\"quotes\\\",\\\"code\\\":\\\"custom\\\",\\\"message\\\":\\\"Provide 1..32 quotes\\\"}]\"}\n+ actual - expected\n\n+ 'failed'\n- 'pending'\n",
+  "events": [
+    {
+      "event": "peer-started",
+      "name": "a",
+      "owner": "0edc7fb52b7a25ee0f9a3b90ac13f68f6bdec87ee55dfdda7ef2fcee52d1d259",
+      "p2pPort": 33283
+    },
+    {
+      "event": "peer-started",
+      "name": "b",
+      "owner": "c0c692202da7c8fc1910e132144092d011cc5219df85309b5558ba0ab538b9b4",
+      "p2pPort": 39935
+    },
+    {
+      "event": "initial-run-settled",
+      "cleanupError": null,
+      "active": false
+    },
+    {
+      "event": "initial-work",
+      "checkpoint": {
+        "id": "696563cd0e3cc24a409dab08e274becd719f65fa0e225391d90b99bb8a3d9672",
+        "owner": "0edc7fb52b7a25ee0f9a3b90ac13f68f6bdec87ee55dfdda7ef2fcee52d1d259",
+        "caseId": "atlas-export-investigation",
+        "createdAt": "2026-11-01T08:21:27.876Z",
+        "schemaVersion": 1,
+        "kind": "checkpoint",
+        "runId": "d8e241c6-ee04-43de-9445-857767c31994",
+        "status": "failed",
+        "task": "Prepare a handoff for the Atlas asset export stall. Read the export journal and the chunk configuration. If the configuration is missing, request it and save pending work. When it arrives, cite both sources and complete the handoff. Distinguish recorded observations from an unverified explanation.",
+        "calls": 5,
+        "repairs": 2,
+        "consumed": [],
+        "lastFailure": "validation:ARGUMENTS:[{\"field\":\"quotes\",\"code\":\"custom\",\"message\":\"Provide 1..32 quotes\"}]",
+        "requestIds": [
+          "fdd93dbdaee2b17efdabc19714269712dd86cceb5d59ab39dce6a3bdf96a2d4c"
+        ],
+        "reason": "validation: [{\"field\":\"quotes\",\"code\":\"custom\",\"message\":\"Provide 1..32 quotes\"}]"
+      }
+    }
+  ],
+  "finalCleanup": [
+    {
+      "peer": "a",
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "peer": "b",
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    }
+  ],
+  "cleanupPassed": true
+}

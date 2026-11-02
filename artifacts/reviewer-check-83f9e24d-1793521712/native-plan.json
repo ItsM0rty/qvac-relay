@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "83f9e24dcf30c9ed4fcb9fb4da69e1ee8df7ea7c",
+  "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+  "selector": "deterministic",
+  "repeatedAttempts": 3,
+  "repeatedScenario": "default checkout handoff, short records",
+  "variation": "data/review-handoff-v1.json",
+  "variationAttempts": 1,
+  "freshStoresPerAttempt": true,
+  "scope": "Serial native inference. Existing model weights and uncontrolled OS caches. No success-rate or speedup claim."
+}

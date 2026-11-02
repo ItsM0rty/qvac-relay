@@ -1,0 +1,2301 @@
+{
+  "mode": "recorded-ranking-budget-replay",
+  "nativeInference": false,
+  "scoreSourceCommit": "99721195552a73dbbccb9ecdee7830cc095b59bd",
+  "rawReportSourceCommit": "unavailable",
+  "scoreSourceBasis": "Caller asserts clean-archive manifest attribution; raw report lacked Git metadata. Configuration hash does not authenticate recorded scores.",
+  "assertedScoreSourceCommit": "99721195552a73dbbccb9ecdee7830cc095b59bd",
+  "currentSourceCommit": "fcb1ecb11007b0e1206084aa115f5d178053f68e",
+  "currentContextBudget": 7000,
+  "fixtureVersion": "retrieval-cases-v2",
+  "datasetHash": "306b32f7ae3f22823f76e34d03cb07858ce1befd2e709949ade16784a56d2bf4",
+  "queryIdentityBasis": "Derived from frozen fixture and historical harness; original report did not capture query text.",
+  "rows": [
+    {
+      "caseId": "dev-checkout-1",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "dev-checkout-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "dev-checkout-1-other"
+        ],
+        "locations": [
+          {
+            "id": "dev-checkout-1-other",
+            "sourceId": "dev-checkout-1-other",
+            "start": 0,
+            "end": 375,
+            "revision": "81a1d932ea29501c4e32716be79fd22cf05d499fcf0953c2f7be15ddd125aedb"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "checkout-cause",
+          "checkout-fix"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-db-1",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "empty-candidates",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [],
+        "locations": []
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "db-cause",
+          "db-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-2",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "checkout-condition"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "checkout-condition"
+        ],
+        "locations": [
+          {
+            "id": "checkout-condition",
+            "sourceId": "checkout-condition",
+            "start": 0,
+            "end": 404,
+            "revision": "78d101a6fb3bbb5e8814f309525b49cd5778dee829cdca6f184bb9ccf8bbacb3"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "checkout-condition"
+        ],
+        "omitted": [],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-cold-1",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-cold-1-other",
+          "cold-limit:p2234-2427"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-cold-1-other",
+          "cold-limit"
+        ],
+        "locations": [
+          {
+            "id": "held-cold-1-other",
+            "sourceId": "held-cold-1-other",
+            "start": 0,
+            "end": 369,
+            "revision": "ec10f7e12de378b4bfb8b9eba6df4a80a1198931ddc87d09644bd7030bf02c89"
+          },
+          {
+            "id": "cold-limit:p2234-2427",
+            "sourceId": "cold-limit",
+            "start": 2234,
+            "end": 2427,
+            "revision": "232f6a1b87b7e00e2a1cce7d6e106eb874993a02ac08d9be6de0fa225d847952"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "cold-limit"
+        ],
+        "omitted": [
+          "cold-observed"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cold-2",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-cold-2-other",
+          "cold-release",
+          "held-cold-2-archive-5:p0-623"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-cold-2-other",
+          "cold-release",
+          "held-cold-2-archive-5"
+        ],
+        "locations": [
+          {
+            "id": "held-cold-2-other",
+            "sourceId": "held-cold-2-other",
+            "start": 0,
+            "end": 374,
+            "revision": "de18e8d80a1b513fda95f5a168fbfcb4287af75a89ec2480e0f5730d762735e3"
+          },
+          {
+            "id": "cold-release",
+            "sourceId": "cold-release",
+            "start": 0,
+            "end": 378,
+            "revision": "83b896beb21e29fc14b050e98956d4e52a90296304b49124a1929a4520ee46d2"
+          },
+          {
+            "id": "held-cold-2-archive-5:p0-623",
+            "sourceId": "held-cold-2-archive-5",
+            "start": 0,
+            "end": 623,
+            "revision": "665cf61fa061357b495cd67b1edf62d15204ee301f2ce89812c87fd9cec6908f"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cold-release"
+        ],
+        "omitted": [],
+        "distractors": 2,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-link-1",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "link-cause"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "link-cause"
+        ],
+        "locations": [
+          {
+            "id": "link-cause",
+            "sourceId": "link-cause",
+            "start": 0,
+            "end": 375,
+            "revision": "bf6ae95f0f03bdafb82be439c0ccf7632ed3a445d547ef05ffb515aa3e64a064"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "link-cause"
+        ],
+        "omitted": [
+          "link-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cert-1",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cert-fix",
+          "cert-cause",
+          "held-cert-1-archive-4:p0-632"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cert-fix",
+          "cert-cause",
+          "held-cert-1-archive-4"
+        ],
+        "locations": [
+          {
+            "id": "cert-fix",
+            "sourceId": "cert-fix",
+            "start": 0,
+            "end": 377,
+            "revision": "581fd6853237cdbe02c994ced51ffdcba17f04a1fd8058ee528aa7dfe097c99a"
+          },
+          {
+            "id": "cert-cause",
+            "sourceId": "cert-cause",
+            "start": 0,
+            "end": 376,
+            "revision": "989fd4301a7f271ecf1cb48a2f97d8b557a8d4484f25f1c7dbeeaf3e0232943c"
+          },
+          {
+            "id": "held-cert-1-archive-4:p0-632",
+            "sourceId": "held-cert-1-archive-4",
+            "start": 0,
+            "end": 632,
+            "revision": "9a2a25225bffefeeb25044a2e0dc8fe8add5db15d1b140b5df80a2cdcc7dfa2d"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cert-cause",
+          "cert-fix"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-charge-1",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "charge-rule",
+          "charge-dry",
+          "held-charge-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "charge-rule",
+          "charge-dry",
+          "held-charge-1-other"
+        ],
+        "locations": [
+          {
+            "id": "charge-rule",
+            "sourceId": "charge-rule",
+            "start": 0,
+            "end": 374,
+            "revision": "5611a79a76da0330913065afc17b092d991224c6e086db7c0d1bdf30b24101c2"
+          },
+          {
+            "id": "charge-dry",
+            "sourceId": "charge-dry",
+            "start": 0,
+            "end": 367,
+            "revision": "c361cb2c2d8b243eb247e2f53e9e2ac354cee05f07792182c3f937c3218c21a1"
+          },
+          {
+            "id": "held-charge-1-other",
+            "sourceId": "held-charge-1-other",
+            "start": 0,
+            "end": 372,
+            "revision": "9b6e40598f3becb22a9bae9365833c4a935491f05b21fb74a16d9e9e344e6d82"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "charge-rule",
+          "charge-dry"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-none-1",
+      "selector": "deterministic",
+      "trial": 1,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-none-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-none-1-other"
+        ],
+        "locations": [
+          {
+            "id": "held-none-1-other",
+            "sourceId": "held-none-1-other",
+            "start": 0,
+            "end": 397,
+            "revision": "a0ca33f38221bb4fda128dcd73cde3245acd214cb7a36d199b9e2ef4cb39cd94"
+          }
+        ]
+      },
+      "selected": {
+        "recall": null,
+        "covered": [],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": true
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-1",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "recorded-native-scores",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "dev-checkout-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "dev-checkout-1-other"
+        ],
+        "locations": [
+          {
+            "id": "dev-checkout-1-other",
+            "sourceId": "dev-checkout-1-other",
+            "start": 0,
+            "end": 375,
+            "revision": "81a1d932ea29501c4e32716be79fd22cf05d499fcf0953c2f7be15ddd125aedb"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "checkout-cause",
+          "checkout-fix"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-db-1",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "empty-candidates",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [],
+        "locations": []
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "db-cause",
+          "db-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-2",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "recorded-native-scores",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "checkout-condition"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "checkout-condition"
+        ],
+        "locations": [
+          {
+            "id": "checkout-condition",
+            "sourceId": "checkout-condition",
+            "start": 0,
+            "end": 404,
+            "revision": "78d101a6fb3bbb5e8814f309525b49cd5778dee829cdca6f184bb9ccf8bbacb3"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "checkout-condition"
+        ],
+        "omitted": [],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-cold-1",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "recorded-native-scores",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cold-limit:p2234-2427",
+          "held-cold-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cold-limit",
+          "held-cold-1-other"
+        ],
+        "locations": [
+          {
+            "id": "cold-limit:p2234-2427",
+            "sourceId": "cold-limit",
+            "start": 2234,
+            "end": 2427,
+            "revision": "232f6a1b87b7e00e2a1cce7d6e106eb874993a02ac08d9be6de0fa225d847952"
+          },
+          {
+            "id": "held-cold-1-other",
+            "sourceId": "held-cold-1-other",
+            "start": 0,
+            "end": 369,
+            "revision": "ec10f7e12de378b4bfb8b9eba6df4a80a1198931ddc87d09644bd7030bf02c89"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "cold-limit"
+        ],
+        "omitted": [
+          "cold-observed"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cold-2",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "recorded-native-scores",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cold-release",
+          "held-cold-2-other",
+          "held-cold-2-archive-3:p1053-1672"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cold-release",
+          "held-cold-2-other",
+          "held-cold-2-archive-3"
+        ],
+        "locations": [
+          {
+            "id": "cold-release",
+            "sourceId": "cold-release",
+            "start": 0,
+            "end": 378,
+            "revision": "83b896beb21e29fc14b050e98956d4e52a90296304b49124a1929a4520ee46d2"
+          },
+          {
+            "id": "held-cold-2-other",
+            "sourceId": "held-cold-2-other",
+            "start": 0,
+            "end": 374,
+            "revision": "de18e8d80a1b513fda95f5a168fbfcb4287af75a89ec2480e0f5730d762735e3"
+          },
+          {
+            "id": "held-cold-2-archive-3:p1053-1672",
+            "sourceId": "held-cold-2-archive-3",
+            "start": 1053,
+            "end": 1672,
+            "revision": "0a87f76028c0a7f2a034b302b6b8fb397e322f9f82dfb409375cbed9fc820a01"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cold-release"
+        ],
+        "omitted": [],
+        "distractors": 2,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-link-1",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "recorded-native-scores",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "link-cause"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "link-cause"
+        ],
+        "locations": [
+          {
+            "id": "link-cause",
+            "sourceId": "link-cause",
+            "start": 0,
+            "end": 375,
+            "revision": "bf6ae95f0f03bdafb82be439c0ccf7632ed3a445d547ef05ffb515aa3e64a064"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "link-cause"
+        ],
+        "omitted": [
+          "link-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cert-1",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "recorded-native-scores",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cert-fix",
+          "held-cert-1-archive-4:p0-632",
+          "cert-cause"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cert-fix",
+          "held-cert-1-archive-4",
+          "cert-cause"
+        ],
+        "locations": [
+          {
+            "id": "cert-fix",
+            "sourceId": "cert-fix",
+            "start": 0,
+            "end": 377,
+            "revision": "581fd6853237cdbe02c994ced51ffdcba17f04a1fd8058ee528aa7dfe097c99a"
+          },
+          {
+            "id": "held-cert-1-archive-4:p0-632",
+            "sourceId": "held-cert-1-archive-4",
+            "start": 0,
+            "end": 632,
+            "revision": "9a2a25225bffefeeb25044a2e0dc8fe8add5db15d1b140b5df80a2cdcc7dfa2d"
+          },
+          {
+            "id": "cert-cause",
+            "sourceId": "cert-cause",
+            "start": 0,
+            "end": 376,
+            "revision": "989fd4301a7f271ecf1cb48a2f97d8b557a8d4484f25f1c7dbeeaf3e0232943c"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cert-cause",
+          "cert-fix"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-charge-1",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "recorded-native-scores",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "charge-rule",
+          "charge-dry",
+          "held-charge-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "charge-rule",
+          "charge-dry",
+          "held-charge-1-other"
+        ],
+        "locations": [
+          {
+            "id": "charge-rule",
+            "sourceId": "charge-rule",
+            "start": 0,
+            "end": 374,
+            "revision": "5611a79a76da0330913065afc17b092d991224c6e086db7c0d1bdf30b24101c2"
+          },
+          {
+            "id": "charge-dry",
+            "sourceId": "charge-dry",
+            "start": 0,
+            "end": 367,
+            "revision": "c361cb2c2d8b243eb247e2f53e9e2ac354cee05f07792182c3f937c3218c21a1"
+          },
+          {
+            "id": "held-charge-1-other",
+            "sourceId": "held-charge-1-other",
+            "start": 0,
+            "end": 372,
+            "revision": "9b6e40598f3becb22a9bae9365833c4a935491f05b21fb74a16d9e9e344e6d82"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "charge-rule",
+          "charge-dry"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-none-1",
+      "selector": "minilm",
+      "trial": 1,
+      "rankingSource": "recorded-native-scores",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-none-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-none-1-other"
+        ],
+        "locations": [
+          {
+            "id": "held-none-1-other",
+            "sourceId": "held-none-1-other",
+            "start": 0,
+            "end": 397,
+            "revision": "a0ca33f38221bb4fda128dcd73cde3245acd214cb7a36d199b9e2ef4cb39cd94"
+          }
+        ]
+      },
+      "selected": {
+        "recall": null,
+        "covered": [],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": true
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-1",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "dev-checkout-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "dev-checkout-1-other"
+        ],
+        "locations": [
+          {
+            "id": "dev-checkout-1-other",
+            "sourceId": "dev-checkout-1-other",
+            "start": 0,
+            "end": 375,
+            "revision": "81a1d932ea29501c4e32716be79fd22cf05d499fcf0953c2f7be15ddd125aedb"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "checkout-cause",
+          "checkout-fix"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-db-1",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "empty-candidates",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [],
+        "locations": []
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "db-cause",
+          "db-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-2",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "checkout-condition"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "checkout-condition"
+        ],
+        "locations": [
+          {
+            "id": "checkout-condition",
+            "sourceId": "checkout-condition",
+            "start": 0,
+            "end": 404,
+            "revision": "78d101a6fb3bbb5e8814f309525b49cd5778dee829cdca6f184bb9ccf8bbacb3"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "checkout-condition"
+        ],
+        "omitted": [],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-cold-1",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cold-limit:p2234-2427",
+          "held-cold-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cold-limit",
+          "held-cold-1-other"
+        ],
+        "locations": [
+          {
+            "id": "cold-limit:p2234-2427",
+            "sourceId": "cold-limit",
+            "start": 2234,
+            "end": 2427,
+            "revision": "232f6a1b87b7e00e2a1cce7d6e106eb874993a02ac08d9be6de0fa225d847952"
+          },
+          {
+            "id": "held-cold-1-other",
+            "sourceId": "held-cold-1-other",
+            "start": 0,
+            "end": 369,
+            "revision": "ec10f7e12de378b4bfb8b9eba6df4a80a1198931ddc87d09644bd7030bf02c89"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "cold-limit"
+        ],
+        "omitted": [
+          "cold-observed"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cold-2",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cold-release",
+          "held-cold-2-archive-5:p0-623",
+          "held-cold-2-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cold-release",
+          "held-cold-2-archive-5",
+          "held-cold-2-other"
+        ],
+        "locations": [
+          {
+            "id": "cold-release",
+            "sourceId": "cold-release",
+            "start": 0,
+            "end": 378,
+            "revision": "83b896beb21e29fc14b050e98956d4e52a90296304b49124a1929a4520ee46d2"
+          },
+          {
+            "id": "held-cold-2-archive-5:p0-623",
+            "sourceId": "held-cold-2-archive-5",
+            "start": 0,
+            "end": 623,
+            "revision": "665cf61fa061357b495cd67b1edf62d15204ee301f2ce89812c87fd9cec6908f"
+          },
+          {
+            "id": "held-cold-2-other",
+            "sourceId": "held-cold-2-other",
+            "start": 0,
+            "end": 374,
+            "revision": "de18e8d80a1b513fda95f5a168fbfcb4287af75a89ec2480e0f5730d762735e3"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cold-release"
+        ],
+        "omitted": [],
+        "distractors": 2,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-link-1",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "link-cause"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "link-cause"
+        ],
+        "locations": [
+          {
+            "id": "link-cause",
+            "sourceId": "link-cause",
+            "start": 0,
+            "end": 375,
+            "revision": "bf6ae95f0f03bdafb82be439c0ccf7632ed3a445d547ef05ffb515aa3e64a064"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "link-cause"
+        ],
+        "omitted": [
+          "link-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cert-1",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cert-fix",
+          "cert-cause",
+          "held-cert-1-archive-4:p0-632"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cert-fix",
+          "cert-cause",
+          "held-cert-1-archive-4"
+        ],
+        "locations": [
+          {
+            "id": "cert-fix",
+            "sourceId": "cert-fix",
+            "start": 0,
+            "end": 377,
+            "revision": "581fd6853237cdbe02c994ced51ffdcba17f04a1fd8058ee528aa7dfe097c99a"
+          },
+          {
+            "id": "cert-cause",
+            "sourceId": "cert-cause",
+            "start": 0,
+            "end": 376,
+            "revision": "989fd4301a7f271ecf1cb48a2f97d8b557a8d4484f25f1c7dbeeaf3e0232943c"
+          },
+          {
+            "id": "held-cert-1-archive-4:p0-632",
+            "sourceId": "held-cert-1-archive-4",
+            "start": 0,
+            "end": 632,
+            "revision": "9a2a25225bffefeeb25044a2e0dc8fe8add5db15d1b140b5df80a2cdcc7dfa2d"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cert-cause",
+          "cert-fix"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-charge-1",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "charge-rule",
+          "held-charge-1-archive-4:p0-632",
+          "charge-dry"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "charge-rule",
+          "held-charge-1-archive-4",
+          "charge-dry"
+        ],
+        "locations": [
+          {
+            "id": "charge-rule",
+            "sourceId": "charge-rule",
+            "start": 0,
+            "end": 374,
+            "revision": "5611a79a76da0330913065afc17b092d991224c6e086db7c0d1bdf30b24101c2"
+          },
+          {
+            "id": "held-charge-1-archive-4:p0-632",
+            "sourceId": "held-charge-1-archive-4",
+            "start": 0,
+            "end": 632,
+            "revision": "251c3c63b133f2f86be9d0a6291e816b1cf898e6b6d860f4417b84689e8a08f3"
+          },
+          {
+            "id": "charge-dry",
+            "sourceId": "charge-dry",
+            "start": 0,
+            "end": 367,
+            "revision": "c361cb2c2d8b243eb247e2f53e9e2ac354cee05f07792182c3f937c3218c21a1"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "charge-rule",
+          "charge-dry"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-none-1",
+      "selector": "laya",
+      "trial": 1,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-none-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-none-1-other"
+        ],
+        "locations": [
+          {
+            "id": "held-none-1-other",
+            "sourceId": "held-none-1-other",
+            "start": 0,
+            "end": 397,
+            "revision": "a0ca33f38221bb4fda128dcd73cde3245acd214cb7a36d199b9e2ef4cb39cd94"
+          }
+        ]
+      },
+      "selected": {
+        "recall": null,
+        "covered": [],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": true
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-1",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "dev-checkout-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "dev-checkout-1-other"
+        ],
+        "locations": [
+          {
+            "id": "dev-checkout-1-other",
+            "sourceId": "dev-checkout-1-other",
+            "start": 0,
+            "end": 375,
+            "revision": "81a1d932ea29501c4e32716be79fd22cf05d499fcf0953c2f7be15ddd125aedb"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "checkout-cause",
+          "checkout-fix"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-db-1",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "empty-candidates",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [],
+        "locations": []
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "db-cause",
+          "db-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-2",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "checkout-condition"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "checkout-condition"
+        ],
+        "locations": [
+          {
+            "id": "checkout-condition",
+            "sourceId": "checkout-condition",
+            "start": 0,
+            "end": 404,
+            "revision": "78d101a6fb3bbb5e8814f309525b49cd5778dee829cdca6f184bb9ccf8bbacb3"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "checkout-condition"
+        ],
+        "omitted": [],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-cold-1",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-cold-1-other",
+          "cold-limit:p2234-2427"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-cold-1-other",
+          "cold-limit"
+        ],
+        "locations": [
+          {
+            "id": "held-cold-1-other",
+            "sourceId": "held-cold-1-other",
+            "start": 0,
+            "end": 369,
+            "revision": "ec10f7e12de378b4bfb8b9eba6df4a80a1198931ddc87d09644bd7030bf02c89"
+          },
+          {
+            "id": "cold-limit:p2234-2427",
+            "sourceId": "cold-limit",
+            "start": 2234,
+            "end": 2427,
+            "revision": "232f6a1b87b7e00e2a1cce7d6e106eb874993a02ac08d9be6de0fa225d847952"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "cold-limit"
+        ],
+        "omitted": [
+          "cold-observed"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cold-2",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-cold-2-other",
+          "cold-release",
+          "held-cold-2-archive-5:p0-623"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-cold-2-other",
+          "cold-release",
+          "held-cold-2-archive-5"
+        ],
+        "locations": [
+          {
+            "id": "held-cold-2-other",
+            "sourceId": "held-cold-2-other",
+            "start": 0,
+            "end": 374,
+            "revision": "de18e8d80a1b513fda95f5a168fbfcb4287af75a89ec2480e0f5730d762735e3"
+          },
+          {
+            "id": "cold-release",
+            "sourceId": "cold-release",
+            "start": 0,
+            "end": 378,
+            "revision": "83b896beb21e29fc14b050e98956d4e52a90296304b49124a1929a4520ee46d2"
+          },
+          {
+            "id": "held-cold-2-archive-5:p0-623",
+            "sourceId": "held-cold-2-archive-5",
+            "start": 0,
+            "end": 623,
+            "revision": "665cf61fa061357b495cd67b1edf62d15204ee301f2ce89812c87fd9cec6908f"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cold-release"
+        ],
+        "omitted": [],
+        "distractors": 2,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-link-1",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "link-cause"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "link-cause"
+        ],
+        "locations": [
+          {
+            "id": "link-cause",
+            "sourceId": "link-cause",
+            "start": 0,
+            "end": 375,
+            "revision": "bf6ae95f0f03bdafb82be439c0ccf7632ed3a445d547ef05ffb515aa3e64a064"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "link-cause"
+        ],
+        "omitted": [
+          "link-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cert-1",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cert-fix",
+          "cert-cause",
+          "held-cert-1-archive-4:p0-632"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cert-fix",
+          "cert-cause",
+          "held-cert-1-archive-4"
+        ],
+        "locations": [
+          {
+            "id": "cert-fix",
+            "sourceId": "cert-fix",
+            "start": 0,
+            "end": 377,
+            "revision": "581fd6853237cdbe02c994ced51ffdcba17f04a1fd8058ee528aa7dfe097c99a"
+          },
+          {
+            "id": "cert-cause",
+            "sourceId": "cert-cause",
+            "start": 0,
+            "end": 376,
+            "revision": "989fd4301a7f271ecf1cb48a2f97d8b557a8d4484f25f1c7dbeeaf3e0232943c"
+          },
+          {
+            "id": "held-cert-1-archive-4:p0-632",
+            "sourceId": "held-cert-1-archive-4",
+            "start": 0,
+            "end": 632,
+            "revision": "9a2a25225bffefeeb25044a2e0dc8fe8add5db15d1b140b5df80a2cdcc7dfa2d"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cert-cause",
+          "cert-fix"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-charge-1",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "charge-rule",
+          "charge-dry",
+          "held-charge-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "charge-rule",
+          "charge-dry",
+          "held-charge-1-other"
+        ],
+        "locations": [
+          {
+            "id": "charge-rule",
+            "sourceId": "charge-rule",
+            "start": 0,
+            "end": 374,
+            "revision": "5611a79a76da0330913065afc17b092d991224c6e086db7c0d1bdf30b24101c2"
+          },
+          {
+            "id": "charge-dry",
+            "sourceId": "charge-dry",
+            "start": 0,
+            "end": 367,
+            "revision": "c361cb2c2d8b243eb247e2f53e9e2ac354cee05f07792182c3f937c3218c21a1"
+          },
+          {
+            "id": "held-charge-1-other",
+            "sourceId": "held-charge-1-other",
+            "start": 0,
+            "end": 372,
+            "revision": "9b6e40598f3becb22a9bae9365833c4a935491f05b21fb74a16d9e9e344e6d82"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "charge-rule",
+          "charge-dry"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-none-1",
+      "selector": "deterministic",
+      "trial": 2,
+      "rankingSource": "lexical-recomputed",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-none-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-none-1-other"
+        ],
+        "locations": [
+          {
+            "id": "held-none-1-other",
+            "sourceId": "held-none-1-other",
+            "start": 0,
+            "end": 397,
+            "revision": "a0ca33f38221bb4fda128dcd73cde3245acd214cb7a36d199b9e2ef4cb39cd94"
+          }
+        ]
+      },
+      "selected": {
+        "recall": null,
+        "covered": [],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": true
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-1",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "recorded-native-scores-reused-for-cache",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "dev-checkout-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "dev-checkout-1-other"
+        ],
+        "locations": [
+          {
+            "id": "dev-checkout-1-other",
+            "sourceId": "dev-checkout-1-other",
+            "start": 0,
+            "end": 375,
+            "revision": "81a1d932ea29501c4e32716be79fd22cf05d499fcf0953c2f7be15ddd125aedb"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "checkout-cause",
+          "checkout-fix"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-db-1",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "empty-candidates",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [],
+        "locations": []
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "db-cause",
+          "db-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-2",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "recorded-native-scores-reused-for-cache",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "checkout-condition"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "checkout-condition"
+        ],
+        "locations": [
+          {
+            "id": "checkout-condition",
+            "sourceId": "checkout-condition",
+            "start": 0,
+            "end": 404,
+            "revision": "78d101a6fb3bbb5e8814f309525b49cd5778dee829cdca6f184bb9ccf8bbacb3"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "checkout-condition"
+        ],
+        "omitted": [],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-cold-1",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "recorded-native-scores-reused-for-cache",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cold-limit:p2234-2427",
+          "held-cold-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cold-limit",
+          "held-cold-1-other"
+        ],
+        "locations": [
+          {
+            "id": "cold-limit:p2234-2427",
+            "sourceId": "cold-limit",
+            "start": 2234,
+            "end": 2427,
+            "revision": "232f6a1b87b7e00e2a1cce7d6e106eb874993a02ac08d9be6de0fa225d847952"
+          },
+          {
+            "id": "held-cold-1-other",
+            "sourceId": "held-cold-1-other",
+            "start": 0,
+            "end": 369,
+            "revision": "ec10f7e12de378b4bfb8b9eba6df4a80a1198931ddc87d09644bd7030bf02c89"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "cold-limit"
+        ],
+        "omitted": [
+          "cold-observed"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cold-2",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "recorded-native-scores-reused-for-cache",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cold-release",
+          "held-cold-2-other",
+          "held-cold-2-archive-3:p1053-1672"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cold-release",
+          "held-cold-2-other",
+          "held-cold-2-archive-3"
+        ],
+        "locations": [
+          {
+            "id": "cold-release",
+            "sourceId": "cold-release",
+            "start": 0,
+            "end": 378,
+            "revision": "83b896beb21e29fc14b050e98956d4e52a90296304b49124a1929a4520ee46d2"
+          },
+          {
+            "id": "held-cold-2-other",
+            "sourceId": "held-cold-2-other",
+            "start": 0,
+            "end": 374,
+            "revision": "de18e8d80a1b513fda95f5a168fbfcb4287af75a89ec2480e0f5730d762735e3"
+          },
+          {
+            "id": "held-cold-2-archive-3:p1053-1672",
+            "sourceId": "held-cold-2-archive-3",
+            "start": 1053,
+            "end": 1672,
+            "revision": "0a87f76028c0a7f2a034b302b6b8fb397e322f9f82dfb409375cbed9fc820a01"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cold-release"
+        ],
+        "omitted": [],
+        "distractors": 2,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-link-1",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "recorded-native-scores-reused-for-cache",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "link-cause"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "link-cause"
+        ],
+        "locations": [
+          {
+            "id": "link-cause",
+            "sourceId": "link-cause",
+            "start": 0,
+            "end": 375,
+            "revision": "bf6ae95f0f03bdafb82be439c0ccf7632ed3a445d547ef05ffb515aa3e64a064"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "link-cause"
+        ],
+        "omitted": [
+          "link-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cert-1",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "recorded-native-scores-reused-for-cache",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cert-fix",
+          "held-cert-1-archive-4:p0-632",
+          "cert-cause"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cert-fix",
+          "held-cert-1-archive-4",
+          "cert-cause"
+        ],
+        "locations": [
+          {
+            "id": "cert-fix",
+            "sourceId": "cert-fix",
+            "start": 0,
+            "end": 377,
+            "revision": "581fd6853237cdbe02c994ced51ffdcba17f04a1fd8058ee528aa7dfe097c99a"
+          },
+          {
+            "id": "held-cert-1-archive-4:p0-632",
+            "sourceId": "held-cert-1-archive-4",
+            "start": 0,
+            "end": 632,
+            "revision": "9a2a25225bffefeeb25044a2e0dc8fe8add5db15d1b140b5df80a2cdcc7dfa2d"
+          },
+          {
+            "id": "cert-cause",
+            "sourceId": "cert-cause",
+            "start": 0,
+            "end": 376,
+            "revision": "989fd4301a7f271ecf1cb48a2f97d8b557a8d4484f25f1c7dbeeaf3e0232943c"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cert-cause",
+          "cert-fix"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-charge-1",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "recorded-native-scores-reused-for-cache",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "charge-rule",
+          "charge-dry",
+          "held-charge-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "charge-rule",
+          "charge-dry",
+          "held-charge-1-other"
+        ],
+        "locations": [
+          {
+            "id": "charge-rule",
+            "sourceId": "charge-rule",
+            "start": 0,
+            "end": 374,
+            "revision": "5611a79a76da0330913065afc17b092d991224c6e086db7c0d1bdf30b24101c2"
+          },
+          {
+            "id": "charge-dry",
+            "sourceId": "charge-dry",
+            "start": 0,
+            "end": 367,
+            "revision": "c361cb2c2d8b243eb247e2f53e9e2ac354cee05f07792182c3f937c3218c21a1"
+          },
+          {
+            "id": "held-charge-1-other",
+            "sourceId": "held-charge-1-other",
+            "start": 0,
+            "end": 372,
+            "revision": "9b6e40598f3becb22a9bae9365833c4a935491f05b21fb74a16d9e9e344e6d82"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "charge-rule",
+          "charge-dry"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-none-1",
+      "selector": "minilm",
+      "trial": 2,
+      "rankingSource": "recorded-native-scores-reused-for-cache",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-none-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-none-1-other"
+        ],
+        "locations": [
+          {
+            "id": "held-none-1-other",
+            "sourceId": "held-none-1-other",
+            "start": 0,
+            "end": 397,
+            "revision": "a0ca33f38221bb4fda128dcd73cde3245acd214cb7a36d199b9e2ef4cb39cd94"
+          }
+        ]
+      },
+      "selected": {
+        "recall": null,
+        "covered": [],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": true
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-1",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "dev-checkout-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "dev-checkout-1-other"
+        ],
+        "locations": [
+          {
+            "id": "dev-checkout-1-other",
+            "sourceId": "dev-checkout-1-other",
+            "start": 0,
+            "end": 375,
+            "revision": "81a1d932ea29501c4e32716be79fd22cf05d499fcf0953c2f7be15ddd125aedb"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "checkout-cause",
+          "checkout-fix"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-db-1",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "empty-candidates",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [],
+        "locations": []
+      },
+      "selected": {
+        "recall": 0,
+        "covered": [],
+        "omitted": [
+          "db-cause",
+          "db-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "dev-checkout-2",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "checkout-condition"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "checkout-condition"
+        ],
+        "locations": [
+          {
+            "id": "checkout-condition",
+            "sourceId": "checkout-condition",
+            "start": 0,
+            "end": 404,
+            "revision": "78d101a6fb3bbb5e8814f309525b49cd5778dee829cdca6f184bb9ccf8bbacb3"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "checkout-condition"
+        ],
+        "omitted": [],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-cold-1",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cold-limit:p2234-2427",
+          "held-cold-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cold-limit",
+          "held-cold-1-other"
+        ],
+        "locations": [
+          {
+            "id": "cold-limit:p2234-2427",
+            "sourceId": "cold-limit",
+            "start": 2234,
+            "end": 2427,
+            "revision": "232f6a1b87b7e00e2a1cce7d6e106eb874993a02ac08d9be6de0fa225d847952"
+          },
+          {
+            "id": "held-cold-1-other",
+            "sourceId": "held-cold-1-other",
+            "start": 0,
+            "end": 369,
+            "revision": "ec10f7e12de378b4bfb8b9eba6df4a80a1198931ddc87d09644bd7030bf02c89"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "cold-limit"
+        ],
+        "omitted": [
+          "cold-observed"
+        ],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cold-2",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cold-release",
+          "held-cold-2-archive-5:p0-623",
+          "held-cold-2-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cold-release",
+          "held-cold-2-archive-5",
+          "held-cold-2-other"
+        ],
+        "locations": [
+          {
+            "id": "cold-release",
+            "sourceId": "cold-release",
+            "start": 0,
+            "end": 378,
+            "revision": "83b896beb21e29fc14b050e98956d4e52a90296304b49124a1929a4520ee46d2"
+          },
+          {
+            "id": "held-cold-2-archive-5:p0-623",
+            "sourceId": "held-cold-2-archive-5",
+            "start": 0,
+            "end": 623,
+            "revision": "665cf61fa061357b495cd67b1edf62d15204ee301f2ce89812c87fd9cec6908f"
+          },
+          {
+            "id": "held-cold-2-other",
+            "sourceId": "held-cold-2-other",
+            "start": 0,
+            "end": 374,
+            "revision": "de18e8d80a1b513fda95f5a168fbfcb4287af75a89ec2480e0f5730d762735e3"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cold-release"
+        ],
+        "omitted": [],
+        "distractors": 2,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-link-1",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "link-cause"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "link-cause"
+        ],
+        "locations": [
+          {
+            "id": "link-cause",
+            "sourceId": "link-cause",
+            "start": 0,
+            "end": 375,
+            "revision": "bf6ae95f0f03bdafb82be439c0ccf7632ed3a445d547ef05ffb515aa3e64a064"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 0.5,
+        "covered": [
+          "link-cause"
+        ],
+        "omitted": [
+          "link-fix"
+        ],
+        "distractors": 0,
+        "noRelevantOptional": false
+      },
+      "coveragePass": false
+    },
+    {
+      "caseId": "held-cert-1",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "cert-fix",
+          "cert-cause",
+          "held-cert-1-archive-4:p0-632"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "cert-fix",
+          "cert-cause",
+          "held-cert-1-archive-4"
+        ],
+        "locations": [
+          {
+            "id": "cert-fix",
+            "sourceId": "cert-fix",
+            "start": 0,
+            "end": 377,
+            "revision": "581fd6853237cdbe02c994ced51ffdcba17f04a1fd8058ee528aa7dfe097c99a"
+          },
+          {
+            "id": "cert-cause",
+            "sourceId": "cert-cause",
+            "start": 0,
+            "end": 376,
+            "revision": "989fd4301a7f271ecf1cb48a2f97d8b557a8d4484f25f1c7dbeeaf3e0232943c"
+          },
+          {
+            "id": "held-cert-1-archive-4:p0-632",
+            "sourceId": "held-cert-1-archive-4",
+            "start": 0,
+            "end": 632,
+            "revision": "9a2a25225bffefeeb25044a2e0dc8fe8add5db15d1b140b5df80a2cdcc7dfa2d"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "cert-cause",
+          "cert-fix"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-charge-1",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "charge-rule",
+          "held-charge-1-archive-4:p0-632",
+          "charge-dry"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "charge-rule",
+          "held-charge-1-archive-4",
+          "charge-dry"
+        ],
+        "locations": [
+          {
+            "id": "charge-rule",
+            "sourceId": "charge-rule",
+            "start": 0,
+            "end": 374,
+            "revision": "5611a79a76da0330913065afc17b092d991224c6e086db7c0d1bdf30b24101c2"
+          },
+          {
+            "id": "held-charge-1-archive-4:p0-632",
+            "sourceId": "held-charge-1-archive-4",
+            "start": 0,
+            "end": 632,
+            "revision": "251c3c63b133f2f86be9d0a6291e816b1cf898e6b6d860f4417b84689e8a08f3"
+          },
+          {
+            "id": "charge-dry",
+            "sourceId": "charge-dry",
+            "start": 0,
+            "end": 367,
+            "revision": "c361cb2c2d8b243eb247e2f53e9e2ac354cee05f07792182c3f937c3218c21a1"
+          }
+        ]
+      },
+      "selected": {
+        "recall": 1,
+        "covered": [
+          "charge-rule",
+          "charge-dry"
+        ],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": false
+      },
+      "coveragePass": true
+    },
+    {
+      "caseId": "held-none-1",
+      "selector": "laya",
+      "trial": 2,
+      "rankingSource": "recorded-native-classes",
+      "replaySucceeded": true,
+      "selection": {
+        "ids": [
+          "held-none-1-other"
+        ],
+        "policy": "recorded-ranking-replay",
+        "historyGroupsDropped": 0,
+        "recordIds": [
+          "held-none-1-other"
+        ],
+        "locations": [
+          {
+            "id": "held-none-1-other",
+            "sourceId": "held-none-1-other",
+            "start": 0,
+            "end": 397,
+            "revision": "a0ca33f38221bb4fda128dcd73cde3245acd214cb7a36d199b9e2ef4cb39cd94"
+          }
+        ]
+      },
+      "selected": {
+        "recall": null,
+        "covered": [],
+        "omitted": [],
+        "distractors": 1,
+        "noRelevantOptional": true
+      },
+      "coveragePass": false
+    }
+  ]
+}

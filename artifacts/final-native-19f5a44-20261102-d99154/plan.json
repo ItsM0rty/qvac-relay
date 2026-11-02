@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "19f5a44f01fe2005b09cc98364b1b0d5da6b7051",
+  "applicationChangeCommit": "40ff12c963b04ff9c98ae67a49f3268d99ba2ece",
+  "workingTreeBeforeRun": "clean",
+  "remoteBeforeRun": {
+    "code-fix/reviewer-reliability": "cfa92b6cb4e5eec89b5412588b7cc175c28bd933",
+    "code-fix/relay-handoff": "cfa92b6cb4e5eec89b5412588b7cc175c28bd933"
+  },
+  "attemptsPlanned": 1,
+  "scenario": "default short-record checkout handoff",
+  "model": "qvac-0.22.0/qwen3-1.7b-q4/cpu/tools-required",
+  "selector": "deterministic",
+  "nativeInference": true,
+  "storeDirectory": ".relay/final-native-19f5a44-20261102-d99154",
+  "setupScope": "Existing verified WSL Ubuntu 24.04, project-local Node 22.21.1, installed dependencies, bundled native worker and cached weights; fresh peer stores. No fresh install or uncached download.",
+  "createdAt": "2026-11-02T05:33:28.596056+00:00"
+}

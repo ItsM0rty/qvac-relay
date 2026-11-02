@@ -1,0 +1,14 @@
+{
+  "mode": "fresh-reviewer-source-install",
+  "passed": true,
+  "sourceCommit": "83f9e24dcf30c9ed4fcb9fb4da69e1ee8df7ea7c",
+  "node": "22.21.1",
+  "platform": "linux",
+  "arch": "x64",
+  "lockSha256": "898cb7ce5f3ef9897667b9acb984b6a8c47085096f337380a3bddc90bf8e532a",
+  "tests": {
+    "passed": 178,
+    "failed": 0
+  },
+  "scope": "Fresh git archive and fresh npm ci on Linux filesystem. Existing supported Node binary and npm download cache. Model weights may be reused through a persistent cache link; first-download/offline installation not established."
+}

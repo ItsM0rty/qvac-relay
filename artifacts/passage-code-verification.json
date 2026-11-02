@@ -1,7 +1,7 @@
 {
   "mode": "working-checkout-verification",
   "passed": true,
-  "sourceCommit": "2f23582bc24fc344e53e752f5077d9f05a477140",
+  "sourceCommit": "59fd3a5623b78ce0c4f2e43c9e7c94d09e16c2d8",
   "platform": "Ubuntu24.04 WSL2 CPU, localNode22.21.1",
   "commands": [
     "npm run build",
@@ -13,6 +13,6 @@
     "durationMs": 170326.259037,
     "failed": 0
   },
-  "dependencyScope": "Existing verified dependencies and unchanged lockfile; fresh installation separately verified at57fc4d6.",
+  "dependencyScope": "Existing verified dependencies and unchanged lockfile; fresh installation separately verified at9972119.",
   "scope": "Controlled harness checks native save schema, actual tool-result input, coverage rejection, persisted quotes and real process replication. Native full completion is separate."
 }

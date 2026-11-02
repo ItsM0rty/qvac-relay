@@ -46,7 +46,7 @@ Accepted briefs use factPolicy quoted-observations-v1. Trusted code turns each v
 4. A reconnects and replicates B's blocks. The resumer recognizes an unconsumed contribution.
 5. A refreshes context and starts bounded work with that contribution protected. A valid new brief cites the contribution and a terminal checkpoint records consumption.
 
-The [2f23582 long-record development run](../artifacts/passage-demo-2f23582.json) completed this flow once with the deterministic selector, including late exact quotations, cleanup and restart deduplication. It does not establish a success rate or a current two-peer pass for either optional selector.
+The [59fd3a5 long-record development run](../artifacts/passage-demo-59fd3a5.json) completed this flow once with the deterministic selector, including late exact quotations, cleanup and restart deduplication. It does not establish a success rate or a current two-peer pass for either optional selector.
 
 This flow depends on locally received blocks. It cannot prove all peers have supplied their latest data. Source quotations support inspection; semantic truth remains a limitation of the model and the evidence.
 

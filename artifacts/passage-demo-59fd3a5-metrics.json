@@ -1,0 +1,14 @@
+{
+  "mode": "native-handoff-trace-summary",
+  "sourceCommit": "59fd3a5623b78ce0c4f2e43c9e7c94d09e16c2d8",
+  "report": "passage-demo-59fd3a5.json",
+  "passed": true,
+  "elapsedMs": 711784.744261,
+  "modelCalls": 11,
+  "repairs": 2,
+  "promptTokens": 20167,
+  "generatedTokens": 703,
+  "exposedLoadMs": 164767.398446,
+  "generationMs": 481751.310401,
+  "scope": "Sum of exposed SDK counters over recorded calls. Prompt tokens include repeated context. Loading is per observed load, OS caches uncontrolled. Not a repeated-trial quality estimate or process/machine memory peak."
+}

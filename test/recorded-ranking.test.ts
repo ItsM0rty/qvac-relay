@@ -8,7 +8,7 @@ import { RETRIEVAL_CASES } from '../src/retrieval-cases.js';
 import { lexicalRetrieve, projectPassages } from '../src/retrieval.js';
 import { MINILM } from '../src/minilm.js';
 
-const sourceAssertion = '57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4';
+const sourceAssertion = '99721195552a73dbbccb9ecdee7830cc095b59bd';
 async function captured() {
   const report = await runRetrievalEvaluation({
     mode: 'retrieval',
@@ -64,7 +64,7 @@ async function captured() {
   ]);
   // Synthetic rows exercise behavior; only historical configuration comes from the raw artifact.
   const historical = JSON.parse(
-    await readFile('artifacts/passage-retrieval-raw-57fc4d6.json', 'utf8'),
+    await readFile('artifacts/passage-retrieval-raw-9972119.json', 'utf8'),
   );
   report.configuration = historical.configuration;
   report.configurationHash = historical.configurationHash;

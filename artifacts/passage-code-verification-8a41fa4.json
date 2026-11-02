@@ -1,0 +1,18 @@
+{
+  "mode": "working-checkout-verification",
+  "passed": true,
+  "sourceCommit": "8a41fa41b73bbc02e236ed18ede53c5bfd8660fe",
+  "platform": "Ubuntu 24.04 WSL2 CPU, project-local Node 22.21.1",
+  "commands": [
+    "npm run build",
+    "npm run format:check",
+    "npm test"
+  ],
+  "tests": {
+    "durationMs": 147544.456749,
+    "failed": 0,
+    "passed": 153
+  },
+  "dependencyScope": "Existing dependencies; unchanged package-lock. Fresh installation separately verified at9972119.",
+  "scope": "Controlled harness suite includes real replication and HTTP. This is not native model quality or a fresh final-source npm ci. Current native handoff intentionally paused before its first reply."
+}

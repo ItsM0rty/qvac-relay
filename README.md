@@ -4,6 +4,8 @@ Relay keeps an engineering investigation alive across two local peers. A local Q
 
 The repository is an assessment implementation. See [testing evidence](docs/TESTING.md) for the distinction between controlled tests, real replication and native inference. Accepted observations are verbatim source quotations. Generated explanations are labelled as unverified in uncertainty and can still be wrong. A quotation establishes what a source reports, not that the source is true.
 
+Historical test records in this copy identify the equivalent rewritten source snapshots; the recorded runs were performed on the original commits.
+
 ## Requirements and setup
 
 For a guided first run, see the [reviewer guide](docs/REVIEWING.md). It covers setup, live progress, status, cancellation and retained results without needing the development history. The [reliability record](docs/REVIEW_RESULTS.md) separates individual native attempts from controlled diagnostics and earlier snapshots.
@@ -15,8 +17,8 @@ The repository is private. If you have access, clone it from a Linux terminal, p
 ```sh
 sudo apt-get update && sudo apt-get install -y git ca-certificates libatomic1
 cd ~
-git clone https://github.com/da-goat37/prac-sdk.git
-cd prac-sdk
+git clone https://github.com/ItsM0rty/qvac-relay.git
+cd qvac-relay
 ```
 
 From a Linux terminal inside this checkout:
@@ -30,12 +32,6 @@ npm test
 ```
 
 On a memory-constrained system, use `NODE_OPTIONS=--max-old-space-size=384 npm ci --maxsockets=2` for the install. Install dependencies and run inference sequentially. The bundle command targets linux-x64 and includes only text generation and decisions. `qvac.config.mjs` computes an absolute model cache path in `.qvac/models`. The initial model load downloads a GGUF through QVAC's registry. A later cached load does not establish that a fresh install can work without network access. The initial dependency installation and uncached model download need network access; subsequent model loads can use the local cache. The development machine needed a 120 second worker startup allowance on WSL's Windows filesystem mount. Prefer a Linux filesystem checkout if startup I/O is slow.
-
-On this development checkout, an ignored Linux Node 22.21.1 runtime is available through `scripts/linux.sh`. It is a convenience for this machine, not a downloaded binary committed to Git. In PowerShell:
-
-```powershell
-wsl -d Ubuntu-24.04 -- bash '/mnt/c/Users/m0rty/Desktop/Programming/Research/New folder/byteask/relay-agent/scripts/linux.sh' npm test
-```
 
 ## Two peers locally
 
@@ -87,11 +83,11 @@ npm run relay -- scan --dir .relay/a
 
 CPU work can take several minutes. The `work` command waits for its checkpoint; use another terminal for `status` or `cancel`. CLI runs allow at most 20 model calls, two corrective attempts and ten minutes per run. Automatic resumption carries call and repair counts from prior work. These are cooperative execution limits; the running operation waits for native settlement after cancellation is requested.
 
-The retained [v6 live demonstration](artifacts/live-demo.json) at source `fd54add` passed with Qwen3 1.7B Q4 in 343463 ms (about 5.7 minutes), using seven cumulative model calls and two repairs. Peer B wrote its contribution into B's own store while A was offline; after reconnecting, A completed the brief citing the health log and deployment configuration. A further restart confirmed deduplication. This historical run predates passage retrieval and is separate from current long-record verification. It is one successful demonstration, not a measured success rate.
+The retained [v6 live demonstration](artifacts/live-demo.json) at source `e336b55` passed with Qwen3 1.7B Q4 in 343463 ms (about 5.7 minutes), using seven cumulative model calls and two repairs. Peer B wrote its contribution into B's own store while A was offline; after reconnecting, A completed the brief citing the health log and deployment configuration. A further restart confirmed deduplication. This historical run predates passage retrieval and is separate from current long-record verification. It is one successful demonstration, not a measured success rate.
 
-The [final native check after review fixes](artifacts/final-native-f1b1ccf-20261102-d99154/summary.json) passed at checkout `f1b1ccf` in 458437.24 ms with seven model calls and one repair. It verified offline contribution, real replication, resumption, both source citations, restart deduplication and cleanup using fresh peer stores and the existing setup. This is one default short-record run, separate from the earlier repeated-run results. See [the verification record](docs/REVIEW_RESULTS.md) for its exact configuration and limits.
+The [final native check after review fixes](artifacts/final-native-19f5a44-20261102-d99154/summary.json) passed at checkout `19f5a44` in 458437.24 ms with seven model calls and one repair. It verified offline contribution, real replication, resumption, both source citations, restart deduplication and cleanup using fresh peer stores and the existing setup. This is one default short-record run, separate from the earlier repeated-run results. See [the verification record](docs/REVIEW_RESULTS.md) for its exact configuration and limits.
 
-The [long-record native handoff](artifacts/passage-demo-2f23582.json) passed at source `2f23582` with deterministic lexical selection in 711784.744 ms, about 11.9 minutes. A saved pending work, B contributed from its own store while A was offline, and A restarted, replicated the contribution and completed a brief with exact late quotations from both records. The run used 11 cumulative calls and two repairs, verified cleanup and restart deduplication, and stopped both peers cleanly. This is one development demonstration, not an accuracy estimate; earlier failed runs remain recorded.
+The [long-record native handoff](artifacts/passage-demo-59fd3a5.json) passed at source `59fd3a5` with deterministic lexical selection in 711784.744 ms, about 11.9 minutes. A saved pending work, B contributed from its own store while A was offline, and A restarted, replicated the contribution and completed a brief with exact late quotations from both records. The run used 11 cumulative calls and two repairs, verified cleanup and restart deduplication, and stopped both peers cleanly. This is one development demonstration, not an accuracy estimate; earlier failed runs remain recorded.
 
 For the default guided live handoff:
 
@@ -128,7 +124,7 @@ The INT8 ONNX model is pinned to revision `a09144355adeed5f58c8ed011d209bf8ee5a1
 
 Laya classifies each full passage as directly relevant, background or unrelated, using bounded batches and optional order probes. It ranks all candidates by class and lexical order, without using confidence or `actProbability` to authorize actions. The native [MiniLM probe](artifacts/minilm-native-probe.json) recorded nonconstant scores, stable reordered results and refusal of overlong input. It is an integration probe, not a held-out quality result. In the measured [passage selection comparison](docs/RETRIEVAL_EVALUATION.md), all three arms achieved 7/9 held-out annotated spans and the optional rankers did not reduce total distractors. Deterministic lexical selection remains the recommended default for this small synthetic set.
 
-The [v5 selector matrix](docs/EVALUATION.md) used source snapshot `872df5c`: both deterministic and Laya arms passed 6/6 automated state checks. Laya made six valid decisions without fallback or truncation, but selected all six candidates, including five irrelevant records, on every task. No filtering benefit was observed, so deterministic selection remains the default. This matrix predates the v6 handoff snapshot and does not establish semantic truth or general selector performance.
+The [v5 selector matrix](docs/EVALUATION.md) used source snapshot `4fb380c`: both deterministic and Laya arms passed 6/6 automated state checks. Laya made six valid decisions without fallback or truncation, but selected all six candidates, including five irrelevant records, on every task. No filtering benefit was observed, so deterministic selection remains the default. This matrix predates the v6 handoff snapshot and does not establish semantic truth or general selector performance.
 
 The selected [Qwen3 1.7B probe](artifacts/live-smoke-1.7b.json) passed in two calls with exact output formatting in 28.56 seconds. The [cancellation probe](artifacts/live-cancellation-1.7b.json) requested cancellation after native output began; cancel() returned in 32.77 ms and the completion rejected as INFERENCE_CANCELLED. These probes are separate from the complete handoff.
 
@@ -151,7 +147,7 @@ npm run evaluate:retrieval -- --mode agent --split heldout --cases held-cold-1,h
 
 Replay is a scripted harness regression using actual tool results and temporary stores. It is not a model-quality result. `regrade` reads captured version 2 case state and recomputes checks without inference or store writes. It refuses missing state and mismatched identities, and labels its output as recorded-state-regrade. Reports validate exact case and trial identities before comparison. Missing cases, duplicates and incompatible configurations fail. Each task includes five irrelevant evidence records. Expected source IDs belong to the grader and are not supplied as mandatory selector context. Version 2 reports check the quoted-observation policy and uncertainty notice; historical version 1 reports are not comparable. Measurements and limitations are included in each report. See [the recorded selector evaluation](docs/EVALUATION.md). The small synthetic suite does not establish general accuracy or statistical significance.
 
-The passage evaluation uses nine frozen version 2 synthetic fixtures, approximately 19,000 characters per case, with disjoint development and held-out families. Expected spans are grader-only and are not forced into context. The 54-row selection comparison and six failed native agent runs are documented in [passage retrieval evaluation](docs/RETRIEVAL_EVALUATION.md); the later long-record native handoff is a separate measurement. The later [cc543bd](artifacts/passage-demo-cc543bd-failed.json) and [cf3b330](artifacts/passage-demo-cf3b330-failed.json) long-record runs failed after pending work and replication; neither is a successful handoff. The [ae3a53f run](artifacts/passage-demo-ae3a53f-failed.json) failed during initial work after quotation validation errors, before a request or replication. The [89f9f10 run](artifacts/passage-demo-89f9f10-failed.json) stopped without the required health-log citation after 12 calls and two repairs; cleanup and resumption reported no error. The earlier source `2f23582` passed build, formatting and 168 controlled tests. Its native long-record handoff passed once with the new save format, as described above. These synthetic checks do not establish semantic truth or general quality.
+The passage evaluation uses nine frozen version 2 synthetic fixtures, approximately 19,000 characters per case, with disjoint development and held-out families. Expected spans are grader-only and are not forced into context. The 54-row selection comparison and six failed native agent runs are documented in [passage retrieval evaluation](docs/RETRIEVAL_EVALUATION.md); the later long-record native handoff is a separate measurement. The later [fa6cecd](artifacts/passage-demo-fa6cecd-failed.json) and [34d4714](artifacts/passage-demo-34d4714-failed.json) long-record runs failed after pending work and replication; neither is a successful handoff. The [5a9b855 run](artifacts/passage-demo-5a9b855-failed.json) failed during initial work after quotation validation errors, before a request or replication. The [1cf402a run](artifacts/passage-demo-1cf402a-failed.json) stopped without the required health-log citation after 12 calls and two repairs; cleanup and resumption reported no error. The earlier source `59fd3a5` passed build, formatting and 168 controlled tests. Its native long-record handoff passed once with the new save format, as described above. These synthetic checks do not establish semantic truth or general quality.
 
 For a fresh reviewer verification, use `npm run verify:review`: it archives the committed Git source, installs fresh dependencies, runs checks and the native reviewer handoff serially, and retains uniquely named reports and peer stores. It reuses the installed Node runtime and may reuse npm and model caches; see [reviewer instructions](docs/REVIEWING.md). The older `scripts/clean-verify.sh` can overwrite historical artifacts, so preserve them before using it. Its `--retrieval` mode requires `npm run ranker:prepare` in the default `.relay/reranker-cache` first.
 
@@ -168,4 +164,18 @@ See [architecture](docs/ARCHITECTURE.md), [decisions](docs/DECISIONS.md) and [cu
 
 ## Personal design section
 
-Suyash must add the assessment's required personal design section himself. No AI-written personal design prose is supplied here.
+Relay is an investigative handoff agent; it surfaces relevant and available evidence, records questions it can't answer, pauses when there's missing information, and resumes when another peer contributes the needed missing information. Relay's specific workflow gives P2P storage an active role as a peer can add useful evidence even while the other peer (which is actually doing the investigation) is offline; the other peer's agent, after successful reconnection and replication, can detect an update signal and automatically resume the investigation if the previously missing information is shared by its counterpart.
+
+Each of the peers have an independent Hyperbee2 tree w/ write permissions being exclusive to the respective owners; peers replicate and read each other's trees and any contribution stays in the writer's tree and links back to a request. This format keeps write ownership clear when peers are disconnected. The tradeoff is that Relay has to assemble the investigation from multiple trees and conflicting contributions aren't automatically resolved; application level logic is necessary to handle both tradeoffs.
+
+The agent runs Qwen3 1.7B Q4 locally through QVAC; it can search for evidence, read a record, request missing information and propose a brief using the standard tools. I kept the tool set small enough to give each tool a clear and specific purpose. After the model makes tool requests, the harness validates arguments and checks the resulting state.
+
+A brief stores the exact quotations from evidence that the agent has read in the read ledger. The harness checks the source revision (SHA-256 hash of the canonicalized evidence record) and requires the quotation to be an exact substring of the delivered excerpt. Any generated interpretations are labelled as unverified. This makes observations traceable, though a matching quote doesn't establish that the source is true or that a proposed cause is correct; a limitation of this approach is that semantically similar phrases are rejected if they aren't an exact substring of a delivered excerpt.
+
+Requests, briefs and checkpoints are persisted; a checkpoint records the run's status, request IDs, call and repair count and relevant source IDs. After a restart, Relay rebuilds work from those persisted records; it doesn't store the model's previous conversation history, a tradeoff made specifically to allow token reduction for the small local model. Stable IDs and checks for existing work help avoid repeating committed effects, thus supporting idempotency. Freshness is based on records available locally, so an update on a disconnected peer may not yet be visible before replication.
+
+While storing evidence records, Relay splits them into source-linked passages and uses lexical retrieval to select candidates. The harness protects the task, required information and valid tool-call history within a bounded context. The original evidence stays in the store and can be read again. The search evidence tool uses a BM25-like scoring to find the passages relevant to the query; lexical retrieval here is lightweight but can miss relevant passages that use different wording.
+
+I tested MiniLM and Laya as optional rerankers, but neither improved the measured span coverage or distractor count on the small retrieval fixture; so lexical selection remains the default. A reranker also can't recover a passage that lexical retrieval never included in its candidate set.
+
+The current demo uses two local peer process connected over loopback TCP; it demonstrates replication and resumption w/o requiring a central server but doesn't implement internet peer discovery. Native inference is suboptimal on my machine and the recoded runs are too few to claim broad reliability.

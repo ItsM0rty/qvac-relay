@@ -9,8 +9,8 @@ Use Ubuntu 24.04 in WSL2 on CPU with Linux Node `^22.21.0 || >=24.9.0`. Install 
 ```sh
 sudo apt-get update && sudo apt-get install -y git ca-certificates libatomic1
 cd ~
-git clone https://github.com/da-goat37/prac-sdk.git
-cd prac-sdk
+git clone https://github.com/ItsM0rty/qvac-relay.git
+cd qvac-relay
 node --version
 npm ci --maxsockets=2
 npm run bundle:qvac

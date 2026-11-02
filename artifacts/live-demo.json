@@ -2,7 +2,7 @@
   "mode": "live-qvac-two-peer",
   "passed": true,
   "elapsedMs": 343463,
-  "directory": ".relay/clean-demo-fd54add9623da1fcd0b59f344a3ddf82ca6e63c0-1793466639",
+  "directory": ".relay/clean-demo-e336b550652fff0c1bee1acf0dd47677e4abacc9-1793466639",
   "events": [
     {
       "event": "peer-started",
@@ -117,6 +117,6 @@
       "runId": "20703ab9635dba7260f0c88fdb1e5011e140871d3e9e17971985af37f66d6aa0"
     }
   ],
-  "sourceCommit": "fd54add9623da1fcd0b59f344a3ddf82ca6e63c0",
+  "sourceCommit": "e336b550652fff0c1bee1acf0dd47677e4abacc9",
   "storesRetainedLocally": true
 }

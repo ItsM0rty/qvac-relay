@@ -1,12 +1,12 @@
 # Passage retrieval evaluation
 
-The recommended default is deterministic lexical retrieval. In this small frozen synthetic set, MiniLM and Laya changed some ordering and selected passages, but neither improved held-out span recall or the total number of distractors over lexical retrieval. MiniLM remains an optional real local reranker; this experiment did not establish a quality gain from using it. The six captured native agent runs are reported separately below. The later default-selector long-record handoff passed at2f23582. It is a development integration result, not a new held-out quality estimate.
+The recommended default is deterministic lexical retrieval. In this small frozen synthetic set, MiniLM and Laya changed some ordering and selected passages, but neither improved held-out span recall or the total number of distractors over lexical retrieval. MiniLM remains an optional real local reranker; this experiment did not establish a quality gain from using it. The six captured native agent runs are reported separately below. The later default-selector long-record handoff passed at59fd3a5. It is a development integration result, not a new held-out quality estimate.
 
 ## Scope and provenance
 
-The measured source was commit `57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4`, run from the clean source archive used in the 129-test clean verification. That archive omitted `.git`, so the original report could not read a commit ID directly. The source commit in the corrected report is restored from the clean-install manifest, not obtained from Git inside the archive.
+The measured source was commit `99721195552a73dbbccb9ecdee7830cc095b59bd`, run from the clean source archive used in the 129-test clean verification. That archive omitted `.git`, so the original report could not read a commit ID directly. The source commit in the corrected report is restored from the clean-install manifest, not obtained from Git inside the archive.
 
-The fixture is `retrieval-cases-v2`, frozen before model evaluation with SHA-256 `306b32f7ae3f22823f76e34d03cb07858ce1befd2e709949ade16784a56d2bf4`. Development and held-out incident families are disjoint; there was no tuning on held-out results. The [original captured report](../artifacts/passage-retrieval-raw-57fc4d6.json) is retained. The [corrected report](../artifacts/passage-retrieval.json) was regraded offline from its recorded passage IDs against that frozen fixture using [retrieval-regrade.ts](../src/retrieval-regrade.ts); the regrade made no new native inference calls. The reporting fix did not change the evaluated rankers.
+The fixture is `retrieval-cases-v2`, frozen before model evaluation with SHA-256 `306b32f7ae3f22823f76e34d03cb07858ce1befd2e709949ade16784a56d2bf4`. Development and held-out incident families are disjoint; there was no tuning on held-out results. The [original captured report](../artifacts/passage-retrieval-raw-9972119.json) is retained. The [corrected report](../artifacts/passage-retrieval.json) was regraded offline from its recorded passage IDs against that frozen fixture using [retrieval-regrade.ts](../src/retrieval-regrade.ts); the regrade made no new native inference calls. The reporting fix did not change the evaluated rankers.
 
 All three arms begin with lexical passage retrieval; the optional rankers order that candidate set, and required source context is handled separately. Consequently, a reranker cannot recover a passage excluded by lexical retrieval. These checks measure exact annotated quotations present in selected passages, not semantic truth or the quality of a generated answer. A later `find_evidence` and `read_record` call can recover an omitted passage, but recovery is not guaranteed and does not mean it was present in the initial context.
 
@@ -29,7 +29,7 @@ The equal counts do not mean the selected passages were identical. For example, 
 
 The separate [agent report](../artifacts/passage-agent.json) recorded zero successful runs across two held-out cases, three selectors and one trial per case and selector. Four runs stopped on context overflow: deterministic on `held-charge-1`, MiniLM on `held-cold-1`, and Laya on both cases. The deterministic `held-cold-1` run failed validation of an undeclared `needId`; the MiniLM `held-charge-1` run failed repeated-action validation. No run produced a successful saved outcome. Empty outcome coverage is not a measurement of zero initial passage coverage. One stochastic trial per case and selector cannot establish a general failure rate or semantic correctness.
 
-The agent report itself records `sourceCommit` as `unavailable`; its source snapshot `57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4` is identified through the clean-install manifest, rather than read from Git inside the archive. These results remain evidence for that snapshot and are not replaced by later verification.
+The agent report itself records `sourceCommit` as `unavailable`; its source snapshot `99721195552a73dbbccb9ecdee7830cc095b59bd` is identified through the clean-install manifest, rather than read from Git inside the archive. These results remain evidence for that snapshot and are not replaced by later verification.
 
 ## Native execution and timing
 
@@ -39,12 +39,12 @@ Laya had 16 native-ranking rows and two empty-candidate rows; its recorded cold 
 
 ## Recorded prediction replay after harness corrections
 
-[The budget replay](../artifacts/passage-ranking-budget-replay.json) reapplies the captured MiniLM logits and Laya classes to the context builder at `2f23582`. No model ran and no peer store was written. Under the current tool metadata, protected availability summary and initial empty read progress, each arm retained 7/9 held-out spans and admitted six distractor passages per trial. This is a budget regression check over old predictions, not a fresh native quality comparison. Original native timing is not reused as new latency. The [earlier replay at b735b53](../artifacts/passage-ranking-budget-replay-b735b53.json) remains separate.
+[The budget replay](../artifacts/passage-ranking-budget-replay.json) reapplies the captured MiniLM logits and Laya classes to the context builder at `59fd3a5`. No model ran and no peer store was written. Under the current tool metadata, protected availability summary and initial empty read progress, each arm retained 7/9 held-out spans and admitted six distractor passages per trial. This is a budget regression check over old predictions, not a fresh native quality comparison. Original native timing is not reused as new latency. The [earlier replay at fcb1ecb](../artifacts/passage-ranking-budget-replay-fcb1ecb.json) remains separate.
 
-The raw report lacks both a source commit and captured query text. The replay requires the known historical configuration hash and the caller's explicit clean-manifest attribution to `57fc4d6`. Query identity is inferred from the frozen task fixture and historical harness. The hash checks configuration compatibility; it does not authenticate the supplied scores.
+The raw report lacks both a source commit and captured query text. The replay requires the known historical configuration hash and the caller's explicit clean-manifest attribution to `9972119`. Query identity is inferred from the frozen task fixture and historical harness. The hash checks configuration compatibility; it does not authenticate the supplied scores.
 
 ```sh
-node --import tsx scripts/replay-ranking.ts artifacts/passage-retrieval-raw-57fc4d6.json artifacts/new-ranking-budget-replay.json --source-commit 57fc4d68cdc53dba9bd9c7eec83c0b983c9fe4f4
+node --import tsx scripts/replay-ranking.ts artifacts/passage-retrieval-raw-9972119.json artifacts/new-ranking-budget-replay.json --source-commit 99721195552a73dbbccb9ecdee7830cc095b59bd
 ```
 
 ## Laya sensitivity probe

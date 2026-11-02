@@ -1,0 +1,18 @@
+{
+  "mode": "working-checkout-verification",
+  "passed": true,
+  "sourceCommit": "ed6a2b7fb3e95a7dc4b14b5c8a730ccf19a1e291",
+  "platform": "Ubuntu 24.04 WSL2 CPU, project-local Node 22.21.1",
+  "commands": [
+    "npm run build",
+    "npm run format:check",
+    "npm test"
+  ],
+  "tests": {
+    "durationMs": 183260.374553,
+    "passed": 147,
+    "failed": 0
+  },
+  "dependencyScope": "Existing dependencies with unchanged package-lock; fresh installation separately verified at9972119. Not a fresh final-source npm ci.",
+  "scope": "Full controlled harness suite includes real separate-process replication and loopback HTTP. Native model quality and complete handoff have separate reports."
+}

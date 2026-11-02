@@ -1,0 +1,5 @@
+Executed from the existing clean repository at 19f5a44f01fe2005b09cc98364b1b0d5da6b7051, using scripts/linux.sh to select Linux Node 22.21.1.
+Unset RELAY_DEMO_LONG and RELAY_DEMO_SCENARIO_FILE.
+RELAY_MODEL=1.7b RELAY_SELECTOR=deterministic npm run demo -- .relay/final-native-19f5a44-20261102-d99154
+Exit code: 0. Existing dependencies, bundled worker and model cache reused; peer stores did not exist before this attempt.
+The retained audit source ran afterward from .tools/final-native-audit.ts, with the report label as its argument; it read only peer A after shutdown.
